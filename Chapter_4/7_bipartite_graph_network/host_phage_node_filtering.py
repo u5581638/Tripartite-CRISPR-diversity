@@ -1,0 +1,21 @@
+import sys
+import csv
+import re
+
+csvfile = open(sys.argv[1])
+hp_table = csv.reader(csvfile)
+
+ret_out = open(sys.argv[1] + "_names_kept2.csv","w")
+spamwriter = csv.writer(ret_out)
+spamwriter.writerow(next(hp_table))
+hp_set = set()
+for row in hp_table:
+	host_name = row[2]
+	phage_name = row[3]
+	my_matchh = re.match('h[0-9]+',host_name)
+	my_matchp = re.match('p[0-9]+',phage_name)
+	if (my_matchh and my_matchp and ((host_name, phage_name) not in hp_set)):
+		spamwriter.writerow(row)
+		hp_set.add((host_name, phage_name))
+ret_out.close()
+csvfile.close()

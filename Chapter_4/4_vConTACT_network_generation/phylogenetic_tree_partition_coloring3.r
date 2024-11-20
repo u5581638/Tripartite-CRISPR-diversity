@@ -1,0 +1,81 @@
+# script to color a phylogenetic tree in the same colors as the clusters in cas12a partitioned network
+
+library(ggplot2)
+library(ggtree)
+library(igraph)
+library(stringr)
+library(treeio)
+library(r2r)
+
+setwd("D:/host_phage_component_partition_reconciliation/subtypes/spcas9/host")
+partition_table_color <- read.csv("spcas9_host_only_partition.csv_w_color.csv") # read in a table which was the color row added. Need to use python to merge.
+# can I use regex/sed 
+my_tree <- read.tree("spcas9.fasta_all_hits.csv_genomes.fasta_aa_raw.fasta_rep_aa_clustered.fa_aln.fasta.treefile")
+
+# need to truncate tip_labels
+i = 1
+while (i <= length(my_tree$tip.label)) {
+	my_tip <- strsplit(my_tree$tip.label[i], split= '_[0-9]+$')
+	my_tip <- unlist(my_tip)
+	my_tip <- my_tip[1]
+	# this will do weird things to the labelling
+	if (!my_tip %in% my_tree$tip.label) {
+		my_tree$tip.label[i] <- my_tip
+	}
+	 
+	i = i + 1
+}
+#my_tree$tip.label <- unique(my_tree$tip.label)
+
+# first remove any ids from the partition table which are not 
+# next need to convert : -> _ to be compatible with newick format. 
+partition_table_color$node <- str_replace_all(partition_table_color$node,":","_")
+# rename so that new tip labels are partition cluster numbers
+
+partition_dict  <- hashmap()
+
+i = 1
+while (i < length(partition_table_color$node)) {
+	if (!partition_table_color$node[i] %in% partition_dict) {
+		partition_dict[[partition_table_color$node[i]]] <- c(partition_table_color$node[i],partition_table_color$component[i],partition_table_color$color[i])
+	}
+	i = i + 1
+}
+
+i = 1
+anno_frame <- data.frame(tip=NA,cluster=NA,colour=NA)
+while (i <= length(my_tree$tip.label)) {
+	my_tip <- my_tree$tip.label[i]
+#	print("yay!!")
+#	print(my_tip)
+	if (has_key(partition_dict,my_tip)) {
+		partition_row = partition_dict[[my_tip]]
+		de <- data.frame(my_tip,partition_row[2],partition_row[3])
+	#	print(de)
+		names(de) <- c("tip","cluster","colour")
+		anno_frame <- rbind(anno_frame,de)
+	} else {
+		de <- data.frame(my_tip,NA,"#000000")
+		names(de) <- c("tip","cluster","colour")
+		anno_frame <- rbind(anno_frame,de)
+	}
+	i = i + 1
+}
+# partiton_tree_only <- partition_table_color$node[partition_table_color$node %in% my_tree$tip.label]
+
+render_tree <- ggtree(my_tree,layout="circular") %<+% anno_frame
+# need to fix
+colors <- anno_frame$colour
+names(colors) <- anno_frame$cluster
+render_tree2 <- render_tree + geom_tippoint(aes(color=cluster)) + scale_color_manual(values = colors) + theme(legend.position = "right")
+
+# okay. Now have to see if I can utilise the color and component columns. The code below should now be irrelevant as I'm now trying to do this through.
+
+ggsave(width=20,height=8,"spcas9_cas7a_all_tree2.png")
+#rename_taxa(my_tree, partiton_tree_only,key=2,value=3)
+
+
+
+# need to:
+# 1. Substitute genome ids to the partition numbers
+# 2. 
