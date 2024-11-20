@@ -1,0 +1,149 @@
+# spacer PPS distance calculator
+# identify the PPS, then compute the distance from the PPS to the spacers. Spacers should be assigned 2D coordinates based on whether spacers map to either the forward or reverse strand.
+
+# first need to create a dict to group entries 
+
+import sys
+import csv
+import copy
+
+def forward_sorter(row):
+	return (float(float (row[20]) + float (row[21]) / 2))
+
+
+def pps_compute(input_url):
+	print("Start:")
+	csvfile = open (input_url, "r") 
+	final_mapping_table = csv.reader(csvfile)
+	print("Real_start:")
+	# first filter NA rows 
+	ret_out = open(input_url + "_no_NA.csv", "w")
+	spam_writer = csv.writer(ret_out)
+	spam_writer.writerow(["Spacer_id","Phage_id","Perc_id","Length", "Mismatches","Gapopen","query_start","query_end","Mapped_start_site","Mapped_end_site","evalue","bitscore","Genome_id","orientation","orientation_score","orientation_confidence","questionable_array","array_score","CRISPR-start","CRISPR-end","repeat_start","repeat_end","spacer_start","spacer_end","dr_repeat_original","dr_repeat_concensous","spacer","Array_tool","RUN","array_number","spacer_number","distance","mapped_strand"])
+	for row in final_mapping_table:
+		if (row[8] != "NA" and row[8] != ''): # may need to change this row number
+			spam_writer.writerow(row)
+	csvfile.close()
+	ret_out.close()
+
+	print("NO_NA written to drive")
+
+	my_in = open (input_url + "_no_NA.csv", "r")
+	final_mapping_table = csv.reader(my_in)
+	print("Dict start:")
+	spacer_host_hits_dict = {}
+	header = next(final_mapping_table)
+	final_mapping_table = final_mapping_table
+	for row in final_mapping_table:
+		# THESE INDEXES WILL NEED TO BE REPLACED WITH THE UPDATED INDEXES IN THE REAL TABLE!!
+		genome_id = row[0].split("|") [0]
+		mapped_hit = row[1]
+		crispr_start = row[18] 
+		crispr_end = row[19]
+		# END OF MODIFICATIONS!!
+
+		spacer_host_id = genome_id.strip() + " " + mapped_hit.strip() + " " + crispr_start.strip() + " " + crispr_end.strip()
+		if (spacer_host_id not in spacer_host_hits_dict):
+			spacer_host_hits_dict[spacer_host_id] = [row]
+		else:
+			spacer_host_hits_dict[spacer_host_id].append(row)
+	my_in.close()
+	spacer_host_hits = list(spacer_host_hits_dict.values())
+	# now spacer-host pairs are grouped.
+	# Need to go through each row. Select the PPS. Compute the distance from the PPS for each entry and assign whether or not the hit is on the same, or complementary strand.
+	print("Final_IO")
+	ret_out = open(input_url + "_distances_annotated.csv", "w")
+	spam_writer = csv.writer(ret_out)
+	spam_writer.writerow(["Spacer_id","Phage_id","Perc_id","Length", "Mismatches","Gapopen","query_start","query_end","Mapped_start_site","Mapped_end_site","evalue","bitscore","Genome_id","orientation","orientation_score","orientation_confidence","questionable_array","array_score","CRISPR-start","CRISPR-end","repeat_start","repeat_end","spacer_start","spacer_end","dr_repeat_original","dr_repeat_concensous","spacer","Array_tool","RUN","array_number","spacer_number","distance","mapped_strand"])
+	print("Hi!!")
+	# add header!!
+	for spacer_host_hit in spacer_host_hits:
+		array_orientation = spacer_host_hit[0][13]
+		if (array_orientation == "Forward"):
+			pps = list(sorted(spacer_host_hit, reverse=True,key=forward_sorter)) [0] # make sure that the sequences are not already sorted!!
+			# THESE INDEXES WILL NEED TO BE CHANGED - Actually this works out!!
+			spacer_start = pps[8]
+			spacer_end = pps[9]
+			pps_coord = float((int(spacer_start) + int(spacer_end)) / 2)
+			pps_sense = 1
+			if (int(spacer_start) > int(spacer_end)):
+			#	print("Yay!!")
+				pps_sense = -1
+		#	print("Hey!!")
+			for hit in spacer_host_hit:
+				# SPACER_TABLE_INDEX WILL NEED TO BE MODIFIED
+				spacer_start_hit = hit[8]
+				spacer_end_hit = hit[9]
+				target_sense = 1 
+				if (int(spacer_end_hit) < int(spacer_start_hit)):
+					target_sense = -1
+				midpoint_spacer_distance = float ((int(spacer_start_hit) + int(spacer_end_hit)) / 2) # could be as simple as adding abs here?
+				# This is the line that needs to change
+			#	print(pps_sense, target_sense, spacer_start,spacer_end )
+				if (pps_sense == 1 and target_sense == 1):
+					midpoint_spacer_distance = midpoint_spacer_distance - pps_coord
+					strand = "1"
+				elif (pps_sense == 1 and target_sense == -1):
+					midpoint_spacer_distance = midpoint_spacer_distance - pps_coord
+					strand = "-1"	
+				elif (pps_sense == -1 and target_sense == 1):
+					midpoint_spacer_distance = pps_coord - midpoint_spacer_distance
+					strand = "-1"
+				elif (pps_sense == -1 and target_sense == -1):
+					midpoint_spacer_distance = pps_coord - midpoint_spacer_distance			
+					strand = "1"
+				else:
+					print("Error!!")
+
+				my_hit = copy.deepcopy(hit)
+				my_hit.extend([str(midpoint_spacer_distance), strand])
+				spam_writer.writerow(my_hit)
+		else: # spacer_host_hit == "Reverse"
+		#	print(spacer_host_hit)
+			pps = list(sorted(spacer_host_hit, reverse=False,key=forward_sorter)) [0]
+			pps_default = list(sorted(spacer_host_hit, reverse=True,key=forward_sorter)) [0]
+			# THESE INDEXES WILL NEED TO BE CHANGED 
+
+			spacer_start = pps[8]
+			spacer_end = pps[9]
+			print("pps:")
+			print(pps)
+			pps_coord = float ((int(spacer_start) + int(spacer_end)) / 2)
+			pps_sense = -1
+		#	print(spacer_end, spacer_start)
+		#	print(spacer_start, spacer_end)
+
+			if (int(spacer_start) > int(spacer_end)):
+		#		print("Yaya!!")
+				pps_sense = 1
+			for hit in spacer_host_hit:
+				# SPACER_TABLE_INDEX WILL NEED TO BE MODIFIED!!
+				spacer_start_hit = hit[8]
+				spacer_end_hit = hit[9]
+				target_sense = -1 
+				if (int(spacer_end_hit) < int(spacer_start_hit)):
+					target_sense = 1
+				midpoint_spacer_distance = float ((int(spacer_start_hit) + int(spacer_end_hit)) / 2)
+			#	print(pps_sense, target_sense, spacer_start,spacer_end )
+				# this might require a slightly different distance calculation
+				if (pps_sense == 1 and target_sense == 1):
+					midpoint_spacer_distance =  midpoint_spacer_distance - pps_coord
+					strand = "1"
+				elif (pps_sense == 1 and target_sense == -1):
+					midpoint_spacer_distance = midpoint_spacer_distance - pps_coord
+					strand = "-1"
+				elif (pps_sense == -1 and target_sense == 1):
+					midpoint_spacer_distance = pps_coord - midpoint_spacer_distance
+					strand = "-1"
+
+				elif (pps_sense == -1 and target_sense == -1):
+					midpoint_spacer_distance = pps_coord - midpoint_spacer_distance		
+					strand = "1"
+				else:
+					print("Error!!")
+				my_hit = copy.deepcopy(hit)
+				my_hit.extend([str(midpoint_spacer_distance), strand])
+				spam_writer.writerow(my_hit)
+	ret_out.close()
+	return 0
+pps_compute(sys.argv[1])
