@@ -1,4 +1,5 @@
 #conservation_heatmp_generation
+# generate heatmap from conservation matrix for the top 30 largest clusters from leiden partitioning
 library(pheatmap)
 setwd("C:/Users/u5581/Documents/PhD/Thesis/result_chapter_2_figure_3/phage_only_virsort_heatmaps_9_9_2024/")
 my_in = "casIB_new_heatmap_matrix_phage.csv"

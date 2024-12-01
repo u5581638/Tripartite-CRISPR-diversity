@@ -1,6 +1,7 @@
 import csv
 import sys
 
+# write to file sequence identifiers and entries from the top 30 partitioned clusters in each network (by size)
 # load partition cluster table
 with open(sys.argv[1],"r") as csvfile:
 	hit_table = list(csv.reader(csvfile))

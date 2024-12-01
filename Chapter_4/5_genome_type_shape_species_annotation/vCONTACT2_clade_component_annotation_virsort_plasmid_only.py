@@ -2,7 +2,6 @@
 # script to annotate the components of vCONTACT2 generated networks by number of species.
 # Should work with p/h cluster numbers so that the chart can be compared to the bipartite phage-host interaction diagrams.
 # Steps:
-
 # 1. Load host/phage vCONTACT2 .clusters + .ntw file + other annotations.
 # 2. Find the number of components in the /ntw file
 # 3. Find the annotation proportion of eac component. This may require developing new functions to retrieve the species.
@@ -13,7 +12,7 @@ import csv
 import math
 from properties_species_annotation_functions import virsort_proportion
 from properties_species_annotation_functions import plasme_proportion
-from properties_species_annotation_functions import  species_survey
+from properties_species_annotation_functions import species_survey
 from properties_species_annotation_functions import matrix_generation
 
 # make this the network file. Extract directly from the network.
@@ -35,7 +34,7 @@ for row in host_virsort_table:
 	if (row[1] not in virsort_dict):
 		virsort_dict[row[1]] = row
 			
-# 3.:
+# 3.: table of genome shape predictions returned by PLasME.
 with open(sys.argv[3],"r") as csvfile3:
 	host_plasme_table = list(csv.reader(csvfile3))
 
@@ -45,7 +44,7 @@ for row in host_plasme_table:
 	if (row[0] not in plasme_dict):
 		plasme_dict[row[0]] = row	
 
-
+# 4. Table of JGI metadata annotations (from GOLD)
 with open(sys.argv[4],"r") as csvfile4:
 	host_gold_annotation_table = list(csv.reader(csvfile4)) # need to a script to create this file. Must be specific to a CRISPR-subtype.
 
@@ -54,7 +53,7 @@ for row in host_gold_annotation_table[1:]:
 	if row[0] not in gold_dict:
 		gold_dict[row[0]] = row
 
-# Theres's a problem with the script that generates this input file.
+# 5. Table of ncbi metadata annotations
 with open(sys.argv[5],"r") as csvfile5:
 	host_ncbi_annotation_table = list(csv.reader(csvfile5)) # need to a script to create this file. Must be specific to a CRISPR-subtype.
 
@@ -63,18 +62,10 @@ for row in host_ncbi_annotation_table:
 	if row[0] not in ncbi_dict:
 		ncbi_dict[row[0]] = row	
 
-# need a seperate heatmap/annotation structure to show protein annotations by cluster
-# need a seperate heatmap/annotation structure to show PAMs by cluster.
-# do I add components seperately or together? -> need alternative mechanism to load file.
-
+# 6. table of sequence identifiers and partitioned cluster numbers.
 with open(sys.argv[6],"r") as csvfile:
 	component_table = list(csv.reader(csvfile))
 
-
-
-# need to consider what rendering is best.
-# 1. Take the fraction of known vs unknown species/samples
-# 2. Take the first 30 species.
 
 
 component_dict = {}
@@ -91,23 +82,6 @@ host_phage_prefix = "p"
 
 components = component_dict
 
-'''
-cluster_number = 1	
-# This loop will need to be changed to use the network file ids instead
-for row in host_cluster_table[1:]:
-	# is this a component
-	if (host_phage_prefix + str(cluster_number) in component_dict):
-	 	component_number = component_dict[host_phage_prefix + str(cluster_number)]
-	 	print("Yay!!")
-	 	if (component_number not in components):
-	 		components[component_number] = [row.split(" ")[0]]
-	 	else:
-	 		my_rows = [row.split(" ")[0]]
-	 		components[component_number].extend(my_rows)
-	else:
-		print("error, all components should be in here")
-	cluster_number += 1	 
-'''
 component_list = []
 for component in components:
 	# need to assign arbitary cluster numbers

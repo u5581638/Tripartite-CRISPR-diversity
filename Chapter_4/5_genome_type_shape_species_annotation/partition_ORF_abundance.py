@@ -6,11 +6,11 @@ import os
 with open(sys.argv[1]) as csvfile:
 	partition_table = list(csv.reader(csvfile))
 
-# For phages, I'd need to use mapped phage ORFs. This may not be feasible given the sheer number of phages. Need to do some kind of parametric screen. (i.e. minimum cluster size > 20)
+# Open annotation table. For phages, I'd need to use mapped phage ORFs. This may not be feasible given the sheer number of phages. Need to do some kind of parametric screen. (i.e. minimum cluster size > 20)
 with open(sys.argv[2]) as csvfile:
 	annotation_table = list(csv.reader(csvfile))
 
-# need to group each partition then retrieve the corresponding ORFs. Each group of ORFs should be written to file (this program) then counted by a seperate script.
+# need to group each partition then retrieve the corresponding annotations. Each group of ORFs should be written to file then counted by a seperate script.
 
 partition_dict = {}
 

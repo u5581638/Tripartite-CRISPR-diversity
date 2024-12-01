@@ -1,8 +1,6 @@
 import csv
 import sys
 
-# load table containing sequence IDs and partitioned cluster numbers
-# create a new table containing sequence ID entries from only the top 20 largest clusters.
 with open(sys.argv[1],"r") as csvfile:
 	hit_table = list(csv.reader(csvfile))
 
@@ -19,7 +17,7 @@ dict_items = sorted(dict_items,key=lambda item: item[1],reverse=True)
 clade_number = 0
 cluster_numbers = set()
 for group in dict_items:
-	if (clade_number >= 20):
+	if (clade_number >= 10):
 		break
 	if (group[0] not in cluster_numbers):
 		cluster_numbers.add(group[0])

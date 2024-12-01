@@ -1,4 +1,4 @@
-# script to count the number of host encoded orfs then to give the abundance of the first 10 (most abundant, along with the percentage of all proteins this constitutes)
+# script to count the number of host encoded orf annotations then compute the conservation of the first 10 (most abundant, along with the percentage of all proteins this constitutes)
 
 import sys
 import csv
@@ -15,7 +15,7 @@ proteins = list(prot_dict.values())
 prot_index = {}
 global total_genomes
 total_prots = []
-# need to create a combined version of 
+# use PFAM to compute the annotation if not DEFLOC entry exists.
 for row in proteins:
 	total_prots.append(row[0])
 	index = 19 

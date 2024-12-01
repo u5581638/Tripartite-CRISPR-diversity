@@ -35,7 +35,7 @@ for row in host_virsort_table:
 	if (row[1] not in virsort_dict):
 		virsort_dict[row[1]] = row
 			
-# 3.:
+# 3.: table of genome shape predictions returned by PLasME.
 with open(sys.argv[3],"r") as csvfile3:
 	host_plasme_table = list(csv.reader(csvfile3))
 
@@ -45,7 +45,7 @@ for row in host_plasme_table:
 	if (row[0] not in plasme_dict):
 		plasme_dict[row[0]] = row	
 
-
+# 4. Table of JGI metadata annotations (from GOLD)
 with open(sys.argv[4],"r") as csvfile4:
 	host_gold_annotation_table = list(csv.reader(csvfile4)) # need to a script to create this file. Must be specific to a CRISPR-subtype.
 
@@ -55,6 +55,7 @@ for row in host_gold_annotation_table[1:]:
 		gold_dict[row[0]] = row
 
 # Theres's a problem with the script that generates this input file.
+# 5. Table of ncbi metadata annotations
 with open(sys.argv[5],"r") as csvfile5:
 	host_ncbi_annotation_table = list(csv.reader(csvfile5)) # need to a script to create this file. Must be specific to a CRISPR-subtype.
 
@@ -67,6 +68,7 @@ for row in host_ncbi_annotation_table:
 # need a seperate heatmap/annotation structure to show PAMs by cluster.
 # do I add components seperately or together? -> need alternative mechanism to load file.
 
+# 6. table of sequence identifiers and partitioned cluster numbers.
 with open(sys.argv[6],"r") as csvfile:
 	component_table = list(csv.reader(csvfile))
 

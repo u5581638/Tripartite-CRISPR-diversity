@@ -2,8 +2,7 @@
 import sys
 import csv
 
-# need to generalise to expand to import all conserved co-occurring cas genes
-# prerun conservation tables to label with subtype
+# generate a matrix of conservation scores from an input list of csv tables containing the conservation score for each gene annotation.
 i = 1
 conservation_dict = {}
 while (i < len(sys.argv) - 1):

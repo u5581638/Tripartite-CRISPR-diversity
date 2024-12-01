@@ -1,4 +1,6 @@
 # basic heatmap generation script
+# generate heatmap from input matrix (this script is specific to the parameters used for heatmap visualisation of genome type/shape conservation for each partitioned cluster from network generation)
+
 library(pheatmap)
 setwd("D:/host_phage_batch_run_7_5_2024-27_8_2024")
 my_table = read.csv("cas12a_species6_inclu_heatmap_matrix.csv",row.names=1)

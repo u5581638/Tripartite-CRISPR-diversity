@@ -2,6 +2,8 @@ import sys
 import csv
 import re
 
+# script to filter unassociated/singleton sequences from the interaction table.
+
 csvfile = open(sys.argv[1])
 hp_table = csv.reader(csvfile)
 

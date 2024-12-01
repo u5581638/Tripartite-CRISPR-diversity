@@ -4,6 +4,7 @@ import sys
 import csv
 import pandas
 
+# function to convert output from virsorter2 into a single combined csv table
 def parse(virsorter_table1_url, virsorter_table2_url, virsorter_table3_url):
 	boundary_table = pandas.read_csv(virsorter_table1_url, delimiter='\t')
 	boundary_table = boundary_table.sort_values(by=['seqname'])

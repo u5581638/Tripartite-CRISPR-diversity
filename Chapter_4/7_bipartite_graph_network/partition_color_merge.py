@@ -1,9 +1,12 @@
-# program to merge the color and partition tables (w/ color column)
+# program to merge the color and cluster partition tables (w/ color column)
 import sys
 import csv
+
+# table of sequence IDs and partitioned cluster numbers
 with open(sys.argv[1],"r") as csvfile:
 	partition_table = list(csv.reader(csvfile))
 
+# table of partitioned cluster numbers and associated colours
 with open(sys.argv[2],"r") as csvfile:
 	color_table = list(csv.reader(csvfile))
 

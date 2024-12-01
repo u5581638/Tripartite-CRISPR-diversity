@@ -1,6 +1,6 @@
 # host_header_adder
 
-# script to add the host genome to the header name
+# script to add the host genome to the header names in each FASTA sequence
 
 import csv
 import sys

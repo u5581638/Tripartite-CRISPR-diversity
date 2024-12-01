@@ -5,7 +5,9 @@ library(png)
 library(magick)
 library(r2r)
 library(dplyr)
-# need to add colors of host + phage mappings
+
+# script to generate and render type VI host-phage bipartite networks.
+
 
 setwd("E:/host-phage-bipartite-coloring_11_9_2024/cas13d")
 # need to create script to swap the first and second rows

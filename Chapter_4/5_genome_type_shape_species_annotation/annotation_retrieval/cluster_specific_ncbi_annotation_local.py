@@ -1,4 +1,4 @@
-# retrieve the subset of gold annotations specific to a subset of phages
+# retrieve the subset of ncbi annotations specific to a subset of phages
 
 # Need to potentially index the csv files to enable fast lookup.
 

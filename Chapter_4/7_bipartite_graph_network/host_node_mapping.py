@@ -1,13 +1,17 @@
 import csv
 import sys
 
+# Associate host-mapped sequence interaction table with colours + partitioned clusters from the respective monopartite networks.
+
+# INPUT: host-MGE interaction table
 with open(sys.argv[1],"r") as csvfile:
 	interaction_table = list(csv.reader(csvfile))
 
+# INPUT: table of host sequence IDs, cluster partition nos. and associated colours
 with open(sys.argv[2],"r") as csvfile:
 	host_node_table = list(csv.reader(csvfile))
 
-# need phage_w_color.csv table from the bioinfo computer to make this work!!
+# # INPUT: table of mapped sequence IDs, cluster partition nos. and associated colours
 with open(sys.argv[3],"r") as csvfile:
 	phage_node_table = list(csv.reader(csvfile))
 

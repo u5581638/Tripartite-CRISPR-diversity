@@ -1,4 +1,6 @@
 # basic heatmap generation script
+
+# generate heatmap from input matrix
 library(pheatmap)
 setwd("D:/host_phage_batch_run_7_5_2024/interaction_host_graphs")
 my_in = "cas12a_comp_matrix_host.csv"

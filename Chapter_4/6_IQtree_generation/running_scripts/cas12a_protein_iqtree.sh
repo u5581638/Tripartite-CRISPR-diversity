@@ -7,6 +7,8 @@
 #PBS -l wd
 #PBS -l storage=scratch/xi88+gdata/xi88+gdata/va71
 
+# script used to run IQtree2
+
 export PATH=$PATH:/g/data/va71/gaetan_data/iqtree-2.2.2.6-Linux/bin
 
 my_input=cas12a.fasta_all_hits.csv_genomes.fasta_aa_raw.fasta_rep_aa_clustered.fa_aln.fasta

@@ -7,6 +7,8 @@ from Bio import SeqIO
 import os
 import subprocess
 
+# script to run PlasME for each genome/ mapped sequuence in a standalone manner
+
 phage_genomes = 1
 #db_directory_path = "/g/data/va71/crispr_pipeline_annotation/annotation_upgrades_test_sequences/cas12a_test2_4/genomes/"
 db_directory_path = sys.argv[1]

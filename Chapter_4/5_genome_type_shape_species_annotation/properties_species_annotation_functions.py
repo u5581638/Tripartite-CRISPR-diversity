@@ -1,7 +1,9 @@
 # properties_species_annotation_functions.py
 import math
+
 # Script to hold all helper functions used for plasmid/virsort/species annotation
 
+# generate list of the number and tally of different genus/species names in a list of metadata annotations.
 def species_count (species_rows,index):
 #	print("rows")
 #	print(species_rows)
@@ -14,6 +16,7 @@ def species_count (species_rows,index):
 	
 	return list(ret_dict.values())	
 
+# compute the proportion of viral homology + genome shape present in each cluster as determined by virsorter2.
 def virsort_proportion (cluster,virsort_dict):
 	matching_entries = []
 	#print(len(cluster))
@@ -77,6 +80,7 @@ def virsort_proportion (cluster,virsort_dict):
 	# genome type = row 29		
 	return (genome_linear, genome_circular, cell, dsDNAphage, ssDNAphage, rna_phage, lavidaviridae, ncldv)
 
+# compute the proportion of genome shape (circular/linear) present in each cluster as determined by PlasME.
 def plasme_proportion (cluster,plasme_dict):
 	matching_entries = []
 	for gene_id in  cluster:
@@ -103,6 +107,7 @@ def plasme_proportion (cluster,plasme_dict):
 def sp_sort(x):
 	return x[1]
 
+# compute normalised shannon diversity index
 # This metric is postive when the species are diverse and negative when there are more members of a small number of species and few species types.
 def shannon_index(species): # N, list(n)
 	individual_count = 0
@@ -124,6 +129,7 @@ def shannon_index(species): # N, list(n)
 	else:	
 		return h_index / math.log(len(species))
 
+# truncate NCBI species annotation identifiers
 def ncbi_species_clean(matching_entries_list, index):
 	ret_list = []
 	for entry in matching_entries_list:
@@ -139,7 +145,8 @@ def ncbi_species_clean(matching_entries_list, index):
 			continue		
 
 	return ret_list
-# attempt to convert the first 1-2 words of the species id into a key based on whether data is metagenome only or contains species information
+
+# truncate JGI species annotation identifiers
 def gold_species_clean(matching_entries_list,index):	
 	ret_list = []
 	for entry in matching_entries_list:
@@ -154,6 +161,7 @@ def gold_species_clean(matching_entries_list,index):
 		ret_list.append(my_entry)
 	return ret_list	
 
+# main function to generate genome shape + type heatmap matrix
 def species_annotation (cluster,gold_anno_dict,ncbi_dict):
 	# need to split both species and sample into multiple categories
 	# GOLD database == row 8
@@ -282,7 +290,7 @@ def species_survey (cluster,gold_anno_dict,ncbi_dict):
 		return (total_size,final_list)
 	else:
 		return (0,[])
-
+# compute proportion of each cluster partition from one network found in another
 def matrix_generation(component_list):
 	out_matrix  = []
 	header = set()

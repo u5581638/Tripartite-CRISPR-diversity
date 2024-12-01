@@ -1,5 +1,5 @@
 #!/bin/bash
-# plasme_running_script
+# plasme_running_helper_script
 
 
 export PATH=$PATH:/g/data/va71/crispr_pipeline_annotation/prodigal/prodigal

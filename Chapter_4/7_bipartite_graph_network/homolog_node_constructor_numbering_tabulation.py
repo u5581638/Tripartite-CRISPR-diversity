@@ -1,6 +1,6 @@
 # homolog_node_constructor
-# Group spacer/phage_ids into vcontact2 identified clusters!!
-
+# Group spacer/phage_ids into vcontact2 identified clusters. Note: These are not the same as leiden partitioned clusters!!
+# Return a table associating host-mapped sequence groupings
 import sys
 import csv
 

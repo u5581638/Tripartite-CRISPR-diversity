@@ -69,12 +69,3 @@ colors <- anno_frame$colour
 names(colors) <- anno_frame$cluster
 render_tree2 <- render_tree + geom_tippoint(aes(color=cluster)) + scale_color_manual(values = colors) + theme(legend.position = "right")
 ggsave(width=16,height=8,"casIIIA_all_tree_top20.png")
-# okay. Now have to see if I can utilise the color and component columns. The code below should now be irrelevant as I'm now trying to do this through.
-
-#rename_taxa(my_tree, partiton_tree_only,key=2,value=3)
-
-
-
-# need to:
-# 1. Substitute genome ids to the partition numbers
-# 2. 
