@@ -2,6 +2,8 @@ from Bio import SeqIO
 import sys
 import os
 
+# program to split concatenated genome assemblies into smaller blocks.
+# input: a concatenated FASTA file of genome-assemblies
 FILE = open(sys.argv[1], "r")
 FILE.seek(5008028911291)
 sequence_iter = SeqIO.parse(FILE, "fasta")
