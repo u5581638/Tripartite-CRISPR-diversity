@@ -1,4 +1,4 @@
-# now need to add the binomial calculated p-values
+# generate binomial plot and assess significance by quadrant.
  
 library(dplyr)
 library(ggplot2)
@@ -26,15 +26,6 @@ strand_probability <- binom.test(quandrant_lower_size,total_size,1/2)
 
 # need to draw and save a strand probability plot
 
-
-
-# compute multinomial significance!!
-# apply a similar procedure to label each plot!!
-# may want to limit to [-50000,50000]
-
-# quad_probability <- multinomial.test(c(quadrant_1_size,quadrant_2_size,quadrant_3_size,quadrant_4_size),c(0.25,0.25,0.25,0.25), MonteCarlo=TRUE,ntrial=500000)
-
-# now convert to *
 
 
 # now need to add the binomial calculated p-values

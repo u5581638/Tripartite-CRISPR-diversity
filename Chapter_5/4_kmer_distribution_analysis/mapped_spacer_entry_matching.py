@@ -1,5 +1,5 @@
 # mapped_spacer_entry_matching
-# script to match kmers with their corresponding mapped spacer entries
+# script to match kmers with their corresponding mapped spacer entries, merging the whole matches and kmer matches.
 
 import csv
 import sys

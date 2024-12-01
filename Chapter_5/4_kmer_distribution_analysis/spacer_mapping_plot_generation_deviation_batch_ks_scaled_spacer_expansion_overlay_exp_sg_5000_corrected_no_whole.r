@@ -5,13 +5,13 @@
 # 1. Compute the kernal density estimation (KDE) from the distances.
 # 2. Compute the Kolmogorov-Smirnov test (KS). Plot this test result for both the sense + and sense - strand.
 # 3. Colour the area undder the KDE estimations on both the positive and negative strand. Will need to manually specify the coordinates to be coloured.
-# 4. Do this for complete matches as well as kmer=10,12,14. Note: Only kmer_size=14 was used in the end as shorter kmers had too many false positives.
+# 4. Do this for complete matches as well as kmer=10,12,14.
 # 4. Run this script as a batch job using R script.
 
 library(dplyr)
 library(ggplot2)
 
-setwd("F:/spacer_expansion/non-problem_corrected_subtypes/")
+setwd("D:/spacer_expansion/finished_problem_corrected_subtypes/finished_2")
 
 graph_parameters <- function(distance_table) {
 filtered_df <- filter(distance_table, mapped_strand == 1)
@@ -122,9 +122,9 @@ return (ret_out)
 
 
 # complete spacer typeIIIB_cmr2.fasta
-base_sequence = "typeIIIB_cmr2.fasta"
+base_sequence = "spcas9"
 
-whole_sequence = paste(base_sequence, "_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_distances_annotated.csv_filt_all.csv_h.csv",sep="")
+whole_sequence = paste(base_sequence, ".fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_distances_annotated.csv_filt_all.csv_h.csv",sep="")
 whole_distance_table <- read.csv(whole_sequence)
 whole_matches <- graph_parameters(whole_distance_table)
 whole_match_sig_point_up.x <- which(whole_matches$pos_kde.x == max(whole_matches$pos_kde.x), arr.ind = TRUE)
@@ -139,7 +139,7 @@ whole_match_sig_point_down.x <- max(whole_matches$neg_kde.x)
 
 # 10 kmer matches
 
-kmer_10_sequence = paste(base_sequence, "_detection_parallel_gadi_kmer10_31-3-2024.csv_non-self.csv_expanded.csv_corrected.csv_2_or_more_hits.csv_distances_annotated.csv_af.csv_h.csv",sep="")
+kmer_10_sequence = paste(base_sequence, "_detection_parallel_gadi_kmer10_29-3-2024.csv_non-self.csv_expanded.csv_corrected.csv_2_or_more_hits.csv_justified.csv_distances_annotated.csv_af.csv_h.csv",sep="")
 kmer_10_distance_table <- read.csv(kmer_10_sequence)
 kmer_10_sequence_matches <- graph_parameters(kmer_10_distance_table)
 kmer_10_match_sig_point_up.x <- which(kmer_10_sequence_matches$pos_kde.x == max(kmer_10_sequence_matches$pos_kde.x), arr.ind = TRUE)
@@ -155,7 +155,7 @@ kmer_10_match_sig_point_down.x <- max(kmer_10_sequence_matches$neg_kde.x)
 
 # 12 kmer matches
 
-kmer_12_sequence = paste(base_sequence, "_detection_parallel_gadi_kmer12_31-3-2024.csv_non-self.csv_expanded.csv_corrected.csv_2_or_more_hits.csv_distances_annotated.csv_af.csv_h.csv",sep="")
+kmer_12_sequence = paste(base_sequence, "_detection_parallel_gadi_kmer12_29-3-2024.csv_non-self.csv_expanded.csv_corrected.csv_2_or_more_hits.csv_justified.csv_distances_annotated.csv_af.csv_h.csv",sep="")
 kmer_12_distance_table <- read.csv(kmer_12_sequence)
 kmer_12_sequence_matches <- graph_parameters(kmer_12_distance_table)
 kmer_12_match_sig_point_up.x <- which(kmer_12_sequence_matches$pos_kde.x == max(kmer_12_sequence_matches$pos_kde.x), arr.ind = TRUE)
@@ -170,7 +170,7 @@ kmer_12_match_sig_point_down.x <- max(kmer_12_sequence_matches$neg_kde.x)
 
 # 14 kmer matches
 
-kmer_14_sequence = paste(base_sequence, "_detection_parallel_gadi_kmer14_31-3-2024.csv_non-self.csv_expanded.csv_corrected.csv_2_or_more_hits.csv_distances_annotated.csv_af.csv_h.csv",sep="")
+kmer_14_sequence = paste(base_sequence, "_detection_parallel_gadi_kmer14_29-3-2024.csv_non-self.csv_expanded.csv_corrected.csv_2_or_more_hits.csv_justified.csv_distances_annotated.csv_af.csv_h.csv",sep="")
 kmer_14_distance_table <- read.csv(kmer_14_sequence)
 kmer_14_sequence_matches <- graph_parameters(kmer_14_distance_table)
 kmer_14_match_sig_point_up.x <- which(kmer_14_sequence_matches$pos_kde.x == max(kmer_14_sequence_matches$pos_kde.x), arr.ind = TRUE)
@@ -212,34 +212,34 @@ deviation_plot <- ggplot(whole_matches,aes(x=pos_kde.x,y=pos_kde.y)) + theme(pan
 #  xlim(-5000,5000) + 
   geom_vline(xintercept=0) + geom_hline(yintercept=0) +
 
- # geom_line(data=kmer_10_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),color="deepskyblue3",linewidth=1) + 
- # geom_area(data=kmer_10_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),fill="deepskyblue3") + 
- # geom_line(data=kmer_10_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),color="deepskyblue3",linewidth=1) + 
-#  geom_area(data=kmer_10_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),fill="deepskyblue3") + 
-#  geom_line(data=kmer_10_sequence_matches,aes(x=expected_kde.x,y=expected_kde.y, group = 1),color="deepskyblue3",linetype="dashed",linewidth=1) + 
-#  geom_line(data=kmer_10_sequence_matches,aes(x=expected_minus_one_kde.x,y=-expected_minus_one_kde.y),color="deepskyblue3",linetype="dashed",linewidth=1) +
-#  geom_text( aes(x=5500, y=kmer_10_match_sig_point_up.y, label=kmer_10_sequence_matches$ks_strand_one_pre[1]),size=12,color="deepskyblue3") + 
-#  geom_text(aes(x=5500,y=-kmer_10_match_sig_point_down.y, label=kmer_10_sequence_matches$ks_strand_minus_one_pre[1]),size=12,color="deepskyblue3") + 
+  geom_line(data=kmer_10_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),color="deepskyblue3",linewidth=1) + 
+  geom_area(data=kmer_10_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),fill="deepskyblue3") + 
+  geom_line(data=kmer_10_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),color="deepskyblue3",linewidth=1) + 
+  geom_area(data=kmer_10_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),fill="deepskyblue3") + 
+  geom_line(data=kmer_10_sequence_matches,aes(x=expected_kde.x,y=expected_kde.y, group = 1),color="deepskyblue3",linetype="dashed",linewidth=1) + 
+  geom_line(data=kmer_10_sequence_matches,aes(x=expected_minus_one_kde.x,y=-expected_minus_one_kde.y),color="deepskyblue3",linetype="dashed",linewidth=1) +
+  geom_text( aes(x=5500, y=kmer_10_match_sig_point_up.y, label=kmer_10_sequence_matches$ks_strand_one_pre[1]),size=12,color="deepskyblue3") + 
+  geom_text(aes(x=5500,y=-kmer_10_match_sig_point_down.y, label=kmer_10_sequence_matches$ks_strand_minus_one_pre[1]),size=12,color="deepskyblue3") + 
 #  geom_text( aes(x=700, y=max(kmer_10_sequence_matches$pos_kde.y)*0.9, label=kmer_10_sequence_matches$n_size[1]),size=12,color="deepskyblue3") + 
-#  geom_line(data=kmer_12_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),color="blue",linewidth=1) + 
-#  geom_area(data=kmer_12_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),fill="blue") + 
-#  geom_line(data=kmer_12_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),color="blue",linewidth=1) + 
-#  geom_area(data=kmer_12_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),fill="blue") + 
-#  geom_line(data=kmer_12_sequence_matches,aes(x=expected_kde.x,y=expected_kde.y, group = 1),color="blue",linetype="dashed",linewidth=1) + 
-#  geom_line(data=kmer_12_sequence_matches,aes(x=expected_minus_one_kde.x,y=-expected_minus_one_kde.y),color="blue",linetype="dashed",linewidth=1) +
-#  geom_text( aes(x=5500, y=kmer_12_match_sig_point_up.y, label=kmer_12_sequence_matches$ks_strand_one_pre[1]),size=12,color="blue") + 
-#  geom_text(aes(x=5500,y=-kmer_12_match_sig_point_down.y, label=kmer_12_sequence_matches$ks_strand_minus_one_pre[1]),size=12,color="blue") + 
+  geom_line(data=kmer_12_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),color="blue",linewidth=1) + 
+  geom_area(data=kmer_12_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),fill="blue") + 
+  geom_line(data=kmer_12_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),color="blue",linewidth=1) + 
+  geom_area(data=kmer_12_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),fill="blue") + 
+  geom_line(data=kmer_12_sequence_matches,aes(x=expected_kde.x,y=expected_kde.y, group = 1),color="blue",linetype="dashed",linewidth=1) + 
+  geom_line(data=kmer_12_sequence_matches,aes(x=expected_minus_one_kde.x,y=-expected_minus_one_kde.y),color="blue",linetype="dashed",linewidth=1) +
+  geom_text( aes(x=5500, y=kmer_12_match_sig_point_up.y, label=kmer_12_sequence_matches$ks_strand_one_pre[1]),size=12,color="blue") + 
+  geom_text(aes(x=5500,y=-kmer_12_match_sig_point_down.y, label=kmer_12_sequence_matches$ks_strand_minus_one_pre[1]),size=12,color="blue") + 
  # geom_text( aes(x=700, y=max(kmer_12_sequence_matches$pos_kde.y)*0.9, label=kmer_12_sequence_matches$n_size[1]),size=12,color="blue") + 
 
 
-  geom_line(data=kmer_14_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),color="red",linewidth=1) + 
-  geom_area(data=kmer_14_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),fill="red") + 
-  geom_line(data=kmer_14_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),color="blue2",linewidth=1) + 
-  geom_area(data=kmer_14_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),fill="blue2") + 
-  geom_line(data=kmer_14_sequence_matches,aes(x=expected_kde.x,y=expected_kde.y, group = 1),color="darkred",linetype="dashed",linewidth=1) + 
+  geom_line(data=kmer_14_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),color="blue4",linewidth=1) + 
+  geom_area(data=kmer_14_sequence_matches,aes(x=pos_kde.x,y=pos_kde.y),fill="blue4") + 
+  geom_line(data=kmer_14_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),color="blue4",linewidth=1) + 
+  geom_area(data=kmer_14_sequence_matches, aes(x=neg_kde.x,y=-neg_kde.y),fill="blue4") + 
+  geom_line(data=kmer_14_sequence_matches,aes(x=expected_kde.x,y=expected_kde.y, group = 1),color="blue4",linetype="dashed",linewidth=1) + 
   geom_line(data=kmer_14_sequence_matches,aes(x=expected_minus_one_kde.x,y=-expected_minus_one_kde.y),color="blue4",linetype="dashed",linewidth=1) +
-  geom_text( aes(x=5500, y=kmer_14_match_sig_point_up.y, label=kmer_14_sequence_matches$ks_strand_one_pre[1]),size=12,color="red") + 
-  geom_text(aes(x=5500,y=-kmer_14_match_sig_point_down.y, label=kmer_14_sequence_matches$ks_strand_minus_one_pre[1]),size=12,color="blue2") + 
+  geom_text( aes(x=5500, y=kmer_14_match_sig_point_up.y, label=kmer_14_sequence_matches$ks_strand_one_pre[1]),size=12,color="blue4") + 
+  geom_text(aes(x=5500,y=-kmer_14_match_sig_point_down.y, label=kmer_14_sequence_matches$ks_strand_minus_one_pre[1]),size=12,color="blue4") + 
  # geom_text( aes(x=700, y=max(kmer_14_sequence_matches$pos_kde.y)*0.9, label=kmer_14_sequence_matches$n_size[1]),size=12,color="blue4") + 
 
 
@@ -256,7 +256,7 @@ deviation_plot <- ggplot(whole_matches,aes(x=pos_kde.x,y=pos_kde.y)) + theme(pan
 # Given that this works on scaled spacers. I bet that the graphs shown in the paper actually represent scaled spacers (distance/contig length). In any case this would work in showing what we want to show!
 
 # need to compare the expected vs abs density y values
-my_out <- paste(whole_sequence,"spacer_distribution_plotdd5000_corrected_kmer14_only.png",sep="_")
+my_out <- paste(whole_sequence,"spacer_distribution_plotdd5000_corrected.png",sep="_")
 ggsave(my_out,width=10,height=9,units="in")
 
 print(kmer_10_sequence_matches$n_size)

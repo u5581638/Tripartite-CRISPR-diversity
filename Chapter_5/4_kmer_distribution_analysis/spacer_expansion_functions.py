@@ -8,93 +8,12 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio import pairwise2
 from Bio.pairwise2 import format_alignment
-import filtered_arrs_appender_SQL4
 import re
 import copy
 import subprocess
 import random
 
-def kmer_pairwise_alignment(spacer,min_seq_id,coverage,spacer_num,spacer_id, contig, kmer_size=10):
-	spacer_kmers = []
-	i = 0
-	spacer = spacer.upper()
-	while (i + kmer_size < len(spacer)):
-		new_kmer = spacer[i:i+kmer_size]
-		my_kmer = Seq(new_kmer)
-		the_kmer = SeqRecord(my_kmer,id=spacer_id + "_" +str(i))
-		spacer_kmers.append(the_kmer)
-		i += 1
-
-	pairwise_alignments = []
-	my_contig = str(contig.seq).upper()
-	reverse_contig = reverse_complement(my_contig)
-	switch = 0
-	# may want to break and only allow one kmer match per spacer
-	for kmer in spacer_kmers:
-		m = re.search(str(kmer.seq),my_contig)
-		mr = re.search(str(kmer.seq),reverse_contig)
-
-		if (m):
-			match_start = m.start()
-			match_end = m.end()
-			match_sequence = m.group(0)
-			switch = 1
-			break
-		if (mr):
-			match_start = len(contig) - mr.start()
-			match_end = len(contig) - mr.end()
-			match_sequence = reverse_complement(mr.group()) # take the reverse complement to be consistent with the normal frame
-			switch = 1
-			break
-	if (switch == 1):
-		outrow = [spacer_id, contig.id, len(match_sequence) / len(spacer),len(contig.seq),match_sequence,"NA","NA","NA",match_start,match_end,"NA","NA"]
-		return outrow
-	else:
-		return None
-
-# Do the pairwise kmer alignment as above, but record the size and positions of the kmer within the output matches.
-def kmer_pairwise_alignment_query_length(spacer,min_seq_id,coverage,spacer_num,spacer_id, contig, kmer_size=10):
-	spacer_kmers = []
-	i = 0
-	spacer = spacer.upper()
-	while (i + kmer_size < len(spacer)):
-		new_kmer = spacer[i:i+kmer_size]
-		my_kmer = Seq(new_kmer)
-		the_kmer = SeqRecord(my_kmer,id=spacer_id + "_" + "kstart:" + str(i) + "kend:" + str(i + kmer_size))
-		spacer_kmers.append(the_kmer)
-		i += 1
-
-	pairwise_alignments = []
-	my_contig = str(contig.seq).upper()
-	reverse_contig = reverse_complement(my_contig)
-	switch = 0
-	# may want to break and only allow one kmer match per spacer
-	for kmer in spacer_kmers:
-		m = re.search(str(kmer.seq),my_contig)
-		mr = re.search(str(kmer.seq),reverse_contig)
-		query_len = len(spacer)
-		qend = kmer.id.split("kend:") [0]
-		qstart = qend.split("kstart:") [-1]
-		qend = kmer.id.split("kend:") [-1]
-		if (m):
-			match_start = m.start()
-			match_end = m.end()
-			match_sequence = m.group(0)
-			switch = 1
-			break
-		if (mr):
-			# need to check the directions are correct
-			match_start = len(contig) - mr.start()
-			match_end = len(contig) - mr.end()
-			match_sequence = reverse_complement(mr.group()) # take the reverse complement to be consistent with the normal frame
-			switch = 1
-			break
-	if (switch == 1):
-		outrow = [spacer_id, contig.id, len(match_sequence) / len(spacer),len(contig.seq),match_sequence,query_len,qstart,qend,match_start,match_end,"NA","NA"]
-		return outrow
-	else:
-		return None
-
+# function to perform spacer mapping by generating kmers of spacer sequences and matching them against mapped sequences.
 def kmer_pairwise_alignment_query_length_spacer_coord(spacer,min_seq_id,coverage,spacer_num,spacer_id, contig, kmer_size=10):
 	spacer_kmers = []
 	i = 0
@@ -151,48 +70,7 @@ def kmer_pairwise_alignment_query_length_spacer_coord(spacer,min_seq_id,coverage
 	else: 
 		return None
 
-def kmer_pairwise_alignment_regex(spacer,min_seq_id,coverage,spacer_num,spacer_id, contig, kmer_size=10):
-	spacer_kmers = []
-	i = 0
-	spacer = spacer.upper()
-	while (i + kmer_size < len(spacer)):
-		new_kmer = spacer[i:i+kmer_size]
-		my_kmer = Seq(new_kmer)
-		the_kmer = SeqRecord(my_kmer,id=spacer_id + "_" +str(i))
-		spacer_kmers.append(the_kmer)
-		i += 1
-
-	pairwise_alignments = []
-	my_contig = str(contig.seq).upper()
-	reverse_contig = reverse_complement(my_contig)
-	switch = 0
-	# may want to break and only allow one kmer match per spacer
-	con_kmer = ""
-	con_kmer = str(spacer_kmers[0].seq)
-	i = 1
-	while (i < len(spacer_kmers)):
-		con_kmer += "|" + str(spacer_kmers[i].seq)
-		i += 1
-	con_pattern = re.compile(con_kmer)	
-	m = re.search(con_pattern,my_contig)
-	mr = re.search(con_pattern,reverse_contig)
-
-	if (m):
-		match_start = m.start()
-		match_end = m.end()
-		match_sequence = m.group(0)
-		switch = 1
-	if (mr):
-		match_start = len(contig) - mr.start()
-		match_end = len(contig) - mr.end()
-		match_sequence = reverse_complement(mr.group()) # take the reverse complement to be consistent with the normal frame
-		switch = 1
-	if (switch == 1):
-		outrow = [spacer_id, contig.id, len(match_sequence) / len(spacer),len(contig.seq),match_sequence,"NA","NA","NA",match_start,match_end,"NA","NA"]
-		return outrow
-	else:
-		return None
-
+# legacy unused mapping function using BLAST instead of direct matches.
 def blast_pairwise_alignment(spacer,min_seq_id,coverage,spacer_num,spacer_id):
 	# write spacer to file
 	my_spacer = Seq(spacer)
@@ -226,8 +104,8 @@ def id_sorter(x):
 def spacer_sorter(x):
 	return x[1]
 
+# scoring identity - unused function
 def scoring(seq1,seq2):
-# sequences must be the same length for this to work
 	i = 0
 	my_score = 0
 	while (i < len(seq1)):
@@ -241,6 +119,7 @@ def scoring(seq1,seq2):
 			i += 1
 	return my_score
 
+# function to replace a target site on a contig by 'N' characters.
 def mask_contig (phage_contig, start, end):
 	phage_seq = str(phage_contig.seq)
 	if (start < end):
@@ -257,6 +136,7 @@ def mask_contig (phage_contig, start, end):
 	phage_contig.seq = phage_seq
 	return phage_contig
 
+# check if a target site is within the bounds of a sliced sequence from the original mapped contig.
 def coords_in_range(coords, phage_start,phage_end):
 	ret_coords = []
 	for coord in coords:
@@ -265,7 +145,7 @@ def coords_in_range(coords, phage_start,phage_end):
 	return ret_coords
 
 
-# eliminate spacers with homology to original spacer + original spacer.
+# compute spacer pairwise identity
 def identity(spacer1,spacer2):
 	spacer1_id = spacer1.id 
 	spacer2_id = spacer2.id
@@ -276,6 +156,7 @@ def identity(spacer1,spacer2):
 	count = 0
 	return [spacer1_id,spacer2_id,alignment[0][2]/len(spacer1.seq)]
 
+# identity homologous kmers
 def spacer_identity(new_arr, the_spacers):
 	ret_arrs = []
 	for arr in new_arr:
@@ -285,6 +166,7 @@ def spacer_identity(new_arr, the_spacers):
 				ret_arrs.append(hit)
 	return ret_arrs
 
+# generate a random target sequence
 def gen_synthetic_phage(phage_length,phage_id):
 
 	ret_str = []
@@ -297,7 +179,7 @@ def gen_synthetic_phage(phage_length,phage_id):
 	return SeqRecord(Seq("".join(ret_str)),id=phage_id)
 
 
-
+# duplicate homologous kmers generated from spacers
 def kmer_homolog_elimination(array,mapped_spacers):
 	arr_spacers = []
 	new_arr = []
@@ -326,7 +208,7 @@ def kmer_homolog_elimination(array,mapped_spacers):
 
 
 
-
+# duplicate homologous blast hits generated from mapping (for validation and comparison with kmer mapping only - not used)
 def blast_homolog_elimination(array,mapped_spacers):
 	# BLAST mapped spacers and eliminate the mapped spacers and any homologs
 	arr_spacers = []
