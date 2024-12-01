@@ -2,10 +2,9 @@ from Bio import SeqIO
 import sys
 import csv
 
-# do two things
-# 1. Find all matching JGI scaffolds.
-# 2. Compute matched/unmatched proportion
+# script to retrieve sequence metadata for JGI-derived sequences using a merged metadata table downloaded from the GOLD database website
 
+# INPUT: table containing JGI sequence identifers
 host_url = open(sys.argv[1],"r")
 host_table = csv.reader(host_url)
 
@@ -19,7 +18,7 @@ for row in host_table:
 host_url.close()
 
 host_ids = list(host_ids.keys())
-
+# INPUT: GOLD table (merged)
 jgi_url = open(sys.argv[2],"r")
 jgi_table = csv.reader(jgi_url)
 

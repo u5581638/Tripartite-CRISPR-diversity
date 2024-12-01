@@ -1,6 +1,8 @@
 import sys
 import csv
 
+# script to truncate headers in conservation matrix
+
 with open(sys.argv[1],"r") as csvfile:
 	the_matrix = list(csv.reader(csvfile))
 

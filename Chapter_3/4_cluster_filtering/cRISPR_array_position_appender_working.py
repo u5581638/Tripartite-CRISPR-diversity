@@ -3,21 +3,22 @@
 # the plan.
 
 # load relabelled file
-# load concatenated CRISPR-array file
+# load concatenated CRISPR-array predictions produced from PILER-CR
 # extract position score
 # Find the minimum distance between the array and the starting point of the arrays
 # this requires computing the abolsute positions of the proteins from the CRISPR array
 # the abolsute position will be the position given by prodigal/genemark + starting array position
 # if strand is negative the starting position should have a higer score than the negative position
-#multiple mapping between arrays and ids mean that the minimal distance between the ids and arrays must be found
+# multiple mapping between arrays and ids mean that the minimal distance between the ids and arrays must be found
 
 from Bio import SeqIO
 import csv
 import sys
 import re
 
-
+# filtered cluster files of protein sequences in FASTA format.
 sequences = SeqIO.parse(sys.argv[1], "fasta")
+# CRISPR-array predictions from PILER-CR in FASTA format.
 crispr_arrs = list(SeqIO.parse(sys.argv[2], "fasta"))
 
 
@@ -60,13 +61,11 @@ index_pattern = re.compile("::[0-9]*:[0-9]*")
 
 ret_seq = []
 
-# 
 i = 0
 for sequ in sequences:
 	returned_seq = re.search(index_pattern, sequ.description)
 #	print(sequ.description)
 
-#	print("regex working?")
 	genome_id = returned_seq.group(0)
 #	print(genome_id)
 #	print(genome_id)

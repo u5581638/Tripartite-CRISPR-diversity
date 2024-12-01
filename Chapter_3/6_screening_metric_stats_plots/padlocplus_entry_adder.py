@@ -1,5 +1,6 @@
 # pfam_entry_adder
 
+# add DEFLOC scores to csv table containing co-occurrance scores for each representative protein sequence
 from Bio import SeqIO
 import sys
 import csv
@@ -7,9 +8,11 @@ import csv
 def row_sorter(x):
 	return float(x[3])
 
+# Input: table of co-occurrance scores
 with open(sys.argv[1],"r") as csvfile2:
 	co_occurrance_table = list(csv.reader(csvfile2))
 
+# Input: Table containing DEFLOC predictions for each representative protein sequence.
 with open(sys.argv[2],"r") as csvfile:
 	hit_table = list(csv.reader(csvfile))
 

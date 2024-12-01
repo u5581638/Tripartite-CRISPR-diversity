@@ -5,14 +5,11 @@
 import sys
 import csv
 
+# INPUT: NCBI table containing species metadata in csv format.
 with open(sys.argv[1],"r") as csvfile:
 	raw_table = list(csv.reader(csvfile))
 
 ncbi_dict = {}
-
-# need to use tuple (datatype,genus,species) as tuple
-# need to count number of instances and store as value
-# unusual inversion of standard dict use.
 
 for row in raw_table:
 	my_key = []

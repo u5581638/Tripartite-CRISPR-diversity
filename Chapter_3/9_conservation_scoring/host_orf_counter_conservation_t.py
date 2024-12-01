@@ -1,7 +1,8 @@
-# script to count the number of host encoded orfs then to give the abundance of the first 10 (most abundant, along with the percentage of all proteins this constitutes)
+# script to count the number of orf annotationd then to compute the conservation scores
 
 import sys
 import csv
+
 
 with open(sys.argv[1],"r") as csvfile:
 	proteins = list(csv.reader(csvfile))[1:]

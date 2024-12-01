@@ -4,6 +4,7 @@ import sys
 
 table_dict = {} # dictionary containing each sequence_id and a list of 
 
+# csv file containing search results from tBLASTn search using multiple queries of representative protein sequences derived from clustering
 with open (sys.argv[1], "r") as csvfile:
 	hit_table = csv.reader(csvfile)
 

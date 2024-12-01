@@ -1,9 +1,11 @@
 # ncbi_window_microbiome_deduplication
 
-#check contig deduplcation has not inflated ncbi taxonomy estimations
+# ncbi taxonomy estimations without contig duplication
 
 import csv
 import sys
+
+# jgi/ncbi table of species annotations in csv format.
 
 with open(sys.argv[1],"r") as csvfile:
 	ncbi_table = list(csv.reader(csvfile))

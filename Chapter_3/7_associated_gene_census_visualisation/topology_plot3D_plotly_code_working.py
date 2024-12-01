@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import pandas as pd 
 
-
+# code to generate a 3D scatter plot showing co-occurrance, abundance and distance, with each point corresponding to each representative protein sequence assigned by colour to each function category assigned by pfam database searches
 d3_table = pd.read_csv("0_10kb_co_occurrance_table_classified_labelled_3D_input_key_font_size.csv")
 figure = px.scatter_3d(d3_table,x='abundance',y='distance (bp)',z='co_occurrance',color='Key:',size='font_size',log_x=True,log_y=False,log_z=True)
 figure.show()

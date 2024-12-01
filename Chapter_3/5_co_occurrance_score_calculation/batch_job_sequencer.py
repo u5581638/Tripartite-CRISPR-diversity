@@ -3,7 +3,8 @@
 
 from Bio import SeqIO
 import sys
- 
+
+# file containing 30-80 input representative protein sequences to co-occurrance calculation (in FASTA format)
 sequences = list(SeqIO.parse(sys.argv[1], "fasta"))
 i=0
 run_number = 0

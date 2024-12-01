@@ -2,6 +2,9 @@ import csv
 import sys
 from Bio import SeqIO
 
+# script to retrieval sequence metadata for JGI-derived sequences using a merged metadata table downloaded from the GOLD database website
+
+# INPUT: GOLD table (merged)
 with open (sys.argv[1],"r") as csvfile:
 	microbiome_table = list(csv.reader(csvfile))
 
@@ -10,6 +13,7 @@ micro_biome_dict = {}
 for row in microbiome_table[1:]:
 	micro_biome_dict[row[12]] = row 
 
+# DNA within 20kb of a CRISPR-array
 sequences = SeqIO.parse(sys.argv[2],"fasta")
 
 ret_out = open(sys.argv[3],"w")

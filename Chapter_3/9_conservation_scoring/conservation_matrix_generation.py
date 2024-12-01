@@ -1,9 +1,9 @@
-#conservation_matrix_generation
+# conservation_matrix_generation
 import sys
 import csv
 
-# need to generalise to expand to import all conserved co-occurring cas genes
-# prerun conservation tables to label with subtype
+# program to generate a matrix of conservation scores using a list of conservation scores for each representative protein sequences, identified by pfam
+
 i = 1
 conservation_dict = {}
 while (i < len(sys.argv) - 1):

@@ -1,8 +1,8 @@
-# script to filter clusters of size either < 3 or 2.
-
+# script to filter clusters of size >= 3
 from Bio import SeqIO
 import sys
 
+# Input file containing clusters in FASTA format.
 sequences = SeqIO.parse(sys.argv[1], "fasta")
 cluster_size_cutoff = 3
 cluster_size = 0

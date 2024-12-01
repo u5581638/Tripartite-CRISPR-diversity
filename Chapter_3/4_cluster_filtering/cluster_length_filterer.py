@@ -1,9 +1,9 @@
-# program to go through each sorted cluster and rename cluster numbers as well as filtering out clusters which lack a single sequence greather than 100 | 200 | 300 amino acids
+# program to go through each sorted cluster and rename cluster numbers as well as filtering out clusters which lack a single sequence greather than 300 amino acids
 
 from Bio import SeqIO
 import sys
 
-
+# Helper function to rename identifiers of sequence from each cluster
 def re_add (identifer):
 	
 	i=1

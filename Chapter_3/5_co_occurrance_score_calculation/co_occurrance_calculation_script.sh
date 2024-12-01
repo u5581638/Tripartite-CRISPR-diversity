@@ -10,4 +10,5 @@
 
 module load python3/3.10.4
 
+# compute the co_occurrance scores based on the number of local (hits within 20kb of a CRISPR-array) hits / global hits in all 9.8TB of sequencing data
 find global_hits/ -name "sequence_tmp_genome_block*" -type "f" | xargs -n 1 -I {} -P 1 ./co_occurrance_batch_helper_script.sh {} all_5_10kb_run_0_139_co_occurrance_scores_table.csv

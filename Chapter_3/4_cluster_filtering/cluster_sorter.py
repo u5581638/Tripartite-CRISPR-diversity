@@ -5,6 +5,7 @@ from Bio import SeqIO
 import sys
 import itertools
 
+# Input file containing filtered clusters in FASTA format.
 sequences = SeqIO.parse(sys.argv[1], "fasta")
 
 clusters = []

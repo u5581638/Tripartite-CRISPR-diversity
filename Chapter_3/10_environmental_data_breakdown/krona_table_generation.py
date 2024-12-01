@@ -5,6 +5,9 @@
 import sys
 import csv
 
+# INPUT: NCBI/JGI table containing species metadata in csv format.
+# Note: This was run for JGI/NCBI assembles using two variants of this script.
+
 with open(sys.argv[1],"r") as csvfile:
 	raw_table = list(csv.reader(csvfile))
 

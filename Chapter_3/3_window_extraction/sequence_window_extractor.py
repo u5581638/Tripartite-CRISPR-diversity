@@ -1,13 +1,13 @@
-	# python extraction code
-
 import sys
 from Bio import SeqIO
 import re
 import copy
 
-# file containing crispr arrays 
-# file containing fasta_sequences
+
+ 
+# file containing genome_aseemblies in FASTA format
 fasta_sequences = list(SeqIO.parse(sys.argv[1], "fasta"))
+# file containing PILER-CR crispr array predictions in FASTA format.
 crispr_arrays = list(SeqIO.parse(sys.argv[2], "fasta"))
 window_size = sys.argv[3]
 
@@ -33,7 +33,6 @@ def window_extractor (genome, index, window_size):
 
 i = 0
 position_pattern = re.compile("Pos=.*]")
-#print("ello")
 #print (len(fasta_sequences))
 #print(len(crispr_arrays))
 extracted_windows = []

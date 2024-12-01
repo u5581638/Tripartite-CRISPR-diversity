@@ -1,10 +1,10 @@
-# program to extract a query sequence from the a given CRISPR-subtype/all subtypes.
+# program to extract sequences from a given CRISPR-subtype/all subtypes for tree generation with a given PFAM annotation.
 
 import sys
 import csv
 from Bio import SeqIO
 
-#CRISPR_subtype annotation_table
+# CRISPR_subtype annotation_table
 csvfile = open(sys.argv[1],"r")
 annotation_table = csv.reader(csvfile)
 

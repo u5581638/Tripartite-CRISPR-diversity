@@ -11,6 +11,7 @@ import re
 from statistics import mean
 from statistics import stdev
 
+# file containing filtered clusters with distances labelled in the identifiers in FASTA format.
 sequences = list(SeqIO.parse(sys.argv[1], "fasta"))
 i = 0
 cluster_pattern = re.compile("cluster_[0-9]* CRISPR_Position")

@@ -1,4 +1,5 @@
-# program to extract a query sequence from the a given CRISPR-subtype/all subtypes.
+# program to extract sequences from a given CRISPR-subtype/all subtypes for tree generation with a given DEFLOC annotation.
+
 
 import sys
 import csv
@@ -17,7 +18,7 @@ for sequ in sequences:
 		seq_dict[sequ.id] = sequ 
 
 query = sys.argv[3]
-query_index = 20 # column containing pfam/padloc entries
+query_index = 20 # column containing pfam/DEFLOC entries
 # specify output
 ret_seqs = open ( sys.argv[1] + "_" + query + "_phylo_seqs.fa","a")
 spamwriter = csv.writer(ret_seqs)

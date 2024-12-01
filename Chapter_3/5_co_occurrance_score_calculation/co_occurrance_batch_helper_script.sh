@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# helper script to compute co_occurrance scores
 my_str=$1
 my_str=($( basename $my_str ))
 my_str=${my_str%_all_global_hits.csv}

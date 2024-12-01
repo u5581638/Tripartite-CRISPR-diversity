@@ -3,6 +3,7 @@ import sys
 from Bio import SeqIO
 import re
 
+# master genbank table from NCBI FTP repository with additional entries added by entrez queries.
 with open (sys.argv[1],"r") as csvfile:
 	microbiome_table = list(csv.reader(csvfile))
 
@@ -14,7 +15,7 @@ for row in microbiome_table[1:]:
 	id_row = re.match('[A-Z]*',id_row)
 	id_row = id_row.group(0)
 	micro_biome_dict[id_row] = row 
-
+# INPUT: sequences with NCBI identifers from sequences within 20kb of a CRISPR-array
 sequences = SeqIO.parse(sys.argv[2],"fasta")
 
 ret_out = open(sys.argv[3],"w")

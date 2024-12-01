@@ -1,14 +1,13 @@
 # script constructor 
-# program to write the script required for nci-parallel
+# program to write the script required for parallel tblastn search
 
 import sys
 import csv
 
-#import file containing sequence names one on each line
-#import file containing database file names one on each line
-
-#extract the sequences
+# extract the sequences
 sequence_names = []
+# import file containing protein sequence file names one on each line
+
 with open(sys.argv[1], "r") as seq_file:
 	while (True):
 		line = seq_file.readline()
@@ -16,8 +15,9 @@ with open(sys.argv[1], "r") as seq_file:
 			break
 		sequence_names.append(str(line))
 
-#extract the database names
+# extract the database names
 database_names = []
+# import file containing database block file names one on each line
 with open(sys.argv[2], "r") as database_names_f:
 	while (True):
 		line = str(database_names_f.readline())

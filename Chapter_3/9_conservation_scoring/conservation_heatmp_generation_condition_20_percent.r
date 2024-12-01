@@ -1,7 +1,9 @@
-#conservation_heatmp_generation
+# conservation_heatmp_generation
+# script to generate a heatmap from a matrix of conservation scores
 library(pheatmap)
 setwd("C:/Users/u5581/Documents/PhD/Thesis/result_chapter_1_figure_3/")
 my_in = "conservation_matrix2_pfam_500_all_merged.csv"
+# matrix of conservation scores
 my_table = read.csv(my_in,row.names=1)
 the_matrix <- data.matrix(my_table)
 # may need to filter some columns

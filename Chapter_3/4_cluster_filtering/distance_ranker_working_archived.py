@@ -5,6 +5,7 @@ from Bio import SeqIO
 import sys
 import re
 
+# input set of representative protein sequences with average distance labelled in identifiers (in FASTA format)
 sequences = SeqIO.parse(sys.argv[1], "fasta")
 
 distance_pattern = re.compile("Average_dist=[0-9]*")

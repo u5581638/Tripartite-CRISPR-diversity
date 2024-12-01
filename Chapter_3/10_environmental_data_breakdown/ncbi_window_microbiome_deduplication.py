@@ -5,6 +5,8 @@
 import csv
 import sys
 
+# INPUT: ncbi table of species annotations in csv format.
+
 with open(sys.argv[1],"r") as csvfile:
 	ncbi_table = list(csv.reader(csvfile))
 

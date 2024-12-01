@@ -1,11 +1,13 @@
-#table_merger
+# table_merger
 
+# script to merge table of co_occurrance scores with corresponding abundance and distance scores
 import csv 
 import sys
 
+# INPUT: co-occurrance table for each representative protein sequence
 with open(sys.argv[1], "r") as csvfile:
 	hit_table = list(csv.reader(csvfile))
-
+# INPUT: distant/abundance table for each representative protein sequence
 with open(sys.argv[2], "r") as csvfile2:
 	hit_table2 = list(csv.reader(csvfile2))
 

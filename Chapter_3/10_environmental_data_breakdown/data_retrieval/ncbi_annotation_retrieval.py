@@ -2,10 +2,7 @@ from Bio import SeqIO
 import sys
 import csv
 
-# do two things
-# 1. Find all matching JGI scaffolds.
-# 2. Compute matched/unmatched proportion
-
+# INPUT: table/list containing NCBI sequence identifers
 host_url = open(sys.argv[1],"r")
 host_table = csv.reader(host_url)
 
@@ -19,7 +16,7 @@ for row in host_table:
 host_url.close()
 
 host_ids = list(host_ids.keys())
-
+# master genbank table from NCBI FTP repository with additional entries added by entrez queries.
 ncbi_url = open(sys.argv[2],"r")
 ncbi_table = csv.reader(ncbi_url)
 

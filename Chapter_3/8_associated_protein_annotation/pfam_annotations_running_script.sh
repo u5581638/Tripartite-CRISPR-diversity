@@ -10,6 +10,8 @@
 
 module load python3/3.10.4
 
+# script to use HMMscan/HHblits to search for remote homology to each representative protein sequence in the DEFLOC and Pfam databases respectively
+
 # Pfam run
 find split_sequences/ -name "*" -type "f" | xargs -n 1 -I {} -P 48 /g/data/va71/alphafold/install/hh-suite/build/src/hhblits -i {} -o {}_pfam_descriptions.txt  -cpu 1 -e 0.001 -maxseq 10 -d /g/data/va71/alphafold/datasets/alphafold2/pfam2/pfam -v 0
 

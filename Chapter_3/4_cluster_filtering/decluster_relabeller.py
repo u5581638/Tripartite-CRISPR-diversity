@@ -3,6 +3,7 @@
 from Bio import SeqIO
 import sys
 
+# files containing labelled clusters in FASTA format.
 sequences = SeqIO.parse(sys.argv[1], "fasta")
 cluster_number = 1
 sequ = next(sequences)
