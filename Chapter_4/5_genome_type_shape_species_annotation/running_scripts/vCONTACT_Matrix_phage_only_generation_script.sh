@@ -1,7 +1,0 @@
-#!/bin/bash
-
-module load python3/3.10.4
-
-# script to generate plasmid + genome type cluster conservation matrix for host-encoded contigs.
-
-python3 /g/data/va71/crispr_pipeline_annotation/host_phage_interaction_final_7-5-2024/source_code/vCONTACT2_clade_component_annotation_virsort_plasmid_only.py casIF/phage/c1.clusters casIF/phage/final_table.csv casIF/phage/typeIIIB_cmr2.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_non_redundant.csv_filtered.csv_deduplicated.csv_filtered_hits_extracted_faidx_bp_window.fasta_p_ovrlps.fa_p.csv casIF/phage/casIF_phage_gold_annotations.csv casIF/phage/casIF_phage_ncbi_annotations.csv phage_only_components_vCONTACT/casIF_phage_only_components.csv phage_only_matrix_generation/casIF_phage_only_virsort_plasmid_matrix.csv
