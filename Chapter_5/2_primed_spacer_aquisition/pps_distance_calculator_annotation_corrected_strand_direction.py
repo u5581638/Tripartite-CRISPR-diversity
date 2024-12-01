@@ -1,7 +1,6 @@
 # spacer PPS distance calculator
-# identify the PPS, then compute the distance from the PPS to the spacers. Spacers should be assigned 2D coordinates based on whether spacers map to either the forward or reverse strand.
+# identify the PPS, then compute the distance from the PPS to the spacers.
 
-# first need to create a dict to group entries 
 
 import sys
 import csv
@@ -11,6 +10,7 @@ def forward_sorter(row):
 	return (float(float (row[20]) + float (row[21]) / 2))
 
 
+# identify the PPS, then compute the distance from the PPS to the spacers. Spacers are assigned based on whether spacers map to either the forward or reverse strand.
 def pps_compute(input_url):
 	print("Start:")
 	csvfile = open (input_url, "r") 
@@ -61,7 +61,6 @@ def pps_compute(input_url):
 		array_orientation = spacer_host_hit[0][13]
 		if (array_orientation == "Forward"):
 			pps = list(sorted(spacer_host_hit, reverse=True,key=forward_sorter)) [0] # make sure that the sequences are not already sorted!!
-			# THESE INDEXES WILL NEED TO BE CHANGED - Actually this works out!!
 			spacer_start = pps[8]
 			spacer_end = pps[9]
 			pps_coord = float((int(spacer_start) + int(spacer_end)) / 2)
@@ -78,7 +77,6 @@ def pps_compute(input_url):
 				if (int(spacer_end_hit) < int(spacer_start_hit)):
 					target_sense = -1
 				midpoint_spacer_distance = float ((int(spacer_start_hit) + int(spacer_end_hit)) / 2) # could be as simple as adding abs here?
-				# This is the line that needs to change
 			#	print(pps_sense, target_sense, spacer_start,spacer_end )
 				if (pps_sense == 1 and target_sense == 1):
 					midpoint_spacer_distance = midpoint_spacer_distance - pps_coord

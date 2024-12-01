@@ -1,7 +1,7 @@
 # mapped_spacer_expansion
 
-# need to mapp spacers onto contigs for which a pre-existing match already exists
-# This will require a two-step approach.
+# map spacers onto contigs for which a pre-existing match already exists
+# This requires a two-step approach.
 
 # 1. Need to develop a pairwise alignment tool to substitute BLAST, which is unsuitable due to it's need to be indexed as a database.
 
@@ -37,6 +37,7 @@ kmer_switch = 1
 with open(sys.argv[1], "r") as csvfile:
 	arrays = list(csv.reader(csvfile))
 
+# take largest concensus array and number spacers from PPS
 arrays = filtered_arrs_appender_SQL4.largest_array_merge(arrays)
 arrays = filtered_arrs_appender_SQL4.number_arrays(arrays[1:])
 arr_out = open(sys.argv[1] + "arr_cpy.csv","w")
@@ -45,7 +46,6 @@ for arr in arrays:
 	for row in arr:
 		spamwriter.writerow(row)
 arr_out.close()
-# need to consider whether to check arrays in this format!! -> a dictionalised format would be preferred
 array_dict = {}
 for arr_group in arrays:
 	for arr in arr_group:
@@ -137,7 +137,6 @@ for phage_set_id in phage_id_set:
 			for coord in target_coords:
 				mapped_phage_dict[phage_set_id][i] = spacer_expansion_functions.mask_contig(mapped_phage_dict[phage_set_id][i], int(coord[0]) - int(phage_contig_start) + 1,int(coord[1]) - int(phage_contig_start) + 1)
 		i += 1
-# Do I need dedup_spacer_list to do phage contig masking?
 for array in dedup_spacer_list:
 	# group spacers in array into lists based on a conserved phage contig`
 	phage_id_dict = {}
@@ -174,7 +173,7 @@ for array in dedup_spacer_list:
 
 
 
-			original_spacers = [] # could get original spacer matches by concatenating to original file? -> but want to filter hits > 2 -> use prexisting program?
+			original_spacers = []
 			if (kmer_switch != 1):
 				SeqIO.write(new_phage_contig, "contig1.fasta","fasta")
 				subprocess.run(["makeblastdb -in " + "contig1.fasta" + " -dbtype nucl"],shell=True)
@@ -182,7 +181,9 @@ for array in dedup_spacer_list:
 			for arr_spacer in matching_arr:
 				# should be able to eliminate this as these targets should be masked.
 				if (kmer_switch == 1):
+					# for each spacer in the array (bar the original) do the kmer search
 					pairwise_mapping = spacer_expansion_functions.kmer_pairwise_alignment_query_length_spacer_coord(arr_spacer[14],20,5,arr_spacer[-1],arr_spacer[0], new_phage_contig,10)
+					# kmer search using Direct repeats with spacer kmer handles.
 					pairwise_mapping2 = spacer_expansion_functions.kmer_pairwise_alignment_query_length_spacer_coord(arr_spacer[14][-5:] + arr_spacer[12] + arr_spacer[14][:5],20,5,arr_spacer[-1],arr_spacer[0], new_phage_contig,10)
 				else:
 					pairwise_mapping = spacer_expansion_functions.blast_pairwise_alignment(arr_spacer[14], 20,5, arr_spacer[-1],arr_spacer[0])
@@ -210,10 +211,7 @@ for array in dedup_spacer_list:
 					spamwriter2.writerow([mapped_spacer_id] + [pairwise_mapping2[1].split(":")[0]] + pairwise_mapping2[2:8] + [target_start,target_end] + ["NA","NA","NA"] + [arr_spacer[1]] + ["NA","NA","NA","NA", arr_spacer[6],arr_spacer[7],arr_spacer[8],arr_spacer[9],arr_spacer[10],arr_spacer[11],arr_spacer[12],arr_spacer[13],arr_spacer[14],arr_spacer[15],arr_spacer[16],arr_spacer[-2],arr_spacer[-1]])
 			if (kmer_switch != 1):
 				subprocess.run("rm contig1.fasta",shell=True)
-							# consider some control statements to flag errors in case things don't.
-					# for each spacer in the array (bar the original) do the pairwise alignment
-				# The above if statement should always be triggered at least once unless something is broken with the mapped genome
-	# can I map arrays to their mapped phages by id? Use tuples as key?
+					
 print("phage_count:")
 print(phage_count)	
 ret_out.close()

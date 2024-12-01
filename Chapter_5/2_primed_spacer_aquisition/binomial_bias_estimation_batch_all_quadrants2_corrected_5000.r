@@ -1,4 +1,4 @@
-# now need to add the binomial calculated p-values
+# generate binomial plot and assess significance by quadrant.
  
 library(dplyr)
 library(ggplot2)

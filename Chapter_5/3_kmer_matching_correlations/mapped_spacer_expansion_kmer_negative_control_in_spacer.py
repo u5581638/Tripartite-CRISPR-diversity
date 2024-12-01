@@ -13,14 +13,14 @@ import copy
 import subprocess
 import random
 import spacer_expansion_functions
-# size the total size of the gapped query alignment
-# This doesn't allow for deletions. Should be the combined additive length of
-# open the blanks removed reconciled array table. Need to renumber using
-# change variable names
+
+# perform kmerised spacer mapping against randomly generated sequences of the same size.
+
 kmer_switch = 1
 with open(sys.argv[1], "r") as csvfile:
 	arrays = list(csv.reader(csvfile))
 
+# take largest concensus array and number spacers from PPS
 arrays = filtered_arrs_appender_SQL4.largest_array_merge(arrays)
 arrays = filtered_arrs_appender_SQL4.number_arrays(arrays[1:])
 arr_out = open(sys.argv[1] + "arr_cpy.csv","w")

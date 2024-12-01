@@ -3,10 +3,7 @@
 import csv
 import sys
 
-
-# There is potentially one flaw in this program. This program does not work with
-# arrays, only contig ids. This should be corrected to use array start and end coordinates
-# to prevent artifacts arising from 
+# unused function. 
 def filter(spacer_url, output_url):
 	with open (spacer_url, "r") as csvfile:
 		hit_table = list(csv.reader(csvfile))
@@ -41,6 +38,7 @@ def filter(spacer_url, output_url):
 	outf.close()
 	return 0
 
+# take only entries where two of more spacers map to the same sequence. Write these to a seperate file.
 def two_or_more(spacer_url):
 	with open (spacer_url, "r") as csvfile:
 		hit_table = list(csv.reader(csvfile))

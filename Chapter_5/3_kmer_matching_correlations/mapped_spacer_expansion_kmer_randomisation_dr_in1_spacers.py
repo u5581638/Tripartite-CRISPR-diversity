@@ -1,6 +1,6 @@
 # mapped_spacer_expansion_randomised_phage
 
-# script to perform a control local pairwise alignment by reshuffling the mapped phages.
+# script to perform a kmerised spacer mapping against reshuffled mapped sequences.
 
 # main difference will be that the mapped phages are only used to retrieve the set of possible arrays.
 # each array is then assigned at random without duplication or replacement to each phage contig.
@@ -32,6 +32,7 @@ kmer_switch = 1
 with open(sys.argv[1], "r") as csvfile:
 	arrays = list(csv.reader(csvfile))
 
+# take largest concensus array and number spacers from PPS
 arrays = filtered_arrs_appender_SQL4.largest_array_merge(arrays)
 arrays = filtered_arrs_appender_SQL4.number_arrays(arrays[1:])
 arr_out = open(sys.argv[1] + "arr_cpy.csv","w")

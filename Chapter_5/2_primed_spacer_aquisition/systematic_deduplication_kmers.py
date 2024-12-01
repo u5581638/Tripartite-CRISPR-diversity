@@ -1,5 +1,4 @@
-# Need to write a deduplication program specific to the elimination of spacers detected by both kmer search and BLAST.
-# Also need to filter additional self-targetting CRISPR-arrays - this may be best done in a seperate program.
+# Deduplicate mapped hits from identical or near identical coordinates.
 '''
 Approach:
 Array self targets - Should already have eliminated most of the self targetting arrays. This must be an amplification effect.
