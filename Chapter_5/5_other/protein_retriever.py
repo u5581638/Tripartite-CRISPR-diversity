@@ -4,13 +4,16 @@ import csv
 import sys
 from Bio import SeqIO
 
+# retrieve protein sequences from BLASTp search result table.
 
+# protein sequences (DB)
 sequences = SeqIO.parse(sys.argv[1],"fasta")
 seq_dict = {}
 for sequ in sequences:
 	if (sequ.id not in seq_dict):
 		seq_dict[sequ.id] = sequ
 
+# BLAST search results
 with open(sys.argv[2],"r") as csvfile:
 	hit_table = list(csv.reader(csvfile))
 

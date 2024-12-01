@@ -3,6 +3,8 @@ library(ggplot2)
 #theme_set(theme_minimal())
 #library(hrbrthemes)
 #args<-commandArgs(TRUE)
+
+# compute spacer distribution for subset of type III-A sequences with homology to RT-Cas1 sequences
 setwd("F:/spacer_expansion/typeIIIA_RT_CAS1_test/")
 i_sequence = "cas1_new_pure_whole.csv"
 distance_table <- read.csv(i_sequence)

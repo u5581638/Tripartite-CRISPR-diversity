@@ -1,6 +1,7 @@
 import csv
 import sys
 
+# filter genomes with homology to RT sequence (by BLASTp/BLASTx) with those without.
 with open(sys.argv[1],"r") as csvfile:
 	blast_table = list(csv.reader(csvfile))
 
