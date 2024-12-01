@@ -1,4 +1,4 @@
-# progrma to deduplicate identical hitmap hit.
+# program to deduplicate identical spacer hitmap table hits.
 import csv
 import sys
 

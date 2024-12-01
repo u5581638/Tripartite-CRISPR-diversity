@@ -70,6 +70,7 @@ def find_pattern(pattern, path):
 				result.append(os.path.join(root, name))
 		return result		
 
+# relabel all fasta files to include the block_name
 def genome_block_relabeller(db_directory_path):
 	print("GSTART!!")
 	blast_db_seqs = find_pattern('*.fasta', db_directory_path) # this will only work if all files in directory are only fasta!! Need to use find!!
@@ -99,6 +100,7 @@ def genome_block_relabeller(db_directory_path):
 			# relabel all fasta files to include the block_name
 	return genome_path
 
+# helper function to run makeblastdb for db generation
 def db_generation_subroutine (db_directory_path):
 	# need to format the db fasta file sequences with their respective block names
 #	print("db_file_is: " + db_directory_path)
@@ -109,6 +111,7 @@ def db_generation_subroutine (db_directory_path):
 	print("db_sub_complete!!")
 	return genome_path
 
+# run tblastn search to identify matching genomes to query
 def db_generation(db_directory_path, file_path):
 	print("db_gen_start!!")
 	subprocess.run(["find " + db_directory_path + " -name *_labelled.fasta -type f | xargs -n 1 -I {} -P 0 tblastn -query " + file_path + " -db {} -out {}.csv -outfmt 10 -evalue 0.0000001 -max_target_seqs 10000000 -max_hsps 1"], shell=True)
@@ -123,6 +126,7 @@ def program_cleaner (): # program to delete all intermediate files generated in 
 def first_ele (elements):
 	return elements[0]
 
+# substitute spaces for hash symbols in protein headers
 def hash_adder(input_genome_file_name):
 	aa_proteins = list(SeqIO.parse(input_genome_file_name, "fasta"))
 	i = 0
@@ -133,6 +137,7 @@ def hash_adder(input_genome_file_name):
 	SeqIO.write(aa_proteins, input_genome_file_name,"fasta")
 	return 0
 
+# run protein prediction and reconciliation (if using genemark) on retrieved set of genomes corresponding to each subtype query.
 def generate_protein (input_genome_file_name, protein_block_name, rnafold_switch=0,merge_protein=0):
 	if (rnafold_switch == 1):
 		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/prodigal/prodigal", "-p", "meta", "-i", input_genome_file_name, "-o", input_genome_file_name + "_output_full.txt", "-a", input_genome_file_name + "_aa_raw.fasta", "-d", input_genome_file_name + "_cds_raw.fasta"]) # output should be redirected to genome specific folder
@@ -157,8 +162,8 @@ def generate_protein (input_genome_file_name, protein_block_name, rnafold_switch
 	subprocess.run(["/g/data/va71/crispr_pipeline_annotation/seqkit", "rmdup",protein_block_name])
 	subprocess.run(["/g/data/va71/crispr_pipeline_annotation/seqkit", "faidx","--update-faidx", protein_block_name])
 	return 0
-# script to reverse the order of the entries post reconcilation (if reverse is selected)
 
+# script to reverse the order of the entries post reconcilation (if reverse is selected)
 def table_reverse(input_table_url):
 	with open(input_table_url) as csvfile:
 		hit_table = list(csv.reader(csvfile))
@@ -182,6 +187,7 @@ def table_reverse(input_table_url):
 	ret_out.close()
 	return 0		
 
+# create genomes table from a set of genomes without an input query.
 def filler_table_generation (my_genomes, genome_url, params, sql_db_connect):
 	# need to lookup GOLD db to retrieve the matching Analysis ID if an NCBI id is supplied
 	con = sql_db_connect
@@ -208,6 +214,7 @@ def filler_table_generation (my_genomes, genome_url, params, sql_db_connect):
 	con.close()	
 	return 0
 
+# generate table compatible with SQL. Note: this function was not used
 def genome_hit_sql_table_generation(hit_table, genome_url, params, sql_db_connect):
 #	con = sqlite3.connect(sql_db_connect)
 #	cur = con.cursor()
@@ -228,8 +235,7 @@ def genome_hit_sql_table_generation(hit_table, genome_url, params, sql_db_connec
 		ret_list.append(row)	
 	return 0	
 
-# Is there a simpler way of making a CLI? See the run_alphafold code!!
-# How well does this program deal with sequences which have already been run before????
+# Retrieve genome sequences by identifier.
 def genome_hit_lookup (hit_table, db_directory_path, genome_file_url, block, genome_row_no=2): # b?
 	row_dict = {}
 	if (os.path.isfile(genome_file_url)):
@@ -288,7 +294,7 @@ def genome_hit_lookup (hit_table, db_directory_path, genome_file_url, block, gen
 
 #START!!
 # code for directly running from cmdline goes here!!
-
+# This is the main code for performing spacer mapping
 # end of code for cmdline.
 
 
@@ -799,7 +805,6 @@ if (spacer_generation_bypass_switch == 0):
 
 	#	print(genome_file)
 
-	# this step is all about extracting genomes
 
 	else: # need an if statement to delete this directory prior to running the program. Ditto for BLAST compiled db!!
 		# Save fixing this for last!! Don't need to run under default circumstances!!!!!!!!!!
@@ -931,6 +936,7 @@ out_file.close()
 # exit()
 	# this is end of spacer_preproccessing!!
 
+# Parameters for spacer mapping!!
 # This parameters should be related to the dr offset score!!!
 perc_identity = 0.90
 dr_perc_identity = 0.90
@@ -953,17 +959,18 @@ if (mapping_skip_switch == 0):
 		input_dr_spacer_fasta = input_dr_spacer_fasta + "_arrs_filtered.fasta"
 		print("Good!!")
 		#	exit()
+		# subproccess call to script mapping spacers
 		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/pipe_line_source_files/nested_mpirun_script_no_qsub_flock_optimised_test_script.sh", input_dr_spacer_fasta, block_directory, str(dr_perc_identity), str(cores), "/g/data/va71/crispr_pipeline_annotation/pipe_line_source_files/", db_directory_path, "co_occurrance_bug_diagnostics_results2/", str(dr_query_hsp_cover), formatting]) # what input args are required??
 	print("Pipeline parameters:")
 	print(input_spacer_fasta)
 	print (block_directory)
 	print (perc_identity)
 	print(cores)
-
+	# subproccess call to script mapping spacers barcoded with direct repeat handles
 	subprocess.run(["/g/data/va71/crispr_pipeline_annotation/pipe_line_source_files/nested_mpirun_script_no_qsub_flock_optimised_test_script.sh", input_spacer_fasta, block_directory, str(perc_identity), str(cores), "/g/data/va71/crispr_pipeline_annotation/pipe_line_source_files/", db_directory_path, "co_occurrance_bug_diagnostics_results/", str(query_cover), formatting ]) # what input args are required??
 		
-		# want to map spacer result file (input_spacer_fasta + "all_hits.csv")
 if (tony_mapping_switch == 1):
+	# exclude mapped hits to crispr arrays (or degraded array homologs)
 	subprocess.run(["/g/data/va71/crispr_pipeline_annotation/pipe_line_source_files/block_tony_spacer_filtration5.sh", db_directory_path])	
 	print ("Up to penultimate step!!:")
 	print("folder dir:")
@@ -993,6 +1000,7 @@ array_table.to_sql('RAW_ARRAYS',sql_db_connect, if_exists='append', index=False)
 array_table.to_csv(crispr_array_table, index=False)
 empty_spacer_filterer.remove_blanks(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_reconciled_full_arr_positions.csv")
 
+# expand and number spacers in each concensus CRISPR array
 spacer_hitmap_master_table = filtered_arrs_appender_SQL4.spacer_hits_appender(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered.csv", db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_reconciled_full_arr_positions.csv_no_blanks.csv", db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv")
 	
 # write SQL code here to store CRISPR-arrays. Create foreign keys by adding the RUN numbers and genomes to the table.
@@ -1002,7 +1010,7 @@ hit_table = pandas.read_csv(hitmap_table_url)
 	
 	# Need to identify whether hits to phage genomes have already occurred for seperate runs. Are these genomes 
 
-	# Need to standardise the Spacer ID format!!!
+# CODE to transfer table to SQL database. Note, this functionality was not used other than to check subtype sequences did not overlap.
 cur.execute("CREATE TABLE IF NOT EXISTS SPACER_HITMAP (Spacer_id TEXT, Phage_id TEXT, Perc_id FLOAT, Length INT, Mismatches TEXT, Gapopen TEXT, query_start TEXT, query_end TEXT, Mapped_start_site TEXT, Mapped_end_site TEXT, evalue TEXT, bitscore TEXT, Genome_id TEXT, orientation TEXT, orientation_score TEXT, orientation_confidence TEXT, questionable_array TEXT, array_score TEXT, `CRISPR-start` TEXT,`CRISPR-end` TEXT,repeat_start TEXT, repeat_end TEXT, spacer_start TEXT, spacer_end TEXT, dr_repeat_original TEXT, dr_repeat_concensous TEXT, spacer TEXT, Array_tool TEXT, RUN TEXT, array_number TEXT, spacer_number TEXT, mapped_genomes TEXT, FOREIGN KEY (Genome_id) REFERENCES GENOMES (Genome_id), FOREIGN KEY (Genome_id) REFERENCES RAW_ARRAYS (Genome_id) )")
 cur.execute("CREATE INDEX IF NOT EXISTS GENOME_ID_INDEX ON SPACER_HITMAP (`Genome_id`)")
 cur.execute("CREATE INDEX IF NOT EXISTS Phage_ID_INDEX ON SPACER_HITMAP (`Phage_id`)")
@@ -1073,8 +1081,9 @@ sql_db_connect.commit()
 #hit_table = hit_table.drop('run',axis=1) # may want to preserve the run information under specific circumstances!!
 # hit_table = hit_table.drop(hit_table.columns[0],axis=1)
 hit_table.to_csv(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv",index=False)
+# create table phages genomes with 2+ spacer hits.
 spacers_2_or_more_master_table = spacers_2_or_more.two_or_more(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv")
-	# This master table should be written to SQL.
+	# compute pps distances.
 spacer_hitmap_master_table = pps_distance_calculator_annotation.pps_compute (db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv" + "_2_or_more_hits.csv")
 distance_table = pandas.read_csv(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv" + "_2_or_more_hits.csv" + "_distances_annotated.csv")
 
@@ -1102,7 +1111,7 @@ sql_db_connect.close()
 ###### end of relevant code ###########
 # ONE KEY UPGRADE TO ADD WILL BE TO RECONCILE THE CRISPR ARRAY INFORMATION AND ARRAY ORIENTATIONS WITH THE MAPPED HITS AS A SINGLE TABLE!!
 
-# After this need to create a mapping between prodigal orfs and the original genomes
+# Code to estimate PAMs from mapped sequences.
 if (pam_anno == 1):
 	filtered_spacer_url = db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered.csv"
 	faidx_retriever_genome_block_spacer_mapping_function.mapped_genome_retrieval(filtered_spacer_url,whole_phage_block_url, 20000)
@@ -1132,7 +1141,7 @@ if (pam_anno == 1):
 # need to create a table which summarises the query name, query results (tblastn), genome file name, predicted orfs
 # perhaps this is not needed
 if (phage_genomes == 1):
-#	need to retrieve filtered phage genomes using samtools and the filtered_arrs .csv file
+#	code to retrieve mapped sequences without PAM prediction
 	if (pam_anno != 1):
 		filtered_spacer_url = db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered.csv"
 		faidx_retriever_genome_block_spacer_mapping_function.mapped_genome_retrieval(filtered_spacer_url, whole_phage_block_url,20000)
@@ -1155,10 +1164,12 @@ if (phage_genomes == 1):
 	if (phage_protein_query_switch == 1):
 		# need to call representative clustering as a function. Need to modify upstream code to achieve this!!
 		# May need a unique phage genome clustering algorithm instead!!
+		# extract a representative sequence from a query search of genomes/mapped sequences followed by mmseqs2 clustering
 		representative_phage_table = genome_representative_clustering.rep_cluster(b_phage, phage_min_seq_id, phage_db_directory_path, phage_a, merge_protein,large_dataset,phylogeny_switch)
 		phage_a = representative_phage_table
 		b_phage = filtered_spacer_url + "_filtered_hits_extracted_faidx_" + "bp_window.fasta" + "rep_genomes" # need to convert upstream representative clustering to a module
 	
+	# code to prepare input files for gene annotation
 	summary_headers = ["Input_sequence","Input_path","genome_name", "genome_id"]
 	phage_summary_frame.append(summary_headers) # This is the phage genome summary table.
 
@@ -1290,7 +1301,7 @@ if (protein_generation_switch == 1):
 
 
 # Pipeline begins in earnest!!
-# start of genome_annotation_summary_table_generation
+# start of gene_annotation_summary_table_generation
 
 with open (a, "r") as csvfile:
 	hit_table = list(csv.reader(csvfile))
@@ -1414,7 +1425,7 @@ protein_annotation_frames = []
 # need an if statement, as well as a flag to specify the conditional running of spacer mapping!!!!!
 # may need to move this block of code upstream so that the representative genomes ("-q" option) are run later!!
 
-# in the case of spacers already being run!!
+# bypass switch in the case of spacers already being mapped!!
 # do not delete spacer distribution analysis when running in this mode!!!
 if (bypass_switch == 1):
 	b_basename = b.split("/")
@@ -1433,15 +1444,8 @@ if (bypass_switch == 1):
 	spacer_dict = spacer_dict_generator.spacer_dict_gen(input_spacer_fasta + "_all_hits.csv")
 	
 
+# main function calls for gene annotation in parallel:
 
-
-
-# need to load specific genomes - already have a dictionary!!!
-
-# Is there a way to rework this so the code includes an option to run all spacers in a given set of genomes, but only annotate those genomes which matches? A mapping specific mode?
-# Could this then automatically conduct secondary annotation of mapped hit genomes?
-# main body of code. Probably should run most of the program code within this loop
-# print(summary_frame)
 if (phage_genomes == 1):
 	phage_protein_annotation_frame = []
 	phage_summary_frame = phage_summary_frame[1:] # may not need this if phage summary frame already lacks headers

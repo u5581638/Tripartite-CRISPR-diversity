@@ -1,5 +1,5 @@
 
-# protein annotation tool api
+# protein annotation workflow api
 import sys
 if ('/g/data/va71/crispr_pipeline_annotation' not in sys.path):
 	sys.path.append('/g/data/va71/crispr_pipeline_annotation')
@@ -42,6 +42,7 @@ def find_pattern(pattern, path):
 				result.append(os.path.join(root, name))
 		return result		
 
+# relabel all fasta files to include the block_name
 def genome_block_relabeller(db_directory_path):
 	print("GSTART!!")
 	blast_db_seqs = find_pattern('*.fasta', db_directory_path) # this will only work if all files in directory are only fasta!! Need to use find!!
@@ -66,9 +67,10 @@ def genome_block_relabeller(db_directory_path):
 		my_file.close()
 		print("GEND!!")
 		print("good!!")
-			# relabel all fasta files to include the block_name
+			
 	return genome_path
 
+# helper function to run makeblastdb for db generation
 def db_generation_subroutine (db_directory_path):
 	# need to format the db fasta file sequences with their respective block names
 #	print("db_file_is: " + db_directory_path)
@@ -79,6 +81,7 @@ def db_generation_subroutine (db_directory_path):
 	print("db_sub_complete!!")
 	return genome_path
 
+# run tblastn search to identify matching genomes to query
 def db_generation(db_directory_path, file_path):
 	print("db_gen_start!!")
 	subprocess.run(["find " + db_directory_path + " -name *_labelled.fasta -type f | xargs -n 1 -I {} -P 0 tblastn -query " + file_path + " -db {} -out {}.csv -outfmt 10 -evalue 0.0000001 -max_target_seqs 10000000 -max_hsps 1"], shell=True)
@@ -93,6 +96,7 @@ def program_cleaner (): # program to delete all intermediate files generated in 
 def first_ele (elements):
 	return elements[0]
 
+# substitute spaces for hash symbols in protein headers
 def hash_adder(input_genome_file_name):
 	aa_proteins = list(SeqIO.parse(input_genome_file_name, "fasta"))
 	i = 0
@@ -103,6 +107,7 @@ def hash_adder(input_genome_file_name):
 	SeqIO.write(aa_proteins, input_genome_file_name,"fasta")
 	return 0
 
+# run protein prediction and reconciliation (if using genemark) on retrieved set of genomes corresponding to each subtype query.
 def generate_protein (input_genome_file_name, protein_block_name, rnafold_switch=0,merge_protein=0):
 	if (rnafold_switch == 1):
 		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/prodigal/prodigal", "-p", "meta", "-i", input_genome_file_name, "-o", input_genome_file_name + "_output_full.txt", "-a", input_genome_file_name + "_aa_raw.fasta", "-d", input_genome_file_name + "_cds_raw.fasta"]) # output should be redirected to genome specific folder
@@ -130,8 +135,8 @@ def generate_protein (input_genome_file_name, protein_block_name, rnafold_switch
 	subprocess.run(["samtools", "faidx", protein_block_name])
 	subprocess.run(["/g/data/va71/crispr_pipeline_annotation/seqkit", "faidx","--update-faidx", protein_block_name])
 	return 0
-# script to reverse the order of the entries post reconcilation (if reverse is selected)
 
+# script to reverse the order of the entries post reconcilation (if reverse is selected)
 def table_reverse(input_table_url):
 	with open(input_table_url) as csvfile:
 		hit_table = list(csv.reader(csvfile))
@@ -155,6 +160,7 @@ def table_reverse(input_table_url):
 	ret_out.close()
 	return 0		
 
+# create genomes table from a set of genomes without an input query.
 def filler_table_generation (my_genomes, genome_url, params, sql_db_connect):
 	# need to lookup GOLD db to retrieve the matching Analysis ID if an NCBI id is supplied
 	con = sql_db_connect
@@ -181,6 +187,7 @@ def filler_table_generation (my_genomes, genome_url, params, sql_db_connect):
 	con.close()	
 	return 0
 
+# generate table compatible with SQL. Note: this function was not used.
 def genome_hit_sql_table_generation(hit_table, genome_url, params, sql_db_connect):
 #	con = sqlite3.connect(sql_db_connect)
 #	cur = con.cursor()
@@ -202,7 +209,7 @@ def genome_hit_sql_table_generation(hit_table, genome_url, params, sql_db_connec
 	return 0	
 
 # Is there a simpler way of making a CLI? See the run_alphafold code!!
-# How well does this program deal with sequences which have already been run before????
+# Retrieve genome sequences by identifier.
 def genome_hit_lookup (hit_table, db_directory_path, genome_file_url, block, genome_row_no=2): # b?
 	row_dict = {}
 	if (os.path.isfile(genome_file_url)):
@@ -254,12 +261,9 @@ def genome_hit_lookup (hit_table, db_directory_path, genome_file_url, block, gen
 
 #START!!
 # code for directly running from cmdline goes here!!
+# This is the main code for performing CRISPR array validation, which is followed by spacer mapping and gene annotation
+# This was originally designed to run as a CLI program with diverse functions. However, this was not implemented and a single workable workflow was run instead.
 
-# end of code for cmdline.
-
-
-
-# need a true CLI interface!!!
 # input_flags:
 # -i input (either csv_file or input sequence in fasta format)
 # -t input_type (query/table)
@@ -768,7 +772,6 @@ if (spacer_generation_bypass_switch == 0):
 
 	else: # need an if statement to delete this directory prior to running the program. Ditto for BLAST compiled db!!
 		# Save fixing this for last!! Don't need to run under default circumstances!!!!!!!!!!
-		# THIS CODE HAS NOT BEEN TESTED YET (12/6/2023)
 		subprocess.run(["find " + db_directory_path + " -name *_labelled.fasta -type f | xargs -n 1 -I {} -P 1 cat {} >> " + db_directory_path  + "genome_only_run_master_file.fasta"], shell=True) # first concatenate the genomes
 		a = db_directory_path + "genome_only_run_master_file.fasta"
 		b = a + "_genomes.fasta"
@@ -820,13 +823,9 @@ if (spacer_generation_bypass_switch == 0):
 	print("checkpoint 2!!")
 
 	# write prodigal + genemark orf translation of target genomes here!!
-	# also need to index with samtools!!
-	# need to consider switching the working of the pipeline so that proteins are retrieved instead of predicted during downstream steps.
-	# Note that this step can be bypassed if the proteins have already been generated
-	# may need a variant of this command which can add new proteins and index them in addition to those in the starting dataset.
+	# index with samtools!!
 	if (protein_generation_switch == 1):
 		input_genome_file_name = b
-		# THis protein database might need to be garbage collected later!!
 		generate_protein(input_genome_file_name,protein_hits_block, rnafold_switch, merge_protein)
 	print("checkpoint 3!!")
 	print(db_directory_path)
@@ -850,9 +849,9 @@ if (spacer_generation_bypass_switch == 0):
 		# may be able to parallelise this loop to save KSU!!
 		partition_cores = 1
 		protopool = Pool(int(cores // partition_cores))
-		
-	# need to add a section for Tony's suggested modifications
-	# This section will probably need to be parallelised to compensate for the dramatically increased run time due to soo many prediction tools running.
+	
+	# function to run CRISPR-array prediction and validation.	
+	# This is parallelised to compensate for the dramatically increased run time due to soo many prediction tools running.
 		while (m <= partitions):
 			partition_dir = output_dir + "_partition_" + str(m) + ".fasta"
 			protopool.apply_async(spacer_mapping_parallelisation.parallel_spacer_partition, (output_dir,partition_dir, db_directory_path,b_basename,crispr_detect, crispr_orientation, partition_cores))
@@ -866,7 +865,7 @@ else:
 
 # table_reverse(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_reconciled_full_arr_positions.csv")
 
-# THis encode the raw detected CRISPR_arrays
+# Merge CRISPR-array predictions
 if (crispr_detect == 1 and crispr_orientation == 1):
 	pilercr_pos_extractor_annotation_full_spacers.merged_detectcrtpilercr_table_2_fasta(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_reconciled_full_arr_positions.csv")
 else:	

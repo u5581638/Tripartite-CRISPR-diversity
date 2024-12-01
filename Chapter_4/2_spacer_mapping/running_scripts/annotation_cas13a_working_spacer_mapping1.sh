@@ -14,5 +14,7 @@ module load blast
 module load python3/3.10.4
 module load samtools
 
+# perform spacer mapping and de-duplication against self-array mapping hits (for Type VI-A genomes)
+
 echo $1
 python3 /g/data/va71/crispr_pipeline_annotation/protein_annotation_tool_api_cli_in_progress_no_queries_mapping_draft_debug_full_spacer_control_mds_representatives_pfam_improved_SQL_spacer_only_v21.py -i /g/data/va71/crispr_pipeline_annotation/annotation_upgraded_main_workflow_run/cas13a/queries/cas13a.fasta -d /g/data/va71/crispr_pipeline_annotation/annotation_upgraded_main_workflow_run/cas13a/genomes/ -t "query" -m "/g/data/va71/labelled_genomes/" -b -r -c -tony -orientation -crispr_detect -phage_genomes -PAM_anno -phage_rep -spacer_gen_bypass -pps_map -prot_case_generation -cores 52 &> spacer_mapping_cas13a_dump.txt

@@ -3,7 +3,7 @@
 from Bio import SeqIO
 import sys
 
-
+# extract genomes from files given a list of identifiers.
 def genomes_from_id (protein_ids, genome_url):
 	genome_ids = set()
 	for protein_id in protein_ids:
@@ -27,6 +27,7 @@ def genomes_from_id (protein_ids, genome_url):
 			ret_genomes.append(genome)
 	return ret_genomes
 
+# select protein sequences given a list of identifiers
 def protein_ids_from_id (protein_ids, protein_url):
 	protein_ids = {}
 	ret_list = []
@@ -36,6 +37,7 @@ def protein_ids_from_id (protein_ids, protein_url):
 			ret_list.append(prot.description)
 	return ret_list		
 
+# select protein sequences given a list of identifiers
 def proteins_from_id (protein_ids, protein_url):
 	protein_ids = {}
 	ret_list = []

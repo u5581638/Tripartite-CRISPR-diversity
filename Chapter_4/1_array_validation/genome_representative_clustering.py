@@ -14,6 +14,7 @@ import table_identifier_extractor
 import subprocess
 
 # This may be mutually exclusive with phage clustering due to the BLAST query requirements!!
+# function to cluster and extract a representative sequence from a family of proteins derived from a query and set of genomes.
 def rep_cluster (b, min_seq_id, db_directory_path, a, merge_protein=0,large_dataset=0,phylogeny_switch=0, is_phage=0):
 	subprocess.run(["/g/data/va71/crispr_pipeline_annotation/prodigal/prodigal", "-i", b,"-o", b + "_prot.txt","-a" , b + "_trans_aa.fa"  ])
 	if (merge_protein == 1):

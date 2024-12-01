@@ -1,14 +1,13 @@
 # script to extract the pilercr id and start/end sites in a usable form for filtration
 
-from Bio import SeqIO # may not need this as a manual parser must be used owing to 
+from Bio import SeqIO  
 from Bio.Seq import Seq 
 from Bio.SeqRecord import SeqRecord
 import sys
 import re
 import csv
-# Strategy
-# Scan line by line in each fasta sequence
-# find repeat number
+
+
 
 def line_denuller (split_sequences):
 	ret_list = []
@@ -22,7 +21,7 @@ def pos_extractor(argx):
 	no_crisprs = re.compile("0 putative CRISPR arrays found")
 	characters = re.compile('[0-9]') # these patterns need to be improved to be more bombproof
 	equals = re.compile('=')
-	repeat_pattern = re.compile('') # need the right pattern. Maybe Sungyeon/Jeremy could help?
+	repeat_pattern = re.compile('')
 	sequence_file = open(argx, "r") # split on >
 	sequence_mega_str = sequence_file.read()
 	if (re.search(first_array, sequence_mega_str)):
@@ -454,7 +453,7 @@ def spacer_table_2_fasta_with_dr_offset (table_name, offset): # offset = number 
 		ret_list.append(new_spacer_record)
 	SeqIO.write(ret_list, table_name + "_drs_" + str(offset) + "_spacers.fasta", "fasta")	
 	return 0
-
+# generate spacers from a table of CRISPR array predictions with the adjacent Direct repeat ends barcoded onto the spacers (without CRISPRdetect)
 def merged_detectcrtpilercr_table_2_fasta_with_dr_offset_all_cases (table_name, offset):
 	offset = int(offset)
 	with open(table_name, "r") as csvfile:
@@ -494,6 +493,7 @@ def merged_detectcrtpilercr_table_2_fasta_with_dr_offset_all_cases (table_name, 
 	SeqIO.write(ret_list, table_name + "_drs_" + str(offset) + "_reconciled_spacers.fasta", "fasta")	
 	return 0
 
+# generate spacers from a table of CRISPR array predictions with the adjacent Direct repeat ends barcoded onto the spacers.
 def merged_detectcrtpilercr_table_2_fasta_with_dr_offset_all_cases_but_better (table_name, offset):
 	offset = int(offset)
 	with open(table_name, "r") as csvfile:
@@ -545,42 +545,7 @@ def merged_detectcrtpilercr_table_2_fasta_with_dr_offset_all_cases_but_better (t
 		# The last spacer-dr sequence should be from the concensous repeat as the modified repeat is absent.
 	SeqIO.write(ret_list, table_name + "_drs_" + str(offset) + "_reconciled_spacers.fasta", "fasta")	
 	return 0
-
-
-'''	for spacer in spacer_table:
-		# This doesn't work in cases of direct repeat permutation from the concensous
-		new_spacer = Seq(spacer[12][(-1 * offset):] + spacer[14] + spacer[12][: (offset - 1)])
-		new_spacer_left = Seq(spacer[12][(-1 * offset):] + spacer[14])
-		new_spacer_right = Seq(spacer[14] + spacer[12][: (offset - 1)])
-		genome_base_position = spacer[0].split("::")
-	#	print(genome_base_position)
-		genome_base_position = genome_base_position[1]
-		genome_base_position = genome_base_position.split(":")
-		genome_base_position = int(genome_base_position[0])
-
-		#the same id will be appended to all sequences!! Check this does not cause issues!!
-		spacer_id = spacer[0]
-		spacer_id = spacer[0].split(" ")
-		spacer_id = spacer_id[0]
-	#	print(spacer[10])
-		spacer_id = spacer_id + "|" + "spacer_start_pos:" + spacer[10] + "|" + "spacer_end_pos:" + spacer[11] + "|" + "global_start_pos:" + str(int(spacer[10]) + genome_base_position) + "|" + "global_end_pos:" + str(int(spacer[11]) + genome_base_position)
-		new_spacer_record = SeqRecord(new_spacer)
-		new_spacer_record.id = spacer_id
-		new_spacer_record.description = ""
-		ret_list.append(new_spacer_record)
-
-		new_spacer_record_left = SeqRecord(new_spacer_left)
-		new_spacer_record_right = SeqRecord(new_spacer_right)
-		new_spacer_record_left.id = spacer_id
-		new_spacer_record_right.id = spacer_id 
-		new_spacer_record_left.description = ""
-		new_spacer_record_right.description = ""
-		ret_list.append(new_spacer_record_left)
-		ret_list.append(new_spacer_record_right)
-	SeqIO.write(ret_list, table_name + "_drs_" + str(offset) + "_reconciled_spacers.fasta", "fasta")	
-	return 0
-	'''
-
+# generate spacers from a table of CRISPR array predictions with the adjacent Direct repeat ends barcoded onto the spacers (without CRISPRdetect)
 def spacer_table_2_fasta_with_dr_offset_all_cases (table_name, offset): # offset = number of nucleotides from the DR to include
 	offset = int(offset)
 	with open(table_name, "r") as csvfile:
@@ -668,6 +633,7 @@ def spacer_table_2_fasta_with_dr_offset_right (table_name, offset): # offset = n
 	SeqIO.write(ret_list, table_name + "_drs_right_" + str(offset) + "_spacers.fasta", "fasta")	
 	return 0
 
+# generate a set of spacers in FASTA format from csv table containing compiled array predictions
 def merged_detectcrtpilercr_table_2_fasta (table_name):
 	with open(table_name, "r") as csvfile:
 		spacer_table = list(csv.reader(csvfile))
@@ -696,7 +662,7 @@ def merged_detectcrtpilercr_table_2_fasta (table_name):
 	SeqIO.write(ret_list, table_name + "_reconciled_spacers.fasta", "fasta")
 	return 0	
 
-
+# generate a set of spacers in FASTA format from csv table containing compiled array predictions (without CRISPRdetect)
 def spacer_table_2_fasta (table_name): # need to think about whether it would be more efficent to parse in the table directly? This could be a program option??
 	with open(table_name, "r") as csvfile:
 		spacer_table = list(csv.reader(csvfile))

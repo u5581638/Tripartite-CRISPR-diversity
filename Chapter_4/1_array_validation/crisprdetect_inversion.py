@@ -1,4 +1,5 @@
 # crisprdetect_inversion
+
 # function to invert crisprdetect output table so that all entry are sorted smallest to largest by gene numbers
 
 import sys
@@ -6,9 +7,11 @@ import csv
 import copy
 from collections import OrderedDict
 
+# helper function for sorting
 def ret_value(x):
 	return int(x[8])
 
+# function to find reverse complement of a sequence
 def rev_comp(sequence):
 	ret_str = []
 	for sequ in sequence:
@@ -27,7 +30,9 @@ def rev_comp(sequence):
 	ret_str.reverse()		
 	return "".join(ret_str)							
 
+# main function to invert the coordinates, spacers and Direct repeat sequences for arrays predicted on the antisense strand.
 def invert(crisprdetect_table_url):
+	# input table of CRISPR-detect predictions in csv format.
 	crisprdetect_table_handle = open(crisprdetect_table_url, "r")
 	crisprdetect_table = list(csv.reader(crisprdetect_table_handle))
 #	print(crisprdetect_table)

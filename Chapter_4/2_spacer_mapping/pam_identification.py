@@ -1,4 +1,5 @@
 # program to find PAM sequences from mapped genomes and genome_hit files and write upstream and downstream web logos as well as a tabulated copy of the upstream and downstream potential PAM sequences for each mapped hit
+# Note, this function did not end up being used.
 from Bio import SeqIO
 import sys
 import csv

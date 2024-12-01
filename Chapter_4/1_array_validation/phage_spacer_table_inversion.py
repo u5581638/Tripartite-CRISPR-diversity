@@ -21,8 +21,6 @@ def phage_table_invert(hitmap_table_url):
 	ret_dict['RUN'] = []
 	for hit in hit_table:
 		phage_id = hit ['mapped_phage_id'] # replace this with the column name for the mapped phage!! 
-		
-
 		mapped_start_coordinate = hit ['start_coord'] # BLAST identified start
 		mapped_end_coordinate = hit ['end_coord']
 	#	mapped_sense = should the sense implictly by the order of the start and end coordinates

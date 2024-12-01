@@ -15,14 +15,14 @@ module load python3/3.10.4
 
 
 # nested mpirun script
-# script to call mpirun for each sequence which in turn individually calls mpirun for database block.
+# script to call GNU parallel for each sequence which in turn individually calls mpirun for database block.
 # results should be manually concatenated together at the end of each run to avoid truncation.
-# top level script need only be an mpirun if required/ to increase speed
+# top level script need only be run using GNU parallel if required/ to increase speed
 # easily convertable to a self-submitting job script.
 
 # each sequence script should:
-# 1. generate an individual script for running mpirun
-# 2. run mpirun from a given directory
+# 1. generate an individual script for running parallel
+# 2. run GNU parallel from a given directory
 # 3. concatenate the results
 
 # input: script containing the input sequence file names listed one per line

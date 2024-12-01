@@ -6,6 +6,9 @@ import subprocess
 from Bio import SeqIO
 
 # In this case the program should take an input genome/csv entry and load the genome based on the block id, then use the index (genome name) to retrieve the exact genome.
+
+# script to retrieve mapped sequence genomes by identifiers using samtools.
+
 def mapped_genome_retrieval(spacer_mapping_table_url, extraction_range=20000):
 	csvfile = open(spacer_mapping_table_url, "r")
 	hit_table = csv.reader(csvfile)

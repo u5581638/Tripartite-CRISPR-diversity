@@ -1,10 +1,11 @@
-# program to filter spacers based on a set based approach
+# functions to filter spacers based on a set based approach
 # No spacers should be encoded at the same position in a genome. 
 # If a spacer is detected which is encoded at the same point, then assign the same coordinates as the first overlapping spacer
 #
 import csv 
 import sys
 
+# standardise the start/end coordinates across array predictions with different tools
 def standardise(contig):
 	existing_spacers = set()
 	for row in contig:
@@ -21,6 +22,7 @@ def standardise(contig):
 			if (index == 1):
 				existing_spacers.add((row_spacer_start, row_spacer_end))	
 
+# remove spacers with the same overlapping distance.
 def same_overlap (hit_table_url, out_url):
 	with open(hit_table_url, "r") as csvfile:
 		hit_table = list(csv.reader(csvfile))
@@ -66,6 +68,7 @@ def same_overlap (hit_table_url, out_url):
 	outf.close()
 	return 0
 
+# eliminate spacers with overlapping coordinates:
 def non_redundant_hits (mapped_spacer_table_url, out_url):
 	spacer_dict = {}
 	with open(mapped_spacer_table_url, "r") as csvfile:

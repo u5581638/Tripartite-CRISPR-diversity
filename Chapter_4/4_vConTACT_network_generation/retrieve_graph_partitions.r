@@ -1,6 +1,7 @@
 library(igraph)
 #library(CINNA)
 
+# generate a number of graph partition using the leiden clustering algorithm
 setwd("D:/host_phage_component_reconciliation")
 mygraph <- read.graph("c1.graphml",format="graphml")
 new_graph <- as.undirected(mygraph,mode="mutual")

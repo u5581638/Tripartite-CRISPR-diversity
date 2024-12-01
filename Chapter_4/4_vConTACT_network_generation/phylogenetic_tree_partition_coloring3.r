@@ -7,6 +7,8 @@ library(stringr)
 library(treeio)
 library(r2r)
 
+# script to color and generate a tree by partitioned clusters in the equivalent (vConTACT2) network representation.
+
 setwd("D:/host_phage_component_partition_reconciliation/subtypes/spcas9/host")
 partition_table_color <- read.csv("spcas9_host_only_partition.csv_w_color.csv") # read in a table which was the color row added. Need to use python to merge.
 # can I use regex/sed 

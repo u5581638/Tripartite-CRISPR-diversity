@@ -34,6 +34,7 @@ def nearest_array (pilercr_spacer_start, pilercr_spacer_end, array):
 	shortest_distance = min(distances.keys())
 	return distances[shortest_distance]	
 
+# construct a new row with maximal direct repeat corrdinates to be consistent with predictions from CRISPR-CRT an CRISPRdetect
 def construct_crisprdetect_row_minimal(row, nearest_row):
 	ret_row = []
 	spacer_start = int(row[5])
@@ -52,7 +53,7 @@ def construct_crisprdetect_row_minimal(row, nearest_row):
 	ret_row = [[row[0].split(" ") [0]] + nearest_row[1:6] + [crispr_start] + [crispr_end] + [row[5]] + [row[6]] + [row[3]] + [row[4]] + [row[9]] + [nearest_row[13]] + [row[11]] + ["PILERCR"]]	
 	return ret_row
 
-# start main code execution!!
+# function to reconile piler-cr array predictions with those from reconciled CRISPRdetect/CRISPR-CRT
 def pilercr_reconcile (crisprdetect_table_url, crispr_pilercr_url, output_dir):
 
 	csvfile = open(crisprdetect_table_url, "r")

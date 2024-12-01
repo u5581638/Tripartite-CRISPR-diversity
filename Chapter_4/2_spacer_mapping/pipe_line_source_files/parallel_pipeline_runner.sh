@@ -1,6 +1,8 @@
 #!/bin/bash
 
-#parallel bash script runner
+
+# parallel bash script runner
+# helper script containing blastn spacer mapping cmd
 sequence=($( basename $1 ))
 database=($( basename $2 ))
 perc_id=$3

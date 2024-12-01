@@ -2,7 +2,7 @@ from Bio import SeqIO
 import csv
 import sys
 
-
+# retrieve protein sequences from hits to a BLASTp search result table (in csv format)
 def anno_list_from_hits (orfs, hits):
 	sequences = SeqIO.parse(orfs, "fasta")
 	with open(hits, "r") as csvfile:

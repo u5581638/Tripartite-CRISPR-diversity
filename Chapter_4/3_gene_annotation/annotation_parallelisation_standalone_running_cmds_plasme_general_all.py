@@ -6,8 +6,8 @@ import os
 import subprocess
 from multiprocessing import Pool
 import pickle
-from annotation_parallelisation_function_SQL9 import annotation_parallelisation
-import virsorter_parser
+from annotation_parallelisation_function_SQL11 import annotation_parallelisation
+import virsorter_parser2
 
 # got to get the phage block dict!!
 # get phage_block_dict_from_pickle!!
@@ -57,11 +57,11 @@ b = a + "_genomes.fasta"
 
 
 if (virsorter_switch == 1):
-	subprocess.run(["source /g/data/va71/my_conda/new_conda/etc/profile.d/conda.sh && conda activate vs2 && /g/data/va71/crispr_pipeline_annotation/annotation_database/annotation_upgrades/virsorter2/virsort_cmd.sh " + b + " " + b + "_virsort " + str(cores)],shell=True)
-	virsorter_parser.parse(b + "_virsort/" + "final-viral-boundary.tsv",b + "_virsort/" + "final-viral-score.tsv", b + "_virsort/" + "final_table.csv")
+	subprocess.run(["source /g/data/va71/my_conda/new_conda/etc/profile.d/conda.sh && conda activate vs2 && /g/data/va71/crispr_pipeline_annotation/annotation_database/annotation_upgrades/virsorter2/virsort_cmd2.sh " + b + " " + b + "_virsort_all " + str(cores)],shell=True)
+	virsorter_parser2.parse(b + "_virsort_all/" + "final-viral-boundary.tsv",b + "_virsort_all/" + "final-viral-score.tsv", b + "_virsort_all/" + "final_table.csv")
 
-	subprocess.run(["source /g/data/va71/my_conda/new_conda/etc/profile.d/conda.sh && conda activate vs2 && /g/data/va71/crispr_pipeline_annotation/annotation_database/annotation_upgrades/virsorter2/virsort_cmd.sh " + b_phage + " " + b_phage + "_virsort " + str(cores)],shell=True)
-	virsorter_parser.parse(b_phage + "_virsort/" + "final-viral-boundary.tsv",b_phage + "_virsort/" + "final-viral-score.tsv", b_phage + "_virsort/" + "final_table.csv")
+	subprocess.run(["source /g/data/va71/my_conda/new_conda/etc/profile.d/conda.sh && conda activate vs2 && /g/data/va71/crispr_pipeline_annotation/annotation_database/annotation_upgrades/virsorter2/virsort_cmd2.sh " + b_phage + " " + b_phage + "_virsort_all " + str(cores)],shell=True)
+	virsorter_parser2.parse(b_phage + "_virsort_all/" + "final-viral-boundary.tsv",b_phage + "_virsort_all/" + "final-viral-score.tsv", b_phage + "_virsort_all/" + "final_table.csv")
 	exit()
 
 rna_cds_not_run = True

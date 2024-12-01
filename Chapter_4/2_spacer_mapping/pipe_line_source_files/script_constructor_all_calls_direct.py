@@ -1,5 +1,5 @@
 # script constructor 
-# program to write the script required for nci-parallel
+# program to write the script required for GNU parallel
 
 import sys
 import csv

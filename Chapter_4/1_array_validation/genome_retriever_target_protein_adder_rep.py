@@ -1,11 +1,12 @@
 # genome_retriever_target_protein_adder
-# retrieve the corresponding genomes and annotate them with the target protein sense and position coordinates
+
 
 import sys
 from Bio import SeqIO
 import csv
 import os
 
+# retrieve the corresponding genomes and annotate them with the target protein sense and position coordinates
 def protein_adder (sequence_url, genomes_st):
 	# prodigal predicted genomes
 	sequences = SeqIO.parse(sequence_url, "fasta")

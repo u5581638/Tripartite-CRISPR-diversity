@@ -4,6 +4,7 @@ import csv
 import sys
 from Bio import SeqIO
 
+# remove any entries without spacers
 def remove_blanks(input_url):
 	with open(input_url, "r") as csvfile:
 		hit_table = list(csv.reader(csvfile))

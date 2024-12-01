@@ -1,9 +1,13 @@
 # program to merge the color and partition tables (w/ color column)
 import sys
 import csv
+
+
+# table containing list of sequences grouped into clusters by leiben partitioning
 with open(sys.argv[1],"r") as csvfile:
 	partition_table = list(csv.reader(csvfile))
 
+# table of cluster specific colours
 with open(sys.argv[2],"r") as csvfile:
 	color_table = list(csv.reader(csvfile))
 

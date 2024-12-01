@@ -29,21 +29,12 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 	cur = con.cursor()
 	rnafold_switch = 0
 	vmatch_switch = 0
-	eggnog_switch = 0 # change this for main run!!
-	virsorter_switch = 0 # change this for main run!!
+	eggnog_switch = 0 
+	virsorter_switch = 0 
 	hhblits_switch = 1
 	criscasfinder_switch = 1
 	type_III_signal_switch = 1
 	
-	'''
-	out_checkpoint_1 = open(b + "_check1.csv", "a")
-	fcntl.flock(out_checkpoint_1.fileno(), fcntl.LOCK_EX)
-	check_writer = csv.writer(out_checkpoint_1)
-	check_writer.writerow([frame])
-	out_checkpoint_1.close()
-	'''
-
-
 	if (db_directory_switch != 0):
 		print("Hih")
 		frame_url_index = 4 # what does this line do? A: It determines which column in the table the genome_id is located!!
@@ -83,28 +74,6 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 		if frame[frame_url_index] in block_dict:
 			print("Match 1!")
 			genome = block_dict[frame[frame_url_index]]
-	#		print("my_genome")
-			# will need this code!! But perhaps should use sql/some other format
-			'''
-			if (target_pos_switch == 1):
-				genome_target_start = genome.description.split("tar_prot_start_pos-")
-				genome_target_start = genome_target_start[1]
-				genome_target_start = genome_target_start.split(" ")
-				genome_target_start = genome_target_start[0]
-				genome_target_end = genome.description.split("tar_prot_end_pos-")
-				genome_target_end = genome_target_end[1]
-				genome_target_end = genome_target_end.split(" ")
-				genome_target_end = genome_target_end[0]
-				genome_target_sense = genome.description.split("tar_prot_sense-")
-				genome_target_sense = genome_target_sense[1]
-				genome_target_sense = genome_target_sense.split(" ")
-				genome_target_sense = genome_target_sense[0]
-				genome_target_order = genome.description.split("tar_prot_order-")
-				genome_target_order = genome_target_order[1]
-				genome_target_order = genome_target_order.split(" ")
-				genome_target_order = genome_target_order[0]
-			'''
-		#	print("protein genesis")
 			genome_len = len(genome)
 			protein_file_name = folder_name  + "/" + frame[frame_url_index] + ".fasta" # calling this variable "protein file name is confusing!!!"
 			SeqIO.write(genome, protein_file_name, "fasta")
@@ -135,25 +104,6 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 			os.mkdir(folder_name)
 		if frame[frame_url_index] in block_dict:
 			genome = block_dict[frame[frame_url_index]]
-			'''
-			if (target_pos_switch == 1):
-				genome_target_start = genome.description.split("tar_prot_start_pos-")
-				genome_target_start = genome_target_start[1]
-				genome_target_start = genome_target_start.split(" ")
-				genome_target_start = genome_target_start[0]
-				genome_target_end = genome.description.split("tar_prot_end_pos-")
-				genome_target_end = genome_target_end[1]
-				genome_target_end = genome_target_end.split(" ")
-				genome_target_end = genome_target_end[0]
-				genome_target_sense = genome.description.split("tar_prot_sense-")
-				genome_target_sense = genome_target_sense[1]
-				genome_target_sense = genome_target_sense.split(" ")
-				genome_target_sense = genome_target_sense[0]
-				genome_target_order = genome.description.split("tar_prot_order-")
-				genome_target_order = genome_target_order[1]
-				genome_target_order = genome_target_order.split(" ")
-				genome_target_order = genome_target_order[0]
-			'''
 			genome_len = len(genome)
 			protein_file_name = folder_name  + "/" + frame[frame_url_index] + ".fasta" # calling this variable "protein file name is confusing!!!"
 			SeqIO.write(genome, protein_file_name, "fasta")
@@ -163,21 +113,7 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 			print(frame)
 		#	print(block_dict)
 
-
-	print("Initalisaed!")
-	# what is protein annotation frame?
 	protein_annotation_frame = []
-#	protein_annotation_frame.append(frame) delete this line if code works!!
-	
-# Start resuming coding here !!!!!!!!!!! 10/09/2021
-	
-	'''
-	out_checkpoint_2 = open(b + "_check2.csv", "a")
-	fcntl.flock(out_checkpoint_2.fileno(), fcntl.LOCK_EX)
-	check_writer = csv.writer(out_checkpoint_2)
-	check_writer.writerow([protein_file_name])
-	out_checkpoint_1.close()
-	'''
 
 	# START OF PHAGE AND GENERAL GENOME PREDICTIONS COUPLED TO ANNOTATION!!
 
@@ -238,25 +174,11 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 
 		fcntl.flock(eggnog_table_url.fileno(), fcntl.LOCK_EX)
 		eggnog_table.to_csv(protein_file_name + "_eggnog.emapper.annotations.csv")
-		'''
-		if (is_phage):
-			eggnog_table.rename(columns={"Genome_id":"Phage_id"},inplace=True)
-			cur.execute("CREATE TABLE IF NOT EXISTS EGGNOG_ANNOTATIONS_PHAGE (Phage_id STRING PRIMARY KEY, seed_ortholog STRING, evalue STRING, score STRING, eggNOG_OGs STRING, max_annot_lvl STRING, COG_category STRING, Description STRING, Preferred_name STRING, GOs STRING, EC STRING, KEGG_ko STRING, KEGG_Pathway STRING, KEGG_Module STRING, KEGG_Reaction STRING, KEGG_rclass STRING, BRITE STRING, KEGG_TC STRING, CAZy STRING,BiGG_Reaction STRING, PFAMs STRING, FOREIGN KEY (Phage_id) REFERENCES PHAGE_GENOMES(Phage_id))") # need to make it so that phage genomes are also recorded in Genomes. Too complicated otherwise!! Need to add catagory for phage genomes!!
-			genome_exists = cur.execute("SELECT PHAGE_ID FROM EGGNOG_ANNOTATIONS_PHAGE WHERE PHAGE_ID=?",(eggnog_table.iloc[0][0],)) # This should be the first query id!!
-			genome_row = genome_exists.fetchone()
-			if (genome_row is None):
-				eggnog_table.to_sql("EGGNOG_ANNOTATIONS_PHAGE",con,if_exists='append',index=False)
-		else:
-			cur.execute("CREATE TABLE IF NOT EXISTS EGGNOG_ANNOTATIONS (Genome_id STRING PRIMARY KEY, seed_ortholog STRING, evalue STRING, score STRING, eggNOG_OGs STRING, max_annot_lvl STRING, COG_category STRING, Description STRING, Preferred_name STRING, GOs, STRING, EC STRING, KEGG_ko STRING, KEGG_Pathway STRING, KEGG_Module STRING, KEGG_Reaction STRING, KEGG_rclass STRING, BRITE STRING, KEGG_TC STRING, CAZy STRING,BiGG_Reaction STRING, PFAMs STRING, FOREIGN KEY (Genome_id) REFERENCES GENOMES(Genome_id))") # need to make it so that phage genomes are also recorded in Genomes. Too complicated otherwise!! Need to add catagory for phage genomes!!
-			genome_exists = cur.execute("SELECT GENOME_ID FROM EGGNOG_ANNOTATIONS WHERE Genome_id=?", (eggnog_table.iloc[0][0],))
-			genome_row = genome_exists.fetchone()
-			if (genome_row is None):
-				eggnog_table.to_sql("EGGNOG_ANNOTATIONS",con,if_exists='append',index=False)
-		'''
 		con.commit()
 		eggnog_table_url.close()
 		# upload excel output to sql via pandas!!
 
+	# virsorter prediction.
 	if (virsorter_switch == 1):
 		# unsure if this is sufficent?????
 		subprocess.run(["source /g/data/va71/my_conda/new_conda/etc/profile.d/conda.sh && conda activate vs2 && /g/data/va71/crispr_pipeline_annotation/annotation_database/annotation_upgrades/virsorter2/virsort_cmd.sh " + protein_file_name + " " + protein_file_name + "_virsort", 1],shell=True)
@@ -318,7 +240,7 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 	if (os.path.isfile(protein_file_name + "_CDS_raw.fnn")):
 		os.remove(protein_file_name + "_CDS_raw.fnn")
 	print("My absence")
-#	THESE BLOCK OF CODE NEEDS TO BE RETHOUGHT TO OPERATE SEPERATELY FOR PHAGE/REGULAR PROTEINS
+
 	my_fai = open(b + "_aa_raw.fasta" + ".fai", "r")
 	fai_read = my_fai.readlines() # read with \n seperated
 	headlines = [] 
@@ -342,7 +264,7 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 			subprocess.run(["/g/data/va71/crispr_pipeline_annotation/seqkit faidx " + b + "_aa_raw.fasta " + "\'" + my_headline + "\'" + " -f " + ">> " + protein_file_name + "_aa_raw.fasta"], shell=True) # will only work if the samtools code is italised
 
 	print("My read!!")# need to add the same changes to this section as well!!
-	
+	# index prodigal predicted CDS sequences
 	if (rnafold_switch == 1): 
 		my_fai_cds = open(b + "_CDS_raw.fnn" + ".fai", "r")
 		fai_read = my_fai_cds.readlines() # read with \n seperated
@@ -370,26 +292,7 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 
 	my_fai.close()
 
-	'''
-	if (rnafold_switch == 1):
-		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/prodigal/prodigal", "-p", "meta", "-i", protein_file_name, "-o", protein_file_name + "_output_full.txt", "-a", protein_file_name + "_aa_raw.fasta", "-d", protein_file_name + "_cds_raw.fasta"]) # output should be redirected to genome specific folder
-		if (merge_protein == 1):
-			subprocess.run(["/g/data/va71/crispr_pipeline_annotation/genemark_reinstall/gms2_linux_64/gms2.pl", "--seq", protein_file_name,"--genome-type", "auto", "--out", protein_file_name + "_trans_aa_gms2.txt", "--faa", protein_file_name + "_trans_aa_gms2.faa", "--fnn", protein_file_name + "_trans_aa_gms2.fnn"])
-			genemark_sequence_reformatting.genemarkS2_reformatting(protein_file_name + "_trans_aa_gms2.faa")
-			prodigal_genemark_reconciliation.union(protein_file_name + "_trans_aa_gms2.faa" + "_geneS2prod_reformatted.fasta", protein_file_name + "_aa_raw.fasta", protein_file_name + "_aa_raw.fasta") # This will need to be rewritten with additional support to enable fnn sequences to be merged into a single file as well (for RNAfold prediction)
-			genemark_sequence_reformatting.genemarkS2_reformatting(protein_file_name + "_trans_aa_gms2.fnn")
-			prodigal_genemark_reconciliation.union(protein_file_name + "_trans_aa_gms2.fnn" + "_geneS2prod_reformatted.fasta", protein_file_name + "_aa_raw.fasta", protein_file_name + "_CDS_raw.fnn")
-	else:
-		
-		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/prodigal/prodigal", "-p", "meta", "-i", protein_file_name, "-o", protein_file_name + "_output_full.txt", "-a", protein_file_name + "_aa_raw.fasta" ]) # output should be redirected to genome specific folder
-		if (merge_protein == 1):
-				subprocess.run(["/g/data/va71/crispr_pipeline_annotation/annotation_database/annotation_upgrades/protein_reconciliation/genemark_reinstall/gms2_linux_64/gms2.pl", "--seq", protein_file_name,"--genome-type", "auto", "--out", protein_file_name + "_trans_aa_gms2.txt", "--faa", protein_file_name + "_trans_aa_gms2.faa"])
-				genemark_sequence_reformatting.genemarkS2_reformatting(protein_file_name + "_trans_aa_gms2.faa")
-				prodigal_genemark_reconciliation.union(protein_file_name + "_trans_aa_gms2.faa" + "_geneS2prod_reformatted.fasta", protein_file_name + "_aa_raw.fasta", protein_file_name + "_aa_raw.fasta") # This will hopefully override the original protein file
-	
-
-	'''
-	# main code here for protein orf id tabulation
+	# main code here for gene annotation tabulation
 	print("run_prodigal!!")
 	# before the file is opened in append mode, the program should check whether the file exists.
 	# This should be true for all file initiation in append mode!!
@@ -450,17 +353,6 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 	print(len(predicted_proteins))
 	print(frame)
 
-	'''
-	out_checkpoint_3 = open(b + "_check3.csv", "a")
-	fcntl.flock(out_checkpoint_3.fileno(), fcntl.LOCK_EX)
-	check_writer = csv.writer(out_checkpoint_3)
-	a = 0
-	while (a < len(predicted_proteins)):
-		check_writer.writerow([predicted_proteins[a].id])
-		a += 1
-		
-	out_checkpoint_3.close()
-	'''
 
 	a = 0
 	while (a < len(predicted_proteins)):
@@ -492,10 +384,10 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 		sequence_id = sequence_id.split("|")
 		sequence_id = sequence_id[-1] # splitting this might cause problems with sql!!
 		SeqIO.write(predicted_proteins[a], folder_name + "hmmer_sequence_files/" + sequence_id, "fasta")
+		# Write CDS genome sequences to file
 		if (rnafold_switch == 1):
 			SeqIO.write(cds_proteins[a], db_directory_path + "RNAfold_predictions/" + sequence_id, "fasta")
-	#	if (alphafold_switch == 1):
-	#		subprocess.run(["alphafold_colab_run.sh", folder_name + "hmmer_sequence_files/" + sequence_id, db_directory_path + "protein_predictions/" + sequence_id])
+		# RNA secondary structure prediction of ORFs using viennafold
 		if (rnafold_switch == 1):
 			subprocess.run(["/g/data/va71/crispr_pipeline_annotation/viennafold/ViennaRNA-2.5.1/src/bin/RNAfold " + "-p " + "--MEA " + "-i " + folder_name + "hmmer_sequence_files/" + sequence_id + " > " + db_directory_path + "RNAfold_predictions/" + sequence_id + "folded.txt"], shell=True)
 			viennafold_parser.parse(db_directory_path + "RNAfold_predictions/" + sequence_id + "folded.txt", annotations_prefix + "_folded.csv")
@@ -516,7 +408,7 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 			'''
 		#	my_vienna.close()
 
-
+		# HMM prediction using phmmer search against uniref90 database.
 		if (phmmer_switch == 1):
 		#	protein_annotation_frame[0].extend(["phmmer_prediction_protein_ID", "phmmer_prediction"])
 			t1_start = time()
@@ -531,6 +423,7 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 			i_e_value = phmmer_frames[0][4]
 			protein_annotation_frame[-1].extend([phmmer_frames_zero, phmmer_frames_one, score, c_e_value, i_e_value])
 			print("phmmer done!!")
+		# HMM prediction using hhsearch against pdb70 database.
 		if (hhsearch_switch == 1):
 		#	protein_annotation_frame[0].extend(["hhsearch_id", "hhsearch_description"])
 			t1_start = time()
@@ -547,6 +440,7 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 			hhsearch_frames_similarity = hhsearch_frames[0][5] 
 			protein_annotation_frame[-1].extend([hhsearch_frames_zero, hhsearch_frames_one, hhsearch_frames_probability, hhsearch_frames_e_value, hhsearch_frames_score])
 			print("hhsearch complete!!")
+		# HMM prediction using HHBlits against the Pdb70 database
 		if (hhblits_switch == 1):
 		#	protein_annotation_frame[0].extend(["hhblits_id", "hhblits_description"])
 			t1_start = time()
@@ -554,8 +448,6 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 			t1_end = time()
 			print("time to run hhblits is:", t1_start, t1_end, t1_start - t1_end)
 			print("hhblits complete!!")	
-		# parsers go here. Keep in mind that parsers are DATABASE SPECIFIC!! Need a comphrensive set of parsers to enable all databases!!!!!!	
-		# need to include HHsearch + HHblits parsers. Then protein annotation is complete!!
 			hhblits_frames = hhsuite_parser.pdb70_parse(folder_name + "hmmer_sequence_files/" + sequence_id + "_hhblits_hits.txt.fa") # this will only work for pdb70. Need to write this script tonight!! Will use biopython!!
 			if (hhblits_frames == []):
 
@@ -574,7 +466,7 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 				hhblits_frames_score = hhblits_frames[0][4]
 				hhblits_frames_similarity = hhblits_frames[0][5]
 				protein_annotation_frame[-1].extend([hhblits_frames_zero, hhblits_frames_one, hhblits_frames_probability, hhblits_frames_e_value, hhblits_frames_score, hhblits_frames_similarity])
-		
+		# run alphafold followed by a dali structure-based homology search. Note: This feature did not end up being implemented.
 		if (dali_switch == 1):
 		#	protein_annotation_frame[0].extend(["AF2+DALI prediction"])
 			t1_start = time()
@@ -588,6 +480,8 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 		if (target_pos_switch == 1):
 			protein_annotation_frame[-1].extend([genome_target_start, genome_target_end, genome_target_sense, genome_target_order])	
 		'''
+
+		# HMM prediction using HHBlits against the Pfam database
 		if (pfam_switch == 1):
 			t1_start = time()
 			subprocess.run(["/g/data/va71/alphafold/install/hh-suite/build/src/hhblits", "-i", folder_name + "hmmer_sequence_files/" + sequence_id, "-o",  folder_name + "hmmer_sequence_files/" + sequence_id + "_hhblits_hits.txt.fa", "-cpu", "1", "-e", "0.001", "-maxseq", "15000", "-d", "/g/data/va71/alphafold/datasets/alphafold2/pfam2/pfam", "-v", "0"])
@@ -620,8 +514,9 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 		# add code here to run code tabulating padloc annotations using hmmscan. change url directories to padloc database. Add the ability to add new HMMs. This must cause all running threads to temporarily pause until the HMM addition has finished writing.
 		
 		# In practice this should only work for CRISPR-associated proteins - NOT phage proteins unless a reliable database of 
-		# LAST serious problem to fix
-		if (padlocplus_switch_novel == 1): # may be wise to keep padloc.hmm and it's additions as seperate files.
+		# add new HMM automatically for unknown ORFs. Need to iteratively build HMM from one sequence but augment with others using 1 sequence HMM or BLAST.. Need to declare a new HMM file.
+		# Note, this functionality did not end up being used.
+		if (padlocplus_switch_novel == 1): 
 			
 			t1_start = time()
 			subprocess.run(["/g/data/va71/alphafold/install/hmmer-3.3.2/src/hmmscan", "-o", folder_name + "hmmer_sequence_files/" + sequence_id + "_hmmscan_hits.fa", "--cpu", "1", "/g/data/va71/alphafold/datasets/alphafold2/crisprcasfinder_hmm_profiles/non_dup_merged_all_models_master_TIGR.HMM", folder_name + "hmmer_sequence_files/" + sequence_id] )
@@ -639,8 +534,8 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 				score = "NA"
 				c_e_value = "NA"
 				i_e_value = "NA"
-				if (phmmer_frames_zero == "NA"): # add new HMM. Need to iteratively build HMM from one sequence but augment with others using 1 sequence HMM or BLAST.. Need to declare a new HMM file.
-					# need hard-drive encoded index. This might be retrieved from SQL!!
+				
+				if (phmmer_frames_zero == "NA"): 
 
 				#	current_index =  retrieve from SQL. This step is no longer nessessary I think???
 					# steps:
@@ -742,7 +637,7 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 			# end of annotation
 
 
-
+		# gene annotations using HMMscan against the DEFLOC database.
 		if (criscasfinder_switch == 1 or (padlocplus_switch_novel == 1 and is_phage)):
 			t1_start = time()
 			subprocess.run(["/g/data/va71/alphafold/install/hmmer-3.3.2/src/hmmscan", "-o", folder_name + "hmmer_sequence_files/" + sequence_id + "_hmmscan_hits.fa", "--cpu", "1", "/g/data/va71/alphafold/datasets/alphafold2/crisprcasfinder_hmm_profiles/non_dup_merged_all_models_master_TIGR.HMM", folder_name + "hmmer_sequence_files/" + sequence_id] )
@@ -764,7 +659,7 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 				c_e_value = phmmer_frames[0][3]
 				i_e_value = phmmer_frames[0][4]
 				protein_annotation_frame[-1].extend([phmmer_frames_zero, phmmer_frames_one, score, c_e_value, i_e_value])
-		
+		# Gene annotations using HMMscan against HMM profiles containing the cyclase domain from type III CRISPR-Cas systems. This was for personal curiosity rather than the whole thesis.
 		if (type_III_signal_switch == 1):
 			t1_start = time()
 			subprocess.run(["/g/data/va71/alphafold/install/hmmer-3.3.2/src/hmmscan", "-o", folder_name + "hmmer_sequence_files/" + sequence_id + "_hmmscan_hits.fa", "--cpu", "1", "/g/data/va71/crispr_pipeline_annotation/type_III_signalling_profile_construction/ggdef_coA_signal_domain_all.hmm", folder_name + "hmmer_sequence_files/" + sequence_id] )
@@ -791,15 +686,9 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 		print("end of annotation_round")
 		print(a)
 		print(len(predicted_proteins))
-	# This process should operate specifically on each genome
 
-	# need to add a section here for  alphafold and RNAfold prediction data!! Alternatively, this data could be perpetually stored in folders iff the data is directly uploaded to the SQL database. Synchronised uploading may be essential as to not expend too many inodes!!
+	# write gene annotations to file:
 
-	# This part should be changed so the pilercr calculation is done outside the annotation frame. Results may instead be appended from dictionary to file.
-
-	# need to change this so that arrays predicted by concensous are instead included/linked in the protein annotation table.
-	
-#	protein_annotation_frames.append(protein_annotation_frame)
 	print("genome_prediction_round_done!")
 	protein_annotation_frame_file = folder_name + "/" + frame[frame_url_index]   + "_annotation_frame.csv" # may want to add an identifier!!!!!!
 	annotations_prefix = b.split("all_hits.csv")[0]
@@ -878,13 +767,6 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 					startend[1] = protein_end
 					break
 		# might need a table based workaround for this!!!
-		'''
-		if (is_phage == False):
-			cur.execute("INSERT INTO PROTEINS (target_protein_start, target_protein_end, target_protein_sense) VALUES (?,?,?) WHERE Genome_id=?",(startend[0], startend[1], protein_sense,protein[0]))
-		else:
-			cur.execute("INSERT INTO PHAGE_PROTEINS (target_protein_start, target_protein_end, target_protein_sense) VALUES (?,?,?) WHERE Phage_id=?",(startend[0],startend[1],protein_sense,protein[0]))
-		'''
-
 	con.commit()
 	write_frame_url.close()
 	subprocess.run(["rm -r " + folder_name],shell=True)
@@ -894,30 +776,7 @@ def annotation_parallelisation (frame, block_dict, db_directory_switch, b, db_di
 # is there a way to test this without having to run the entire program repititously??
 # is this section in any way coupled to the main annotation table?
 # This section of code be redundant and able to be removed!!
-'''
-	if (spacer_mapping_switch == 1 or bypass_switch == 1):
-		# this line is!! Just the genome id?
-		genome_id_full = frame[frame_url_index] # this should be the genome id directly!! Basically, if the rest of the code is test this should be the problem line!!
-		if genome_id_full in spacer_dict:
-			spacer_dict_entry = spacer_dict[genome_id_full]
-			spacer_dict_hits = spacer_dict_entry.values()
-			# triple nested dict
-			spacer_dict_hits = list(spacer_dict_hits)
-			j = 0
-			while (j < len(spacer_dict_hits)):
-				spacer_dict_hits[j] = spacer_dict_hits[j][0]
-				j += 1
-			# This part might be redundant	
-			spacer_file = open(folder_name + "/" + genome_id_full + "_spacer_hits.csv", "w")
-			spam_writer2 = csv.writer(spacer_file)
-		#	this writes the spacer hits for each individual genome!!	
-			for hit in spacer_dict_hits:
-		#		print(hit)
-				spam_writer2.writerow(hit)
-			spacer_file.close()
-		else:
-			print("Error, spacer_hit_dict could not be found!!")
-'''
+
 	# need to additionally return:
 	# 1. indexed genome file with the new genome added.
 	# 2. indexed protein file with the new proteins added.

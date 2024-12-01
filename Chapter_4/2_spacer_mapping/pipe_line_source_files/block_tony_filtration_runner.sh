@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# script to perform spacer filtration on each block of mapped spacer hits (by BLASTn) prior to concatenation
 
 block_dr_name=$1
 working_dir=$2

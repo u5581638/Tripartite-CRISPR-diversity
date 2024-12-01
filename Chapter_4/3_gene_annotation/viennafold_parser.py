@@ -13,7 +13,7 @@ def line_denuller(input_str):
 	return ret_str
 
 
-
+# parse RNA secondary structure predictions to table.
 def parse(cds_url, ret_url):
 	my_sequence_handle = open(cds_url, "r")
 	my_sequence = my_sequence_handle.read()

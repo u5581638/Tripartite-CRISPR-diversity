@@ -4,9 +4,7 @@ import csv
 import sys
 
 
-# There is potentially one flaw in this program. This program does not work with
-# arrays, only contig ids. This should be corrected to use array start and end coordinates
-# to prevent artifacts arising from 
+# unused function
 def filter(spacer_url, output_url):
 	with open (spacer_url, "r") as csvfile:
 		hit_table = list(csv.reader(csvfile))
@@ -45,7 +43,9 @@ def filter(spacer_url, output_url):
 #filter(sys.argv[1])
 
 
-
+# take only 2+ hits to the same mapped sequences. 
+# Note: An updated version of this function was used to perform spacer distribution analysis in Chapter 5. 
+# This was only kept for backwards compatbility.
 def two_or_more(spacer_url):
 	with open (spacer_url, "r") as csvfile:
 		hit_table = list(csv.reader(csvfile))

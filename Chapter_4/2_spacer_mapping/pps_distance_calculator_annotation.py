@@ -1,7 +1,5 @@
 # spacer PPS distance calculator
-# identify the PPS, then compute the distance from the PPS to the spacers. Spacers should be assigned 2D coordinates based on whether spacers map to either the forward or reverse strand.
 
-# first need to create a dict to group entries 
 
 import sys
 import csv
@@ -10,7 +8,8 @@ import copy
 def forward_sorter(row):
 	return (float(int (row[20]) + int (row[21]) / 2))
 
-
+# identify the PPS, then compute the distance from the PPS to the spacers. Spacers should be assigned based on whether spacers map to either the forward or reverse strand.
+# note, an updated version of this code was used for spacer distribution analysis. This script is included for backward-compatibility with the annotation workflow.
 def pps_compute(input_url):
 	print("Start:")
 	with open (input_url, "r") as csvfile:

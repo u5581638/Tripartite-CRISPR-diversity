@@ -37,6 +37,7 @@ def nearest_array (crt_spacer_start, crt_spacer_end, array):
 	shortest_distance = min(distances.keys())
 	return distances[shortest_distance]	
 
+# construct a new row with maximal direct repeat corrdinates to be consistent with predictions from CRISPR-CRT and PILER-CR
 def construct_crisprdetect_row_minimal (row, nearest_row):
 	ret_row = []
 	repeat_start = int(row[4])
@@ -62,6 +63,7 @@ def construct_crisprdetect_row_minimal (row, nearest_row):
 	# compare the start and end array coords. Expand the CRISPR-array range the spacer to be added exceeds the existing bounds.
 
 # problem with this approach is that CRISPR-array self-filtering requires the DR sequence in it's original (not a reconstructed or inferred) form!!
+
 def construct_crisprdetect_row (row, nearest_row):
 	ret_row = []
 	spacer_start = int(row[6])
@@ -83,6 +85,7 @@ def construct_crisprdetect_row (row, nearest_row):
 		ret_row = [row[0]] + nearest_row[1:5] + [int(nearest_row[6]) , int(nearest_row[7]) + (repeat_length + spacer_length) + 1,int(nearest_row[7]) + 1, int(nearest_row[7]) + repeat_length, int(nearest_row[7]) + repeat_length + 1, int(nearest_row[7]) + 1 + repeat_length + spacer_length, int(nearest_row[6]) - (spacer_length) + 1, row[8], row[11], row[9], "CRT"]
 	return ret_row	
 
+# function to reconcile CRISPRdetect and CRISPR-CRT predictions
 def crt_reconcile(crisprdetect_table_url, crisprcrt_table_url, output_dir):
 
 	with open(crisprdetect_table_url) as csvfile:

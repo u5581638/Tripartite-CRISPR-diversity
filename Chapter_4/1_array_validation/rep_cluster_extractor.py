@@ -6,6 +6,7 @@ import copy
 import statistics
 import math
 
+# function to extract the most representative sequence in each cluster, based on the smallest eucidilean distances derived from the pairwise similarities between sequences in each cluster.
 def rep_sequence_determinant(mds_table_url, maximum_cluster_bound=0.06, maximum_cluster_bound_x=None, maximum_cluster_bound_y=None):
 	with open(mds_table_url, "r") as csvfile:
 		hit_table = list(csv.reader(csvfile)) # input is a csv file with sequence_id, MDS x coordinate and MDS y coordinate on each row.

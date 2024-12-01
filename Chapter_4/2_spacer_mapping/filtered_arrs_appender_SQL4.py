@@ -108,6 +108,7 @@ def extract_spacer_coords(array):
 		ret_list.append((row[10],row[11]))
 	return ret_list
 
+# generate the coordinates of the largest concensous array
 def anneal(arr_keys):
 	contig_coords = []
 	for arr_coord in arr_keys:
@@ -135,6 +136,7 @@ def anneal(arr_keys):
 
 	return contig_coords
 
+# create a single array as the largest non-overlapping collection of spacers from CRISPR-CRT, PILER-CR and CRISPRdetect
 def largest_array_merge(hit_table):
 	contig_dict = {}
 
@@ -150,7 +152,6 @@ def largest_array_merge(hit_table):
 		# If the start/end array coordinates overlap, then merge the two array dictionaries
 		array_dict = {} # dict for each individual array in the contig
 		
-		# does this make any sense given that these are the indices that need to be replaced?
 		for row in contig_dict[array]:
 			if (row[6], row[7]) not in array_dict:
 				array_dict[(row[6], row[7])] = [row]
@@ -196,7 +197,7 @@ def lam_sort(x):
 #	print(x)
 	return int(float(x[10]))
 
-
+# Number spacers from the PPS
 def number_arrays (merged_table): # number arrays can assign the relative position of each spacer
 	ret_table = []
 	array_dict = {}
@@ -244,6 +245,7 @@ def number_arrays (merged_table): # number arrays can assign the relative positi
 
 	return ret_table # may want to save this to seperate file!!!
 
+# function to generate a concensous set of array predictions and to number each spacer from the PPS
 def spacer_hits_appender(filtered_spacer_hit_url, merged_spacer_table_url, output_url):
 	filtered_spacer_hit_url = open(filtered_spacer_hit_url, "r")
 	merged_spacer_table_url = open(merged_spacer_table_url, "r")

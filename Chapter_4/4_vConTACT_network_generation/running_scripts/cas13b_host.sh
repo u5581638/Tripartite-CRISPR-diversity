@@ -15,6 +15,8 @@ conda activate vContact2
 export PATH=$PATH:/g/data/va71/Prodigal-GoogleImport
 export PYTHONPATH=$PYTHONPATH:/g/data/va71/vConTACT2/MAVERICLab-vcontact2-c0413a6c92e8/build/lib
 
+# script to perform vConTACT2 network generation using host-encoded Type VI-B genomes.
+
 input_dir=/g/data/va71/vConTACT2/MAVERICLab-vcontact2-c0413a6c92e8/bin/cas13b/host/
 input_protein=cas13b.fasta_all_hits.csv_genomes.fasta_aa_raw.fasta
 output_protein=cas13b_host_g2g.csv

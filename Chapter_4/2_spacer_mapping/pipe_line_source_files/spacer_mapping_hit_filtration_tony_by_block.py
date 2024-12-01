@@ -1,4 +1,4 @@
-# script to perform spacer filtration by block prior to concatenation
+# code to perform spacer filtration (by excluding identical matches by DR-spacer constructs) by block prior to concatenation
 
 import sys
 import csv

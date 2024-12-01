@@ -2,7 +2,7 @@ from Bio import SeqIO
 import sys
 import csv
 
-
+# retrieve genomes from a set of genome sequences.
 def genome_retriever (seq_url, hit_url):
 	sequences = SeqIO.parse(seq_url, "fasta")
 	with open(hit_url, "r") as csvfile:

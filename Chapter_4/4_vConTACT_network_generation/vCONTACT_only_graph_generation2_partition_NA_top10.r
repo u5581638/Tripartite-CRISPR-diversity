@@ -4,6 +4,7 @@ library(randomcoloR)
 library(dplyr)
 #library(CINNA)
 
+# render networks using the Fruchterman Reingold layout with only the 10 largest network partitions coloured.
 setwd("/Users/gaetanburgio/Documents/cluster_networks_alex_13-05-2024/cas13b/")
 #edgelist <- read.csv("casIIIB_ph_filtered_16_4_2024.csv",row.names=NULL)
 mygraph <- read.graph("c1.graphml",format="graphml")

@@ -5,6 +5,7 @@ import sys
 from Bio import SeqIO
 import copy
 
+# function to filter hits (from a BLAST search with output in csv format) based on the presence of matching genome sequence identifiers (from a file containing genomes in FASTA format). These filtered hits are then written to a seperate file
 def hits_from_genomes (genomes, table_url, r=False):
 	
 	with open(table_url, "r") as csvfile:

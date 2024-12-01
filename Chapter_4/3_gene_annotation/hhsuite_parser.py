@@ -14,7 +14,8 @@ def rejoiner (split_ids):
 #	print(split_ids)
 		
 	return ret_splits	
-# gaetan. I think this is the function your looking for!!
+
+# function to parse output from hhblits to table (first used on pdb70).
 def pdb70_parse(sequence_url):
 
 	sequences = SeqIO.parse(sequence_url, "fasta")

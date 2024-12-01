@@ -1,5 +1,6 @@
 # spacer_dict_generator
 
+# generate a dictionary of spacers and their associated DRs with coordinates
 def spacer_dict_gen(argx):
 	with open(argx) as csvfile2:
 		spacer_table = list(csv.reader(csvfile2))

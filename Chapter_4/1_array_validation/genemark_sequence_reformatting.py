@@ -1,7 +1,7 @@
 # protein_reconciliation
 
 # this file contains two functions to change the formatting of MetaGeneMark and GeneMarkS2 to be the same as prodigal.
-
+# Note, these functions did not end up being used as all protein prediction was performed using prodigal.
 import sys
 from Bio import SeqIO
 from Bio.Seq import Seq 

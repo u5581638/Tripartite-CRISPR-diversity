@@ -3,8 +3,9 @@ import sys
 import csv
 import re
 
+# functions to parse CRISPRcrt/PILER-CR predictions into tables in csv format.
 
-
+# helper function to dictionalise the strand direction info table produced by CRISPRleader
 def dictionary_generator (info_table):
 	crispr_info_dict = {}
 	info_switch = 0
@@ -26,6 +27,7 @@ def dictionary_generator (info_table):
 	return crispr_info_dict
 	# info dissection goes here!!
 
+# function to tabulate output from CRISPR-CRT (as part of CRISPRleader) in csv format.
 def spacer_crt_table_generation (spacers_table, info_table, output_dir):
 	spacer_crt_table = {}
 #	print(info_table)

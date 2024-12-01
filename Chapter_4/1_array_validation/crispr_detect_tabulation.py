@@ -7,9 +7,9 @@ import sys
 from Bio import SeqIO
 import re
 import pilercr_pos_extractor_annotation_full_spacers
-import pilercr_pos_extractor_annotation_full_spacers
 import itertools
 
+# function to adjust the tabulated positions and sequences of CRISPR direct repeats containing INDELS
 def true_repeat_indels (repeat, dots, repeat_start, repeat_size, sense, indels_positions=[]):
 	ori_repeat = list(repeat)
 	ori_dots = list(dots)
@@ -84,12 +84,13 @@ def true_repeat_indels (repeat, dots, repeat_start, repeat_size, sense, indels_p
 				
 
 
-
+# function to convert the output file produced by CRISPRdetect into csv format.
 def tabulate(crispr_detect_url):
+	
 	ret_out = open(crispr_detect_url + "_crisprdetect_results.csv", "w")
 	spam_writer = csv.writer(ret_out)
 	spam_writer.writerow(["genome_id","orientation","orientation_score", "orientation_confidence", "questionable_array", "array_score","CRISPR-start","CRISPR-end", "repeat_start", "repeat_end","spacer_start","spacer_end","dr_repeat_original", "dr_repeat_concensous", "spacer" ]) # add a specific crispr_id? Need to consider whether or not to adjust for CRISPR-position
-
+	# INPUT: CRISPR-detect output file
 	crisprdetect_handle = open(crispr_detect_url, "r")
 	crisprdetect_results = crisprdetect_handle.read()
 	crisprdetect_results = crisprdetect_results.split(">")

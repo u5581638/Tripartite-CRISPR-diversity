@@ -3,6 +3,7 @@ library(randomcoloR)
 library(dplyr)
 #library(CINNA)
 
+# render networks using the Fruchterman Reingold layout
 setwd("E:/host_phage_batch_run_7_5_2024/host_only_vCONTACT_networks/casIIIA")
 #edgelist <- read.csv("cas12b_ph_filtered_16_4_2024.csv",row.names=NULL)
 mygraph <- read.graph("c1.graphml",format="graphml")

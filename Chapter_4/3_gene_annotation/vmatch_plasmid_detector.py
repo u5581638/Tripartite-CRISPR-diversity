@@ -13,6 +13,7 @@ def line_denuller (split_sequences):
 			ret_list.append(ele)
 	return ret_list
 
+# detect sequence repeats on contig indicative of circular DNA. Note: THis did not end up being used.
 def plasmid_detect(vmatch_match_url_i, sequence_url, output_url):
 	direct_repeat_threshold = 0
 	plasmid_dr_threshold = 30

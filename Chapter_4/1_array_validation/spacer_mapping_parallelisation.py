@@ -20,7 +20,7 @@ def rejoiner (in_str):
 		i += 1
 	return ret_str	
 
-
+# function to perform CRISPR-array validates and reconciliation using CRISPRdetect, CRT and PILER-CR
 def parallel_spacer_partition (output_dir, partition_dir, db_directory_path, b_basename, crispr_detect=0, crispr_orientation=0, partition_cores=1):
 	dir_dir = rejoiner(output_dir.split("/"))
 	sir_dir = partition_dir + '_dir/'
