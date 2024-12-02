@@ -1,0 +1,4 @@
+,gold_environmental_diversity,ncbi_sample_diversity,ncbi_species_diversity
+cluster_1,0.914891747,0.960964047,0.942680715
+cluster_2,0.837725914,0.864973521,0.859114005
+cluster_3,0.83224889,NA,0.888186847

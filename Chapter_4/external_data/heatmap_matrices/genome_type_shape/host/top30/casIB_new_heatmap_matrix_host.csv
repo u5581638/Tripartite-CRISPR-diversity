@@ -1,0 +1,7 @@
+cluster_no,virsort_linear,virsort_circular,virsort_cell,virsort_dsDNAphage,virsort_ssDNAphage,virsort_RNAphage,virsort_lavidaviridae,virsort_ncldv,plasme_linear,plasme_circular
+cluster_5,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+cluster_7,0.0013679890560875513,0.0,0.9986320109439124,0.0013679890560875513,0.0,0.0,0.0,0.0,0.9917920656634747,0.008207934336525308
+cluster_8,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+cluster_14,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+cluster_16,0.03389830508474576,0.0,0.9661016949152542,0.03389830508474576,0.0,0.0,0.0,0.0,1.0,0.0
+cluster_17,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
