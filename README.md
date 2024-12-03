@@ -5,7 +5,8 @@ Note: Many of the scripts and code were originally run from a single fixed direc
 
 The code utilised the following dependencies:
 
-Standalone Programs
+Standalone Programs:
+
 Dependency	Version
 python3		3.10.4
 prodigal	 2.6.3
