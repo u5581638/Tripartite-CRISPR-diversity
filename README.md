@@ -7,8 +7,6 @@ The code utilised the following dependencies:
 
 Standalone Programs:
 
-Dependency	Version
-
 python3		3.10.4
 
 prodigal	 2.6.3
@@ -53,8 +51,6 @@ clustal omega	 1.2.4
 
 Python modules:
 
-Dependency	Version
-
 Biopython	 1.78	
 
 matplotlib  3.5.3
@@ -64,8 +60,6 @@ plotly	 5.18.0
 pandas	 2.1.4
 
 R packages:
-
-Dependency	Version
 
 ggplot2	  3.5.1
 
