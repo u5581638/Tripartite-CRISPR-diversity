@@ -5,7 +5,7 @@ Note: Many of the scripts and code were originally run from a single fixed direc
 
 The code utilised the following dependencies:
 
-Standalone Programs:
+**Standalone Programs:**
 
 python3		3.10.4
 
@@ -49,7 +49,7 @@ vConTACT2	 0.11.3
 
 clustal omega	 1.2.4
 
-Python modules:
+**Python modules:**
 
 Biopython	 1.78	
 
@@ -59,7 +59,7 @@ plotly	 5.18.0
 
 pandas	 2.1.4
 
-R packages:
+**R packages:**
 
 ggplot2	  3.5.1
 
