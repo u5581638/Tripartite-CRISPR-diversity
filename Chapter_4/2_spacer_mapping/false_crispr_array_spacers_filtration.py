@@ -11,7 +11,7 @@ def filtration(input_url):
 
 	ret_list = []
 	for spacer in spacers:
-		my_id = spacer.id.split("|") [0] # see if this works, it may not.
+		my_id = spacer.id.split("|") [0]
 		if my_id not in seq_dict:
 			seq_dict[my_id] = [spacer]
 		else:

@@ -5,7 +5,7 @@ def spacer_dict_gen(argx):
 	with open(argx) as csvfile2:
 		spacer_table = list(csv.reader(csvfile2))
 
-	spacer_table.sort(key=first_ele) # check this works in isolation
+	spacer_table.sort(key=first_ele) 
 	spacer_dict = {}
 	# want to create a two level nested dict
 	# the outer level will be the genome id
@@ -19,7 +19,7 @@ def spacer_dict_gen(argx):
 		# extract the genome_id
 		spacer_id = spacer_hit[0].split("|")
 		spacer_id = spacer_id[1]		
-		spacer_start_pos = spacer_hit[0].split("spacer_start_pos:") # may be better to split on global_start/end_pos instead!!!
+		spacer_start_pos = spacer_hit[0].split("spacer_start_pos:") 
 		spacer_start_pos = spacer_start_pos[1]
 		spacer_start_pos = spacer_start_pos.split("|")
 		spacer_start_pos = spacer_start_pos[0]
@@ -31,12 +31,12 @@ def spacer_dict_gen(argx):
 	#	print(spacer_coord)
 		if (spacer_id == previous_spacer_id):
 			if (spacer_coord not in coord_dict):
-				coord_dict[spacer_coord] = [spacer_hit] # may be creating a superflous nested list of one element. Easy to bypass however!!
+				coord_dict[spacer_coord] = [spacer_hit] 
 			else:
 				coord_dict[spacer_coord].append(spacer_hit)
 		else:
 			spacer_dict[previous_spacer_id] = coord_dict
 			coord_dict = {}
 		previous_spacer_id = spacer_id	
-	spacer_dict[previous_spacer_id] = coord_dict # should this be in the outer scope (as it was originally?) Possible error?
+	spacer_dict[previous_spacer_id] = coord_dict
 	return spacer_dict

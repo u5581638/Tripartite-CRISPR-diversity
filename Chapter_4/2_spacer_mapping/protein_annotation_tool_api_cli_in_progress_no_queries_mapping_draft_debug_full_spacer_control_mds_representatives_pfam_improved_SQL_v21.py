@@ -1,4 +1,3 @@
-
 # protein annotation tool api
 import sys
 if ('/g/data/va71/crispr_pipeline_annotation' not in sys.path):
@@ -11,9 +10,6 @@ import os
 import subprocess
 import pilercr_pos_extractor_annotation
 import pilercr_pos_extractor_annotation_full_spacers
-import phmmer_parser
-import phmmer_parser2
-import phmmer_parser3
 import vir_sorter_parser
 import hhsuite_parser
 import dali_parser
@@ -39,11 +35,9 @@ import false_crispr_array_spacers_filtration
 import crispr_detect_tabulation
 import crisprdetect_inversion
 import crispr_mapping_parser_draft_v7_functions_standalone_upgraded
-import crt_reconciliation
-import pilercr_reconciliation
 import filtered_arrs_appender_SQL4
-import pps_distance_calculator_annotation
-import spacers_2_or_more
+import pps_distance_calculator_annotation_corrected_strand_direction
+import spacers_2_or_more_2
 import genemark_sequence_reformatting
 import prodigal_genemark_reconciliation
 import genome_representative_clustering
@@ -77,7 +71,6 @@ def genome_block_relabeller(db_directory_path):
 	blast_db_seqs.extend(find_pattern('*.fa', db_directory_path))
 	blast_db_seqs.extend(find_pattern('*.fna', db_directory_path))
 	# find all fasta files in a directory
-#	print(blast_db_seqs)
 	print("loop start!!")
 	i=0
 	genome_path = blast_db_seqs[0]
@@ -103,7 +96,6 @@ def genome_block_relabeller(db_directory_path):
 # helper function to run makeblastdb for db generation
 def db_generation_subroutine (db_directory_path):
 	# need to format the db fasta file sequences with their respective block names
-#	print("db_file_is: " + db_directory_path)
 
 	genome_path = genome_block_relabeller(db_directory_path) # relabel db files, returning a new file with the labelled prefix attached
 	print("db_sub!!")
@@ -155,7 +147,6 @@ def generate_protein (input_genome_file_name, protein_block_name, rnafold_switch
 				genemark_sequence_reformatting.genemarkS2_reformatting(input_genome_file_name + "_trans_aa_gms2.faa")
 				prodigal_genemark_reconciliation.union(input_genome_file_name + "_trans_aa_gms2.faa" + "_geneS2prod_reformatted.fasta", input_genome_file_name + "_aa_raw.fasta", input_genome_file_name + "_aa_raw.fasta") # This will hopefully override the original protein file
 	# This is where samtools is called. Need to add a function on input_protein_file to replace the whitespace with an allowed character.
-#	hash_adder(input_genome_file_name + "_aa_raw.fasta") # replace the whitespace with #
 	subprocess.run(["/g/data/va71/crispr_pipeline_annotation/seqkit", "faidx", input_genome_file_name + "_aa_raw.fasta"])	
 	subprocess.run(["makeblastdb", "-in", input_genome_file_name + "_aa_raw.fasta", "-dbtype", "prot"])
 	subprocess.run(["cat " + input_genome_file_name + "_aa_raw.fasta >> " + protein_block_name],shell=True)	# This may result in some protein duplication, however samtools does not duplicate the indexes.
@@ -207,7 +198,6 @@ def filler_table_generation (my_genomes, genome_url, params, sql_db_connect):
 		else:
 			genome_id_prefix = None
 
-
 		row = ["Not assigned",None,genome.id, None, None,None,None, None,None,None, None,None,None,date.today(),params, genome_id_prefix]
 		spam_writer.writerow(row)
 		ret_list.append(row)	
@@ -216,8 +206,6 @@ def filler_table_generation (my_genomes, genome_url, params, sql_db_connect):
 
 # generate table compatible with SQL. Note: this function was not used
 def genome_hit_sql_table_generation(hit_table, genome_url, params, sql_db_connect):
-#	con = sqlite3.connect(sql_db_connect)
-#	cur = con.cursor()
 	ret_list = []
 	header = ["RUN","Seed_id", "Genome_id", "perc_identity", "length", "mismatch", "gapopen", "query_start", "query_end", "match_start", "match_end","evalue","bitscore", "my_date", "params","Genome_id_prefix","Genome_path"]
 	ret_list.append(header)
@@ -241,30 +229,13 @@ def genome_hit_lookup (hit_table, db_directory_path, genome_file_url, block, gen
 	if (os.path.isfile(genome_file_url)):
 		os.remove(genome_file_url)
 	genome_file = open(genome_file_url, "a")
-	# print(hit_table)
 	for row in hit_table:
-		# go through hit table and split based on the genome identifier
-		print("entire row")
-		print(row)
+
 		genome_row = row[genome_row_no]
-		print("First genome")
-		print(genome_row)
 		genome_row = genome_row.split("|") 
-		print("Strip genome")
-		print(genome_row)
 		true_gene_id = genome_row[0]
-		'''
-		gene_id = str(genome_row[1])
-		gene_id_suffix = gene_id.split("::")
-		gene_id_suffix2 = gene_id_suffix[1]
-		gene_id_suffix3 = gene_id_suffix2.split(":")
-		gene_id_suffix4 = gene_id_suffix3[1]
-		gene_id_suffix5 = gene_id_suffix4.split("_")
-		gene_id_suffix5 = gene_id_suffix5[0]
-		true_gene_id = gene_id_suffix[0] + "::" + gene_id_suffix3[0] + ":" + gene_id_suffix5		
-		'''
-		# only need to construct a new list/dict if the current genome_row genome differs from the previous!	
-		genome_row = block # in theory this should be the block
+
+		genome_row = block
 		if (genome_row not in row_dict):
 			my_id = {true_gene_id}
 			row_dict[genome_row] = my_id
@@ -525,7 +496,7 @@ if (spacer_generation_bypass_switch == 0):
 		gold_Analysis_project = pandas.read_excel(golddata_url,sheet_name="Analysis Project")
 
 
-	# Here I can get away with zero constraints because NCBI already ensures table consistency. In all other sql tables though constraints are required. Will need to add these contraints in a create table statements
+	# Intialise SQL db
 		try:
 			gold_study.to_sql("GOLD_STUDY",sql_db_connect,if_exists='fail',index=False)
 			cur.execute("CREATE INDEX GOLD_STUDY_ID_INDEX ON GOLD_STUDY (`STUDY GOLD ID`)")
@@ -602,19 +573,16 @@ if (spacer_generation_bypass_switch == 0):
 			exit()
 
 
-	# now should either an input csv table, or csv table generated from the query sequence.
 
 	# also want to create a version of the protein capable of non-specific annotation given an input set of genomes (db_directory_switch_option == 0)
 	print("checkpoint 1!!")
 
-	# need to retrieve the corresponding labelled genome.
-	# Is this neccessary?
+	# need to retrieve the corresponding genomes.
 	print("db_directory_switch:")
 	print(db_directory_switch)
 	if (db_directory_switch != 0):
 		if (input_type == "query"): # here we want to take the table generated from db_generation
 			mod_file_path = file_path # .split('/')
-		#	mod_file_path = mod_file_path[-1]
 			a = mod_file_path + "_all_hits.csv" #  This should point to the generated table. May need a '/' between db_directory_path and file path for this to work!!
 		elif (input_type == "table"): # here we want to take the input table, which has been labelled!!
 			a = mod_file_path # this will be a specified table.
@@ -625,13 +593,9 @@ if (spacer_generation_bypass_switch == 0):
 
 		with open (a, "r") as csvfile:
 			hit_table = list(csv.reader(csvfile))
-			#print(hit_table)
-		# for each sequence in the query file, find the corresponding genome hit
-		# need to think about the best way to do this!!
-		# probably want to annotate with 
-		b = a + "_genomes.fasta" # need to open genomes!!!!! this is the real problem
+
+		b = a + "_genomes.fasta" 
 		genome_hit_lookup(hit_table, db_directory_path, b, genome_path, 1)
-		# bug must be past this block!!
 		genome_file = open(b, "r")
 
 		# extract the block name from each table row
@@ -643,7 +607,6 @@ if (spacer_generation_bypass_switch == 0):
 				fai_table = list(csv.reader(csvfile,delimiter='\t'))
 			subprocess.run(["rm " + genome_hits_block + ".fai"],shell=True)	
 			fai_headers = set()
-		#	print(fai_table)
 			for row in fai_table:
 				if (row[0] not in fai_headers):
 					fai_headers.add(row[0])
@@ -659,7 +622,6 @@ if (spacer_generation_bypass_switch == 0):
 
 
 		else:	
-		#	print(b)
 			subprocess.run(["cat " + b + " >> " + genome_hits_block],shell=True)
 		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/seqkit rmdup " + genome_hits_block],shell=True)
 		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/seqkit faidx " + "--update-faidx " + genome_hits_block],shell=True)
@@ -702,15 +664,7 @@ if (spacer_generation_bypass_switch == 0):
 					genome_prefix_ids['Genome_id_prefix'].append(None)
 					genome_type['Genome_type'].append(None)
 							
-	#	print(genome_prefix_ids)
-		print(len(export_table["Genome_id"]))
-		print(list(genome_prefix_ids.values()) [0])
-		print(genome_path)
-		export_table = export_table.assign(Genome_path = genome_path)
-
-		print(export_table['Genome_path'])
-		print(list(genome_prefix_ids.values()) [0])
-	
+		export_table = export_table.assign(Genome_path = genome_path)	
 		export_table = export_table.assign(Genome_id_prefix = list(genome_prefix_ids.values()) [0]) # These don't seem to work!
 		export_table = export_table.assign(Genome_type = list(genome_type.values()) [0]) # These don't seem to work!
 		
@@ -729,86 +683,9 @@ if (spacer_generation_bypass_switch == 0):
 			else:
 				break
 					
-		i = 0
-		# should make a standalone code file containing just this loop and the nessessary inputs.
-		# Try just one instance of export table so that each command can be run interactively
-		# It might be possible to make an optimisation here because, in theory, each genomes table only contains one seed!!!!!!!!
-		# This would reduce the time complexity to a single O(n) pass.
-		while i < len( export_table):
-			res = cur.execute('SELECT * FROM GENOMES WHERE Genome_id LIKE ?', ('%'+ export_table.iloc[i][2] + '%',)) # hang on, do these need to be genomes????? Matching between Genomes and seeds = wrong!!!!!	
-			row = res.fetchone()
-			if (row is not None):
-				# In this instance need to add seed sequence to first row.  (.
-			#	print(row[0])
-			#	print(export_table.iloc[i][1])
-				new_value = str(row[0]) + "," + export_table.iloc[i][1]
-				cur.execute('UPDATE GENOMES SET Seed_id =? WHERE Genome_id LIKE ?', (new_value, '%' + export_table.iloc[i][2] + '%',))			# need to create a table if it does not already exist mapping genome ids to seed values
-			#	print(export_table)
-				export_table.drop(labels=export_table.index[i],axis='index',inplace=True) # Remove overlapping genome from the collection of genomes to annotate. Might still want to spacer map though???? May need to create a seperate set of indexed files and tables to handle this!! 
-			#	print(export_table)
-			#	export_table.iloc[0][i] = index
-			else:
-				print("iloc_index")
-				print(export_table.iloc[i][0])
-				export_table.iloc[i][0] = index
-				i += 1	
-			print(i)
-			print(len(export_table))	
-			sql_db_connect.commit()	
-
-			# Need to decide whether to keep this dumpster-fire of sql code!!
-			#	cur.execute('SELECT * FROM GENOME_SEED_JUNCTION')
-			#	names = list(map(lambda x: x[0], cur.description))
-			#	previous = names[-1].split("_") [-1]
-			#	new = previous += 1
-			#	cur.execute('ALTER TABLE GENOME_SEED_JUNCTION ADD ? STRING', ("seed_" + str(new))) # not sure if this operation is allowed in sqlite3
-			#	cur.execute('UPDATE GENOME_SEED_JUNCTION SET seed_?=? WHERE Genome_id=?;', (str(new),export_table[i][0],export_table[i][1])) # need to check with someone who knows SQL whether this makes sense/could be written better!! Fortunately this code is sort of optional!!
-				
-			
-				# Answer: Spacer mapping does not need to occur again PROVIDED previously mapped phage genomes are associated with the new genomes. MAKE SURE THIS IS DONE BEFORE RUNNING THE PIPELINE!!!!
-				
-		#	else:
-				# passively add to seed table. A lot more complicated then changing the field
-			#	cur.execute('CREATE TABLE IF NOT EXISTS GENOME_SEED_JUNCTION (Genome_id STRING PRIMARY KEY)')
-			#	cur.commit()
-
-
-			#	cur.execute('SELECT * FROM GENOME_SEED_JUNCTION')
-			#	names = list(map(lambda x: x[0], cur.description))
-			#	previous = names[-1].split("_") [-1]
-			#	new = previous += 1
-			#	if (previous == "id"):
-			#		cur.execute('ALTER TABLE GENOME_SEED_JUNCTION ADD ? STRING', ("seed_0"))
-			#		cur.execute('INSERT INTO GENOME_SEED_JUNCTION(Genome_id,seed_0) VALUES(?,?)', (export_table[i][1],export_table[i][0]))
-			#	else:
-			#		cur.execute('ALTER TABLE GENOME_SEED_JUNCTION ADD ? STRING', ("seed_" + str(new)))
-			#		cur.execute('INSERT INTO GENOME_SEED_JUNCTION(Genome_id,seed_? VALUES(?,?)', (str(new),export_table[i][1],export_table[i][0])) # need to check with someone who knows SQL whether this makes sense/could be written better!! Fortunately this code is sort of optional!!
-
-			#	cur.commit()
-			# end of sql dumpster-fire code!!
-		cur.execute('CREATE INDEX IF NOT EXISTS GENOME_PREFIX_INDEX ON GENOMES(Genome_id_prefix)')
-		sql_db_connect.commit()
-		# failure adding genomes
-		export_table.to_sql('GENOMES',sql_db_connect, if_exists='append', index=False)		
-		export_table.to_csv(a)
-
-
-		# need to sort hit table such that hits from the same database file are searched in a single pass of the database
-		# maybe instead step 1 should be to dictionalise the rows with the same common block (key)
-		# for each entry:
-		# load a different block
-		# if block id and row id matches then write to genome_file
-		# continue iterating through all the blocks	
-		# genomes should be accessible by index!!
-	#	print ("Done IO!!")
-		
-
-	#	print(genome_file)
-
 
 	else: # need an if statement to delete this directory prior to running the program. Ditto for BLAST compiled db!!
-		# Save fixing this for last!! Don't need to run under default circumstances!!!!!!!!!!
-		# THIS CODE HAS NOT BEEN TESTED YET (12/6/2023)
+
 		subprocess.run(["find " + db_directory_path + " -name *_labelled.fasta -type f | xargs -n 1 -I {} -P 1 cat {} >> " + db_directory_path  + "genome_only_run_master_file.fasta"], shell=True) # first concatenate the genomes
 		a = db_directory_path + "genome_only_run_master_file.fasta"
 		b = a + "_genomes.fasta"
@@ -821,24 +698,11 @@ if (spacer_generation_bypass_switch == 0):
 		for entry in export_table['Genome_id']:
 			my_entry = entry.split("_") [0]
 			if 'Genome_id_prefix' not in genome_prefix_ids:
-			#	genome_prefix_ids['Genome_id_prefix'] = [my_entry]
 				genome_type['Genome_type'] = [genome_is]
 			else:
-			#	genome_prefix_ids.append(my_entry)
 				genome_type.append(genome_type)
 			
-	#	export_table['Genome_id_prefix'] = genome_prefix_ids.values()
-		print(list(genome_type.values()) [0])
 		export_table['Genome_type'] = list(genome_type.values()) [0]
-		i = 0
-		while i < len( export_table):
-			res = cur.execute('SELECT * FROM GENOMES WHERE Genome_id=?', tuple(hit[1]))
-			
-			if (res.fetchone() is not None):
-				# In this instance just remove entry from export table.
-				export_table.drop(labels=i,axis=0,inplace=True)
-			else:
-				i += 1	
 
 		cur.execute('CREATE TABLE IF NOT EXISTS GENOMES (RUN STRING, Seed_id STRING, Genome_id STRING PRIMARY KEY, perc_identity STRING, length STRING, mismatch STRING, gapopen STRING, query_start STRING, query_end STRING, match_start STRING, match_end STRING, evalue STRING, bitscore STRING, my_date STRING, params STRING, Genome_type STRING, Genome_id_prefix STRING, Genome_path TEXT, FOREIGN KEY (Genome_id_prefix) REFERENCES GOLD_ANALYSIS_PROJECT (`AP GOLD ID`))')
 		cur.execute('CREATE INDEX IF NOT EXISTS GENOME_PREFIX_INDEX ON GENOMES(Genome_id_prefix)')
@@ -847,9 +711,6 @@ if (spacer_generation_bypass_switch == 0):
 
 
 		SeqIO.write(my_genomes, b, "fasta") # rename the genome file to be consistent with the other settings. Better to use rename?
-
-		# need to create an input table directly from the genome files encoding the same information!!
-		# need to standardise the table input for both cases in sqlGe
 
 	# need to add primary and foreign keys to sql table!!
 	sql_db_connect.close()
@@ -860,17 +721,10 @@ if (spacer_generation_bypass_switch == 0):
 
 	# write prodigal + genemark orf translation of target genomes here!!
 	# also need to index with samtools!!
-	# need to consider switching the working of the pipeline so that proteins are retrieved instead of predicted during downstream steps.
-	# Note that this step can be bypassed if the proteins have already been generated
-	# may need a variant of this command which can add new proteins and index them in addition to those in the starting dataset.
 	if (protein_generation_switch == 1):
 		input_genome_file_name = b
-		# THis protein database might need to be garbage collected later!!
 		generate_protein(input_genome_file_name,protein_hits_block, rnafold_switch, merge_protein)
 	print("checkpoint 3!!")
-	print(db_directory_path)
-	#cores = 48  this should be a command line option
-
 
 	if (spacer_mapping_switch == 1):
 		print("checkpoint 4!!")
@@ -880,8 +734,7 @@ if (spacer_generation_bypass_switch == 0):
 			os.mkdir(db_directory_path + "spacer_distribution_analysis/")
 		b_basename = b.split("/")
 		b_basename = b_basename[-1]
-		print (b)
-		print(b_basename)
+
 		# need to seperate split spacers into smaller files
 		output_dir = db_directory_path + "spacer_distribution_analysis/" + b_basename
 		partition_size = os.path.getsize(b) // cores
@@ -891,7 +744,6 @@ if (spacer_generation_bypass_switch == 0):
 		partition_cores = 8
 		protopool = Pool(int(cores // partition_cores))
 		
-	# need to add a section for Tony's suggested modifications
 	# This section will probably need to be parallelised to compensate for the dramatically increased run time due to soo many prediction tools running.
 		while (m <= partitions):
 			partition_dir = output_dir + "_partition_" + str(m) + ".fasta"
@@ -903,8 +755,6 @@ else:
 	b_basename = file_path + "_all_hits.csv" + "_genomes.fasta"
 	b_basename = b_basename.split("/") [-1]
 	# Need to put in a bypass to jump to this line of code!!!!!!
-
-# table_reverse(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_reconciled_full_arr_positions.csv")
 
 # THis encode the raw detected CRISPR_arrays
 if (crispr_detect == 1 and crispr_orientation == 1):
@@ -928,14 +778,6 @@ spam_writer.writerow(["Genome_id","orientation","orientation_score", "orientatio
 for hit in hit_table:
 	spam_writer.writerow(hit)
 out_file.close()	
-
-	# now need to blast against an input db
-	# may need to define parameters as optional flags!!
-	# need to launch script with maximum cpus.
-	# block directory
-# exit()
-	# this is end of spacer_preproccessing!!
-
 # Parameters for spacer mapping!!
 # This parameters should be related to the dr offset score!!!
 perc_identity = 0.90
@@ -958,8 +800,6 @@ if (mapping_skip_switch == 0):
 		false_crispr_array_spacers_filtration.filtration(input_dr_spacer_fasta)
 		input_dr_spacer_fasta = input_dr_spacer_fasta + "_arrs_filtered.fasta"
 		print("Good!!")
-		#	exit()
-		# subproccess call to script mapping spacers
 		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/pipe_line_source_files/nested_mpirun_script_no_qsub_flock_optimised_test_script.sh", input_dr_spacer_fasta, block_directory, str(dr_perc_identity), str(cores), "/g/data/va71/crispr_pipeline_annotation/pipe_line_source_files/", db_directory_path, "co_occurrance_bug_diagnostics_results2/", str(dr_query_hsp_cover), formatting]) # what input args are required??
 	print("Pipeline parameters:")
 	print(input_spacer_fasta)
@@ -1002,13 +842,10 @@ empty_spacer_filterer.remove_blanks(db_directory_path + "spacer_distribution_ana
 
 # expand and number spacers in each concensus CRISPR array
 spacer_hitmap_master_table = filtered_arrs_appender_SQL4.spacer_hits_appender(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered.csv", db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_reconciled_full_arr_positions.csv_no_blanks.csv", db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv")
-	
-# write SQL code here to store CRISPR-arrays. Create foreign keys by adding the RUN numbers and genomes to the table.
-
 hitmap_table_url = db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv"
 hit_table = pandas.read_csv(hitmap_table_url)
 	
-	# Need to identify whether hits to phage genomes have already occurred for seperate runs. Are these genomes 
+# Need to identify whether hits to phage genomes have already occurred for seperate runs. Are these genomes 
 
 # CODE to transfer table to SQL database. Note, this functionality was not used other than to check subtype sequences did not overlap.
 cur.execute("CREATE TABLE IF NOT EXISTS SPACER_HITMAP (Spacer_id TEXT, Phage_id TEXT, Perc_id FLOAT, Length INT, Mismatches TEXT, Gapopen TEXT, query_start TEXT, query_end TEXT, Mapped_start_site TEXT, Mapped_end_site TEXT, evalue TEXT, bitscore TEXT, Genome_id TEXT, orientation TEXT, orientation_score TEXT, orientation_confidence TEXT, questionable_array TEXT, array_score TEXT, `CRISPR-start` TEXT,`CRISPR-end` TEXT,repeat_start TEXT, repeat_end TEXT, spacer_start TEXT, spacer_end TEXT, dr_repeat_original TEXT, dr_repeat_concensous TEXT, spacer TEXT, Array_tool TEXT, RUN TEXT, array_number TEXT, spacer_number TEXT, mapped_genomes TEXT, FOREIGN KEY (Genome_id) REFERENCES GENOMES (Genome_id), FOREIGN KEY (Genome_id) REFERENCES RAW_ARRAYS (Genome_id) )")
@@ -1016,78 +853,15 @@ cur.execute("CREATE INDEX IF NOT EXISTS GENOME_ID_INDEX ON SPACER_HITMAP (`Genom
 cur.execute("CREATE INDEX IF NOT EXISTS Phage_ID_INDEX ON SPACER_HITMAP (`Phage_id`)")
 sql_db_connect.commit()
 
-	# Want to be able to annotate phage genomes without reproccessing duplicates- track already proccessed genomes.
-	# Want to ask when the same phage genome is mapped by another genome as well as when it's mapped by the same genome!!!
-	# If it's only been mapped by the same genome then only this genome/contig/slice should be listed.
-	#
-i = 0
-# iterate through the spacer_hitmap_table.
-while (i < len(hit_table)):
-	res = cur.execute('SELECT * FROM SPACER_HITMAP WHERE Phage_id LIKE ?', ('%'+ hit_table.iloc[i][1] + '%',)) # hang on, do these need to be genomes????? Matching between Genomes and seeds = wrong!!!!!	
-	rowi = res.fetchone()
-	# Is phage id in SPACER_HITMAP
-	# Want to work with just the subset 
-	if (rowi is not None):
-		res = cur.execute('SELECT * FROM SPACER_HITMAP WHERE Genome_id LIKE ? AND Phage_id = ?', ('%'+ hit_table.iloc[i][12] + '%', hit_table.iloc[i][1])) # hang on, do these need to be genomes????? Matching between Genomes and seeds = wrong!!!!!	
-		row = res.fetchone()
-		# Is genome id in SPACER_HITMAP
-		if (row is not None):
-			my_row = list(hit_table.iloc[i])
-			my_row.append(row[-1]) # add the existing mapped genome value for the same Genome-Phage id
-			my_row = tuple(map(str,my_row))
-			cur.execute('INSERT INTO SPACER_HITMAP (Spacer_id, Phage_id, Perc_id, Length, Mismatches, Gapopen, query_start, query_end, Mapped_start_site, Mapped_end_site, evalue, bitscore, Genome_id, orientation, orientation_score, orientation_confidence, questionable_array, array_score, `CRISPR-start`,`CRISPR-end`,repeat_start, repeat_end, spacer_start, spacer_end, dr_repeat_original, dr_repeat_concensous, spacer, Array_tool, run, array_number, spacer_number, mapped_genomes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);',my_row)
-		else:
-			my_row = list(hit_table.iloc[i])
-			# This line
-			a_value = rowi[-1] + "," + hit_table.iloc[i][12]
-			my_row.append(a_value)
-			my_row = tuple(map(str,my_row))
-			cur.execute('INSERT INTO SPACER_HITMAP (Spacer_id, Phage_id, Perc_id, Length, Mismatches, Gapopen, query_start, query_end, Mapped_start_site, Mapped_end_site, evalue, bitscore, Genome_id, orientation, orientation_score, orientation_confidence, questionable_array, array_score, `CRISPR-start`,`CRISPR-end`,repeat_start, repeat_end, spacer_start, spacer_end, dr_repeat_original, dr_repeat_concensous, spacer, Array_tool, run, array_number, spacer_number, mapped_genomes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);',my_row)
-			cur.execute('UPDATE SPACER_HITMAP SET mapped_genomes = ? WHERE Phage_id = ?', (a_value, my_row[1]))
-	# go through the SQL database and update all entries with the Same phage ID with the new value.
-	# Add row with phage id
-	else:
-		my_row = list(hit_table.iloc[i])
-		my_row.append(hit_table.iloc[i,12])
-		my_row = tuple(map(str,my_row))
-		cur.execute('INSERT INTO SPACER_HITMAP (Spacer_id, Phage_id, Perc_id, Length, Mismatches, Gapopen, query_start, query_end, Mapped_start_site, Mapped_end_site, evalue, bitscore, Genome_id, orientation, orientation_score, orientation_confidence, questionable_array, array_score, `CRISPR-start`,`CRISPR-end`,repeat_start, repeat_end, spacer_start, spacer_end, dr_repeat_original, dr_repeat_concensous, spacer, Array_tool, run, array_number, spacer_number, mapped_genomes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);',my_row)
-#	hit_table[i] = my_row # This may cause side effecting on the hit_table which may lead to difficult to trace errors!!!!!
-	i += 1
 
-sql_db_connect.commit()
-	# The line below should no longer be needed!!!
-#	hit_table.to_sql("SPACER_HITMAP", sql_db_connect, if_exists='append', index=True) # append or a standalone table???
-	# add a column to this table when the same phage genome mapped from a different host genome is found.
-
-
-	# Need to assign primary and foreign keys to this table!! Worth thinking about whether this should be a standalone table or one massive table??? - massive one would have the advantage of seeing the links between different genomes/phages. Need it to be non-redundant
-
-	# key question here is how to relate the mapped hits to each other?
-	# May need to add the run. Although, through joining, the converse phages should be retrievable
-	# Need to consider whether the run number is nessessary
-	# Need to define foreign keys between this table and the spacer mapping table!
-	# Is this table redundant (with the spacer mapping table?
-	# Is more info required to make it relevant?
-	# Best to move on and define relations at the end.
-#	phage_table = phage_spacer_table_inversion.phage_table_invert(hitmap_table_url)
-	# Not sure whether this is nessessary!!
-	# Save till last!!
-#	phage_table.to_sql("PHAGE_HITMAP", sql_db_connect, if_exists='append', index=True)
-
-	# need to add a line to retrieve filtered genomes!!
-	# compute distance scores here
-	# Might want to include a conditional statement here!!
-#run_row = hit_table['run']
-#hit_table = hit_table.drop('run',axis=1) # may want to preserve the run information under specific circumstances!!
-# hit_table = hit_table.drop(hit_table.columns[0],axis=1)
+# compute distance scores here
 hit_table.to_csv(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv",index=False)
 # create table phages genomes with 2+ spacer hits.
-spacers_2_or_more_master_table = spacers_2_or_more.two_or_more(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv")
-	# compute pps distances.
-spacer_hitmap_master_table = pps_distance_calculator_annotation.pps_compute (db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv" + "_2_or_more_hits.csv")
+spacers_2_or_more_master_table = spacers_2_or_more_2.two_or_more(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv")
+# compute pps distances.
+spacer_hitmap_master_table = pps_distance_calculator_annotation_corrected_strand_direction.pps_compute (db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv" + "_2_or_more_hits.csv")
 distance_table = pandas.read_csv(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv" + "_2_or_more_hits.csv" + "_distances_annotated.csv")
 
-# ["Genome_id","Spacer_start","Spacer_end","Phage_id","Mapped_spacer_start","Mapped_spacer_end","evalue","bitscore","CRISPR_start","CRISPR_end","orientation", "spacer","distance","mapped_sense"]		
 cur.execute("CREATE TABLE IF NOT EXISTS `PRIMED_SPACER_2+_SPACER_HITMAP_DISTANCES` (Spacer_id STRING,Phage_id STRING,Perc_id STRING,Length STRING, Mismatches STRING,Gapopen STRING,query_start STRING,query_end STRING,Mapped_start_site STRING,Mapped_end_site STRING,evalue STRING,bitscore STRING,Genome_id STRING,orientation STRING,orientation_score STRING,orientation_confidence STRING,questionable_array STRING,array_score STRING,`CRISPR-start` STRING,`CRISPR-end` STRING,repeat_start STRING,repeat_end STRING,spacer_start STRING,spacer_end STRING,dr_repeat_original STRING, dr_repeat_concensous STRING,spacer STRING,Array_tool STRING,array_number STRING,spacer_number STRING,distance STRING,mapped_strand STRING, run STRING, CONSTRAINT Spacer_id PRIMARY KEY (Genome_id, spacer_start, spacer_end), FOREIGN KEY (Genome_id) REFERENCES SPACER_HITMAP(Genome_id), FOREIGN KEY (Phage_id) REFERENCES SPACER_HITMAP(Spacer_GENOME_id)) ")	
 cur.execute("CREATE INDEX IF NOT EXISTS GENOME_ID_INDEX ON `PRIMED_SPACER_2+_SPACER_HITMAP_DISTANCES` (Genome_id)")
 cur.execute("CREATE INDEX IF NOT EXISTS PHAGE_ID_INDEX ON `PRIMED_SPACER_2+_SPACER_HITMAP_DISTANCES` (Phage_id)")
@@ -1097,20 +871,6 @@ distance_table.to_sql("PRIMED_SPACER_2+_HITMAP_DISTANCES", sql_db_connect, if_ex
 	
 sql_db_connect.close()
 
-# Think this is for a feature which is now redundant!!!!!!
-
-#
-##### Check whether or not the below line of code is still relevant!!!!!!!!!#########
-	# This should be changed to only use the filtered dict!!
-#spacer_dict = spacer_dict_generator.spacer_dict_gen(input_spacer_fasta + "_all_hits.csv")
-#if (tony_mapping_switch == 1):
-#	dr_spacer_dict = spacer_dict_generator.spacer_dict_gen(input_dr_spacer_fasta + "_all_hits.csv")
-#if (spacer_only_switch == 1):
-#	exit() # exit the program before doing annotation!!
-
-###### end of relevant code ###########
-# ONE KEY UPGRADE TO ADD WILL BE TO RECONCILE THE CRISPR ARRAY INFORMATION AND ARRAY ORIENTATIONS WITH THE MAPPED HITS AS A SINGLE TABLE!!
-
 # Code to estimate PAMs from mapped sequences.
 if (pam_anno == 1):
 	filtered_spacer_url = db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered.csv"
@@ -1119,27 +879,15 @@ if (pam_anno == 1):
 		os.mkdir(db_directory_path + "phages/")
 	phage_genome_reformatting.reformat(filtered_spacer_url + "_filtered_hits_extracted_faidx_" + "bp_window.fasta", db_directory_path  + "phages/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_genomes.csv") # may want to change the output dir to be in the phages folder
 	hits_master_table_url = db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_reconciled_full_arr_positions.csv", db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv"
-	# focus on getting to here first!!
 	pam_identification.pam_id(hits_master_table_url, filtered_spacer_url + "_filtered_hits_extracted_faidx_" + "bp_window.fasta",hits_master_table_url + "_pam_summary.csv", 5)
- 	# Need master table blast spacer positions. This should be """ hits_blast_filtered.csv
- 	# Should return a superposition of the upstream and downstream PAM sequences within a defined window size!
 	pam_table = pandas.read_csv(hits_master_table_url + "_pam_summary.csv")
 	sql_db_connect = sqlite3.connect("/g/data/va71/crispr_pipeline_annotation/" + "crispr-phage_interactome.sql")
 	cur = sql_db_connect.cursor()
 
-	# Possibly need to come back and fix this!!
-# No idea why this line does not work!! Fortunately, it's not super nessessary!!
-#	cur.execute("CREATE TABLE IF NOT EXISTS PAMS (Spacer_id STRING, Genome_id STRING, Phage_id STRING, spacer_start STRING, spacer_end STRING, crispr_direction STRING, blast_direction STRING, mapped_spacer_start STRING, mapped_spacer_end STRING, PAM_start, PAM_end, CONSTRAINT Spacer_id PRIMARY KEY (Spacer_id, spacer_start, spacer_end), FOREIGN KEY (Spacer_id) REFERENCES SPACER_HITMAP (Spacer_id), FOREIGN KEY (Genome_id) REFERENCES GENOMES (Genome_id), FOREIGN KEY (Phage_id) REFERENCES SPACER_HITMAP (Phage_id))")
-
-#	sql_db_connect.commit()
 	pam_table.to_sql("PAMs",sql_db_connect, if_exists="append",index=False)
 	cur.execute("CREATE INDEX IF NOT EXISTS SPACER_ID_INDEX ON PAMS(Genome_id)")
 	cur.execute("CREATE INDEX IF NOT EXISTS PHAGE_ID_INDEX ON PAMS(Phage_id)")
 	sql_db_connect.close()
-# Key is that blast db hits are labelled by the file name as the suffix!!
-# can extract by splitting on "|" and taking the suffix.
-# need to create a table which summarises the query name, query results (tblastn), genome file name, predicted orfs
-# perhaps this is not needed
 if (phage_genomes == 1):
 #	code to retrieve mapped sequences without PAM prediction
 	if (pam_anno != 1):
@@ -1159,11 +907,8 @@ if (phage_genomes == 1):
 	phage_min_seq_id = 0.99
 	large_dataset = 0
 	phylogeny_switch = 0
-	# Set this for the moment. Need a different clustering algorithm for phages!!!!!!!!!!!!!!!!!!!!!!!!!!
 	phage_protein_query_switch = 0
 	if (phage_protein_query_switch == 1):
-		# need to call representative clustering as a function. Need to modify upstream code to achieve this!!
-		# May need a unique phage genome clustering algorithm instead!!
 		# extract a representative sequence from a query search of genomes/mapped sequences followed by mmseqs2 clustering
 		representative_phage_table = genome_representative_clustering.rep_cluster(b_phage, phage_min_seq_id, phage_db_directory_path, phage_a, merge_protein,large_dataset,phylogeny_switch)
 		phage_a = representative_phage_table
@@ -1184,16 +929,8 @@ if (phage_genomes == 1):
 			phage_dict[genome.id] = genome
 
 	genome_sequences = phage_dict.values()
-	# need to filter_phage_sequences based on whether they have already been run
-	
-	# need to change this code to create a Phage genome table.
-
 	sql_db_connect = sqlite3.connect("/g/data/va71/crispr_pipeline_annotation/" + "crispr-phage_interactome.sql")
 	cur = sql_db_connect.cursor()
-
-
-
-	# should only take the phage genomes with the same slices.  Subsets should not be possible so the only possibility of multiple hits within the same phage is non-overlapping
 	cur.execute("CREATE TABLE IF NOT EXISTS PHAGE_GENOMES (Phage_id_slice STRING,Phage_id STRING, Phage_id_prefix STRING)")
 	k = 0
 	while (k < len(genome_sequences)):
@@ -1210,36 +947,6 @@ if (phage_genomes == 1):
 			genome_sequences.pop[k]	
 
 	sql_db_connect.commit()
-
-#	k = 0
-#	while (k < len(genome_sequences)):
-#		phage_id = genome_sequences[k].id.split("|")
-#		gene_name = phage_id[0]
-#		gene_id = gene_id[-1]
-#		genome_id_prefix = genome_sequences[k].id.split("_")[0]
-#		if (genome_id_prefix[:1] == "Ga"):
-#			pass 
-#		else:
-#			genome_id_prefix = None
-#		row_ins = ["Not assigned",None,gene_id, None, None,None,None, None,None,None, None,None,None,None,params, "PHAGE", genome_id_prefix ]
-#		###
-#		try:
-
-#			res = cur.execute('SELECT * FROM GENOMES WHERE genome_id=?', tuple(gene_id))
-#			row = res.fetchone()
-#			if (row is not None):
-#				genome_sequences.pop(k) # In theory spacer mapping runs are already connected through the spacer_mapping table. This is just to avoid annotating phage genomes twice!
-#				# need to add a relational clause as to the different genome_ids targettting the same phage!!
-#			else:
-			#	cur.execute('CREATE TABLE IF NOT EXISTS PHAGE_GENOMES (Input_sequence STRING, Input_path STRING, genome_name STRING, genome_id STRING PRIMARY KEY, FOREIGN KEY genome_id REFERENCES SPACER_HITMAP (`Phage_id`))') # need to consider whether to use pandas or straight sql syntax to add the new elements!!!
-#				sql_cmd = ''' INSERT INTO GENOMES (RUN, Seed_id, Genome_id, length, mismatch, gapopen, query_start, query_end, match_start, match_end, evalue, bitscore, my_date, params, Genome_type, Genome_id_prefix ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) '''
-#				cur.execute(sql_cmd, tuple(row_ins)) # Add entry to table.
-
-#				k += 1
-#			cur.commit()
-#
-#		except sqlite3.OperationalError:
-#			break	
 	genome_sequences = list(SeqIO.parse(b_phage, "fasta")) # these are the phage genomes.
 	phage_dict = {}
 	for genome in genome_sequences:
@@ -1247,8 +954,6 @@ if (phage_genomes == 1):
 			phage_dict[genome.id] = genome
 
 	genome_sequences = phage_dict.values()
-
-
 	phage_block_dict = {}
 	for gene in genome_sequences:
 		gene_id = gene.id.split("|")
@@ -1257,7 +962,6 @@ if (phage_genomes == 1):
 		phage_block_dict[gene_id] = gene	
 		ret_ele = [in_seq, phage_a, gene_name, gene_id]
 		phage_summary_frame.append(ret_ele)
-
 	
 	# Once These elements have been added to the table to only sql statements to add are in the annotation_parallelisation script. This requires using locks but is much easier conceptually!!
 	for frame in phage_summary_frame:
@@ -1271,7 +975,6 @@ if (phage_genomes == 1):
 			fai_table = list(csv.reader(csvfile,delimiter='\t'))
 		subprocess.run(["rm " + phage_hits_block + ".fai"],shell=True)	
 		fai_headers = set()
-	#	print(fai_table)
 		for row in fai_table:
 			if (row[0] not in fai_headers):
 				fai_headers.add(row[0])
@@ -1295,11 +998,6 @@ if (protein_generation_switch == 1):
 	generate_protein(input_genome_file_name,phage_protein_hits_block, rnafold_switch, merge_protein)
 # NEED TO FUNCTIONALISE THIS SECTION OF CODE FURTHER SO I CAN RUN TWO INSTANCES OF IT (HOST GENOME AND PHAGE!! - MAY CONSIDER ADDING A SLICING FUNCTION FROM THE SEED PROTEIN/MAPPED TARGET SITE)
 
-
-
-
-
-
 # Pipeline begins in earnest!!
 # start of gene_annotation_summary_table_generation
 
@@ -1319,15 +1017,9 @@ if (db_directory_switch != 0 ): # If a csv/query sequence is used for input
 	in_seq = b.split("/")
 	in_seq = in_seq[-1] # extract just the basename
 	for row in hit_table:
-#		print(row)
-		# this index needs to be converted to a variable rather than hard coded!!
 		ret_ele = [in_seq, a, row[3]] # 
-	#	print("table_construction:")
-	#	print(ret_ele)
 		summary_frame.append(ret_ele)
 	genome_sequences = list(SeqIO.parse(b, "fasta"))
-		# In order for this next line to work, the number of genomes must == the number of hits. If a genome can't be retrieve both it and the corresponding hit should be ignored.
-		# This may be a potential source of bugs
 	block_dict = {}
 	for gene in genome_sequences:
 		gene_id = gene.id.split("|")
@@ -1335,8 +1027,6 @@ if (db_directory_switch != 0 ): # If a csv/query sequence is used for input
 		block_dict[gene_id] = gene
 	i = 1
 	while (i < len(summary_frame)):
-	#		print (summary_frame[i][2])
-	#		print (len(summary_frame))
 		genome_row = summary_frame[i][2].split("|") 
 		gene_id = str(genome_row[1])
 		gene_id_suffix = gene_id.split("::")
@@ -1366,8 +1056,6 @@ if (db_directory_switch != 0 ): # If a csv/query sequence is used for input
 			summary_frame[i].extend([genome_id, genome_file_name, b + "_output_full.txt"]) # protein orf_name
 		else:
 			print("Error!!")
-			#	print(block_dict.keys())
-			#	print(true_gene_id)	
 		i += 1
 	for frame in summary_frame:
 		summary_writer.writerow(frame) # could do this concurrently with writing in memory!!
@@ -1405,42 +1093,19 @@ else:
 # iterate through the summary frame.
 # will have to compromise between amount of output files and speed (I/O bottleneck). Some of these tables could be exlcusively held in memory!
 # still, these are the main tables.
-
 # this is the end of the genome level summary file!!!!!!!!!!!!
-# this section will need a rework. Of note, the summary file is not actually used.
-
-
 
 protein_annotation_frames = []
-# need a python mkdir instance call here!! Perhaps even  
-
-
-# Use block_dict as the input to the spacer mapping pipeline!!
-# link the results of mapping into the annotation pipeline!! 
-# This reason why this must be done here is that it's much more efficent to map spacers all at once than seperately. The output should be a dictionary/table of the mappings 
-# which can be linked to each genome and stored in the appropiate folder.
-####### spacer mapping distribution code goes here!!! ########
-
-# create temporary directory to house spacer distribution files.
-# need an if statement, as well as a flag to specify the conditional running of spacer mapping!!!!!
-# may need to move this block of code upstream so that the representative genomes ("-q" option) are run later!!
 
 # bypass switch in the case of spacers already being mapped!!
 # do not delete spacer distribution analysis when running in this mode!!!
 if (bypass_switch == 1):
 	b_basename = b.split("/")
 	b_basename = b_basename[-1]
-	print (b)
-	print(b_basename)
 	cores = 48
 	# block directory
 	perc_identity = 0.85
 	input_spacer_fasta = db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_full_real_arr_positions.csv" + "_spacers.fasta"	
-	print("Pipeline parameters:")
-	print(input_spacer_fasta)
-	print (block_directory)
-	print (perc_identity)
-	print(cores)
 	spacer_dict = spacer_dict_generator.spacer_dict_gen(input_spacer_fasta + "_all_hits.csv")
 	
 
@@ -1473,36 +1138,3 @@ print("Done!")
 # Use the protein tables for each genome to retrieve all the ORFs, along with their positional information and sense.
 # Create a rank-ordered set of ORFs for concatenation. Either save this feature as a tabular representation or output as actual sequences.
 # This may be easier to do from SQL after all. 
-
-
-	# protein_annotation_framing_rendering.render(folder_name + "/" + frame[4] + "_genome_specific_annotations.csv")
-
-	# may need to replace with a subproccess call
-
-
-	# need to load file and add to 
-	# main code here for phage prediction
-	# Note: virsorter is not really fit for purpose in this application as it can't predict phage boundaries.
-#	subprocess.run(['../virsorter'])
-#	vir_sorter_frames = vir_sorter_parser.vir_sort_parse(protein_file_name + "vir_sorted.tsv")
-#
-#	protein_annotation_frame_file = open(folder_name + "/" + frame[4] + "_genome_specific_annotations.csv", "r")
-#	protein_annotation_frame_no_phage = list(csv.reader(protein_annotation_frame_file))
-#	protein_annotation_frame_file.close()
-#	protein_annotation_frame_file = open(folder_name + "/" + frame[4] + "_genome_specific_annotations.csv", "w")
-#	spam_writer2 = csv .writer(protein_annotation_frame_file)
-
-#	i=1
-#	protein_annotation_frame_no_phage[0].aannotation_parallelisationppend("genome_name:")
-#	protein_annotation_frame_no_phage[0].append("phage prediction:")
-#	while (i < len(protein_annotation_frame_no_phage)):
-#		protein_annotation_frame_no_phage[i].append(vir_sorter_frames[0][0])
-#		protein_annotation_frame_no_phage[i].append(vir_sorter_frames[0][1])
-#		i += 1
-#	for protein_annotation_frame in protein_annotation_frame_no_phage:
-#		spam_writer2.writerow(protein_annotation_frame)
-#	protein_annotation_frame_file.close()		
-
-	# current memory based copy of protein orf dataframe is protein_annotation_frame_no_phage
-	
-# visualise these orfs using a tool/python render

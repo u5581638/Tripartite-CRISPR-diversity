@@ -20,7 +20,6 @@ def mapped_genome_retrieval(spacer_mapping_table_url, extraction_range=20000):
 		genome_block = hit[1].split("|")
 		genome_id = genome_block[0]
 		genome_name = genome_block[1]
-	#	print("samtools", "faidx", str(genome_id) + ".fasta", "\'" + hit[1] + "\'" + ":1-1000000000000000")
 		spacer_start = int(hit[8])
 		spacer_end = int(hit[9])
 		if (spacer_start > spacer_end):
@@ -34,9 +33,7 @@ def mapped_genome_retrieval(spacer_mapping_table_url, extraction_range=20000):
 		# need to label this data with target spacer start and ends!!	
 		cmdline = "samtools faidx " + "/g/data/va71/labelled_genomes/" + str(genome_id) + ".fasta " + "\'" + hit[1] + "\'" + ":" + str(spacer_start) + "-" + str(spacer_end)
 		cmdline2 = "samtools faidx " + "/g/data/va71/labelled_genomes/" + str(genome_id) + ".fasta " + "\'" + hit[1] + "\'"
-	#	subprocess.run(["samtools", "faidx", str(genome_id) + ".fasta", "\'" + hit[1] + "\'" + ":1-1000000000000000"],shell=True, stdout=ret_out)
 		subprocess.run([cmdline],shell=True, stdout=ret_out)
-	#	subprocess.run([cmdline2],shell=True, stdout=phage_out)
 	
 	ret_out.close()
 	phage_out.close()

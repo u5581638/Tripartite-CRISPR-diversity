@@ -21,7 +21,6 @@ def reformat(spacer_url, output_dir):
 	i = 0
 	while (i < len(sequences)):
 		header = sequences[i].id.split("-")
-	#	print(header)
 		end_sequence = header[1]
 
 		if (int(end_sequence) > len(sequences[i])):

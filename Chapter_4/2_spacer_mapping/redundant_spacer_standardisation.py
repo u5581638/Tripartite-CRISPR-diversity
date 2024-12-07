@@ -49,12 +49,7 @@ def same_overlap (hit_table_url, out_url):
 			for spacer in existing_spacers:
 				spacer_start = int(float(spacer[0]))
 				spacer_end = int(float(spacer[1]))
-			#	print(spacer_start)
-			#	print(spacer_end)
-			#	print(row_spacer_start)
-			#	print(row_spacer_end)
 				if ((spacer_start <= int(float(row_spacer_start)) <= spacer_end or spacer_start <= int(float(row_spacer_end)) <= spacer_end or (spacer_start <= int(float(row_spacer_start)) and spacer_end >= (int(float(row_spacer_end)))) or (spacer_start >= int(float(row_spacer_start)) and spacer_end <= (int(float(row_spacer_end)))))):
-				#	print("Yay")
 					contig_dict[contig][i][22] = spacer_start
 					contig_dict[contig][i][23] = spacer_end
 					index = 1
