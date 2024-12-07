@@ -35,7 +35,6 @@ def invert(crisprdetect_table_url):
 	# input table of CRISPR-detect predictions in csv format.
 	crisprdetect_table_handle = open(crisprdetect_table_url, "r")
 	crisprdetect_table = list(csv.reader(crisprdetect_table_handle))
-#	print(crisprdetect_table)
 	ret_out = open(crisprdetect_table_url + "_inverted.csv", "w")
 	spam_writer = csv.writer(ret_out)
 	ret_dict = OrderedDict()
@@ -68,7 +67,6 @@ def invert(crisprdetect_table_url):
 			ret_dict[genome_id] = [my_row]
 		else:	
 			ret_dict[genome_id].append(my_row)	
-#	ret_dict = list(ret_dict.values()).sort(key= ret_value) # hopefully this is still in the order the keys were added!!
 	ret_dict = list(ret_dict.values())
 	for array in ret_dict:
 		if (array[0][1] == "Reverse"):
@@ -84,7 +82,6 @@ def invert(crisprdetect_table_url):
 
 			# repeats may need to be incremented to adjust for row.
 			while (i < len(sorted_array)):
-			#	print(sorted_array[i-1][8])
 				previous_row_repeat_start_cpy = copy.deepcopy(previous_row_repeat_start)
 				previous_row_repeat_end_cpy = copy.deepcopy(previous_row_repeat_end)
 				previous_row_repeat_con_cpy = copy.deepcopy(previous_row_repeat_con)
@@ -101,10 +98,6 @@ def invert(crisprdetect_table_url):
 				sorted_array[i][13] = previous_row_repeat_cpy
 
 				sorted_array[i][10] = str(int(sorted_array[i][10]) + 1)
-			#	if (i == 2):
-			#		sorted_array[i][11] = str(int(copy.deepcopy(sorted_array[i][11])) + 1) 
-			#	else:	
-			#		sorted_array[i][11] = str(int(sorted_array[i][11]) + 1) 
 				i += 1
 			final_row = [sorted_array[i-1][0], sorted_array[i-1][1],sorted_array[i-1][2],sorted_array[i-1][3],sorted_array[i-1][4],sorted_array[i-1][5],sorted_array[i-1][6],sorted_array[i-1][7],previous_row_repeat_start,previous_row_repeat_end,"","",previous_row_repeat_con,previous_row_repeat,""]
 			sorted_array = sorted_array[1:]

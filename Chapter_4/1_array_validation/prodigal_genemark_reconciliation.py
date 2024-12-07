@@ -64,7 +64,6 @@ def intersection (genemark_orfs_url, prodigal_orfs_url, protein_out_url):
 			print("error")
 			print(protein_sense)
 			exit()		
-#		if ((protein_start, protein_end, protein_sense) not in genemark_dict):
 		genemark_dict[(protein_start, protein_end, protein_sense)] = sequence
 	prodigal_dict = {}
 	for sequence in prodigal_sequences:
@@ -73,7 +72,6 @@ def intersection (genemark_orfs_url, prodigal_orfs_url, protein_out_url):
 		protein_start = genome_description[1]
 		protein_end = genome_description[2]
 		protein_sense = genome_description[3]
-#		if ((protein_start, protein_end, protein_sense) not in prodigal_dict):
 		prodigal_dict[(protein_start, protein_end, protein_sense)] = sequence
 	ret_list = []
 	for my_key in prodigal_dict:
@@ -81,6 +79,3 @@ def intersection (genemark_orfs_url, prodigal_orfs_url, protein_out_url):
 			ret_list.append(genemark_dict[my_key])	
 	SeqIO.write(ret_list, protein_out_url, "fasta")		
 	return ret_list
-
-# union(sys.argv[1], sys.argv[2], sys.argv[3])
-# intersection(sys.argv[1], sys.argv[2], sys.argv[3])

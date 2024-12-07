@@ -7,11 +7,6 @@ import sys
 def genomes_from_id (protein_ids, genome_url):
 	genome_ids = set()
 	for protein_id in protein_ids:
-		print(protein_id)
-	#	prot_id_only = protein_id.split(" # ")
-	#	prot_id_only = prot_id_only[0]
-	#	prot_id_only = protein_id.split("|")
-	#	prot_id_only = prot_id_only[1]
 		prot_id_only = protein_id
 		prot_id_only = prot_id_only.split("::")
 		prot_id_only_num = prot_id_only[1]

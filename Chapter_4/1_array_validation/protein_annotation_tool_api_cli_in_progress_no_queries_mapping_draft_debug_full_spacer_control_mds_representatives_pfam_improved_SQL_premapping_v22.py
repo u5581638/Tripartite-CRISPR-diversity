@@ -44,7 +44,6 @@ def find_pattern(pattern, path):
 
 # relabel all fasta files to include the block_name
 def genome_block_relabeller(db_directory_path):
-	print("GSTART!!")
 	blast_db_seqs = find_pattern('*.fasta', db_directory_path) # this will only work if all files in directory are only fasta!! Need to use find!!
 	blast_db_seqs.extend(find_pattern('*.fa', db_directory_path))
 	blast_db_seqs.extend(find_pattern('*.fna', db_directory_path))
@@ -62,11 +61,8 @@ def genome_block_relabeller(db_directory_path):
 		for sequence in sequences:
 			this_sequence = sequence
 			this_sequence.id =  this_sequence.id # label each db sequence with the block name. This will be important in later steps!!
-		#	ret_seq.append(this_sequence)
 			SeqIO.write(this_sequence, my_file, "fasta")
 		my_file.close()
-		print("GEND!!")
-		print("good!!")
 			
 	return genome_path
 
@@ -221,16 +217,6 @@ def genome_hit_lookup (hit_table, db_directory_path, genome_file_url, block, gen
 		genome_row = row[genome_row_no]
 		genome_row = genome_row.split("|") 
 		true_gene_id = genome_row[0]
-		'''
-		gene_id = str(genome_row[1])
-		gene_id_suffix = gene_id.split("::")
-		gene_id_suffix2 = gene_id_suffix[1]
-		gene_id_suffix3 = gene_id_suffix2.split(":")
-		gene_id_suffix4 = gene_id_suffix3[1]
-		gene_id_suffix5 = gene_id_suffix4.split("_")
-		gene_id_suffix5 = gene_id_suffix5[0]
-		true_gene_id = gene_id_suffix[0] + "::" + gene_id_suffix3[0] + ":" + gene_id_suffix5		
-		'''
 		# only need to construct a new list/dict if the current genome_row genome differs from the previous!	
 		genome_row = block # in theory this should be the block
 		if (genome_row not in row_dict):
@@ -253,8 +239,7 @@ def genome_hit_lookup (hit_table, db_directory_path, genome_file_url, block, gen
 			if (gene_key in row[1]):
 				my_genome = gene
 				my_genome.id = gene_key
-				my_genome.description = ""  # my_genome.description # + "|" + row[0] # now sequence should be annotated with block + genome_id + sequence_id
-				# need to modify this code to erase the block name!! This is probably the easiest fix!!
+				my_genome.description = "" 
 				SeqIO.write(my_genome, genome_file, "fasta") # This needs to be written to file then indexed with samtools
 	genome_file.close()
 	return 0
@@ -595,24 +580,17 @@ if (spacer_generation_bypass_switch == 0):
 
 		with open (a, "r") as csvfile:
 			hit_table = list(csv.reader(csvfile))
-			#print(hit_table)
-		# for each sequence in the query file, find the corresponding genome hit
-		# need to think about the best way to do this!!
-		# probably want to annotate with 
-		b = a + "_genomes.fasta" # need to open genomes!!!!! this is the real problem
+
+		b = a + "_genomes.fasta"
 		genome_hit_lookup(hit_table, db_directory_path, b, genome_path, 1)
-		# bug must be past this block!!
 		genome_file = open(b, "r")
 		# extract the block name from each table row
 		previous_genome_row = ""
-		# if samtools file exists then delete file. Else samtools and index the genomes
 		if (os.path.isfile(genome_hits_block + ".fai")):
-			# need to only add genomes which are not already in the data block. Extract the ids from the samtools file
 			with open (genome_hits_block + ".fai", "r") as csvfile:
 				fai_table = list(csv.reader(csvfile,delimiter='\t'))
 			subprocess.run(["rm " + genome_hits_block + ".fai"],shell=True)	
 			fai_headers = set()
-		#	print(fai_table)
 			for row in fai_table:
 				if (row[0] not in fai_headers):
 					fai_headers.add(row[0])
@@ -632,30 +610,22 @@ if (spacer_generation_bypass_switch == 0):
 		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/seqkit rmdup -i " + genome_hits_block + " -o " + genome_hits_block  + " -d duplicated.fa.gz -D duplicated.detail.txt"],shell=True)
 		print("Passed stdout bottleneck!!")
 		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/seqkit faidx " + "--update-faidx " + "\'" + genome_hits_block + "\'"],shell=True)
-		# if option -q is used then prodigal should be used to predict proteins arising from tblastn hits.
-		# blastp should then identify these proteins.
-		# these proteins should then be retrieved!!
-		# these should also be a set, so that redundant proteins are removed.
 		if (protein_query_switch == 1):
 			representative_table = genome_representative_clustering.rep_cluster(b, min_seq_id, db_directory_path, a, merge_protein, large_dataset, phylogeny_switch, sys.argv)
 			a = representative_table
 			with open (a, "r") as csvfile:
 				hit_table = list(csv.reader(csvfile))
 
-		genome_hit_sql_table_generation(hit_table,a, "".join(sys.argv), sql_db_connect) # need to reach here to bypass creating new genome blocks. The reason is because this function modifies the hit_table!!!
-		print("Good up to here?")
-		# RUN this code as a standalone. Attempt to integrate the prefix ids. Should not need to rest!!!!
+		genome_hit_sql_table_generation(hit_table,a, "".join(sys.argv), sql_db_connect) 
 		export_table = pandas.read_csv(a,header=0)
 		genome_prefix_ids = {}
 		genome_type = {}
 		genome_is = "HOST"
-	#	print(export_table.columns)
 		for entry in export_table['Genome_id']:
 			my_entry = entry
 			my_entry = str(my_entry).split("_") 	
 			if (len(my_entry) > 1):
 				my_entry = my_entry[0]
-			#	print(my_entry)
 				if 'Genome_id_prefix' not in genome_prefix_ids:
 					genome_prefix_ids['Genome_id_prefix'] = [my_entry]
 					genome_type['Genome_type'] = [genome_is]
@@ -674,104 +644,14 @@ if (spacer_generation_bypass_switch == 0):
 		export_table = export_table.assign(Genome_id_prefix = list(genome_prefix_ids.values()) [0]) # These don't seem to work!
 		export_table = export_table.assign(Genome_type = list(genome_type.values()) [0]) # These don't seem to work!
 		export_table = export_table.assign(Genome_path = genome_path)
-
-	#	cur.execute("PRAGMA foreign_keys = ON;")
-	#	cur.execute('CREATE TABLE IF NOT EXISTS GENOMES (RUN STRING, Seed_id STRING, Genome_id STRING, perc_identity STRING, length STRING, mismatch STRING, gapopen STRING, query_start STRING, query_end STRING, match_start STRING, match_end STRING, evalue STRING, bitscore STRING, my_date STRING, params STRING, Genome_type STRING, Genome_id_prefix TEXT, Genome_path TEXT)') # FOREIGN KEY (Genome_id_prefix) REFERENCES GOLD_ANALYSIS_PROJECT (`AP GOLD ID`) see if this works without the foreign key. Might not be feasible to make mapping 1 to 1 due to NCBI IDs.
 		sql_db_connect.commit()
-		# generate a unique key or keep trying
 		while (True):
 			index = random.randint(1000000000000000000, 10000000000000000000)
 			index = str(index)
 			break
-		#	index = random.choices(L, k = 1) [0]
-		#	res = cur.execute('SELECT * FROM GENOMES WHERE RUN LIKE ?', (index,))
-		#	row = res.fetchone()
-		#	if (row != None): # There should not be an identical run number. THIS MAY BE A SOURCE OF BUGS!!!!!
-		#		print("random_generation!!") # This should
-		#	else:
-		#		break
 					
 		i = 0
-		# should make a standalone code file containing just this loop and the nessessary inputs.
-		# Try just one instance of export table so that each command can be run interactively
-		# It might be possible to make an optimisation here because, in theory, each genomes table only contains one seed!!!!!!!!
-		# This would reduce the time complexity to a single O(n) pass.
-		'''
-		if (skip_genome_dup_detection == 0):
-			while i < len( export_table):
-				res = cur.execute('SELECT * FROM GENOMES WHERE Genome_id LIKE ?', ('%'+ export_table.iloc[i][2] + '%',)) # hang on, do these need to be genomes????? Matching between Genomes and seeds = wrong!!!!!	
-				row = res.fetchone()
-				if (row is not None):
-					# In this instance need to add seed sequence to first row.  (.
-				#	print(row[0])
-				#	print(export_table.iloc[i][1])
-					new_value = str(row[1]) + "," + export_table.iloc[i][1]
-					cur.execute('UPDATE GENOMES SET Seed_id =? WHERE Genome_id LIKE ?', (new_value, '%' + export_table.iloc[i][2] + '%',))			# need to create a table if it does not already exist mapping genome ids to seed values
-				#	print(export_table)
-					export_table.drop(labels=export_table.index[i],axis='index',inplace=True) # Remove overlapping genome from the collection of genomes to annotate. Might still want to spacer map though???? May need to create a seperate set of indexed files and tables to handle this!! 
-				#	print(export_table)
-				#	export_table.iloc[0][i] = index
-				else:
-					# This is the problematic line!!
-					export_table.iat[i, 0] = index
-					i += 1
-				
-				sql_db_connect.commit()	
-		'''
-			# Need to decide whether to keep this dumpster-fire of sql code!!
-			#	cur.execute('SELECT * FROM GENOME_SEED_JUNCTION')
-			#	names = list(map(lambda x: x[0], cur.description))
-			#	previous = names[-1].split("_") [-1]
-			#	new = previous += 1
-			#	cur.execute('ALTER TABLE GENOME_SEED_JUNCTION ADD ? STRING', ("seed_" + str(new))) # not sure if this operation is allowed in sqlite3
-			#	cur.execute('UPDATE GENOME_SEED_JUNCTION SET seed_?=? WHERE Genome_id=?;', (str(new),export_table[i][0],export_table[i][1])) # need to check with someone who knows SQL whether this makes sense/could be written better!! Fortunately this code is sort of optional!!
-				
-			
-				# Answer: Spacer mapping does not need to occur again PROVIDED previously mapped phage genomes are associated with the new genomes. MAKE SURE THIS IS DONE BEFORE RUNNING THE PIPELINE!!!!
-				
-		#	else:
-				# passively add to seed table. A lot more complicated then changing the field
-			#	cur.execute('CREATE TABLE IF NOT EXISTS GENOME_SEED_JUNCTION (Genome_id STRING PRIMARY KEY)')
-			#	cur.commit()
-
-
-			#	cur.execute('SELECT * FROM GENOME_SEED_JUNCTION')
-			#	names = list(map(lambda x: x[0], cur.description))
-			#	previous = names[-1].split("_") [-1]
-			#	new = previous += 1
-			#	if (previous == "id"):
-			#		cur.execute('ALTER TABLE GENOME_SEED_JUNCTION ADD ? STRING', ("seed_0"))
-			#		cur.execute('INSERT INTO GENOME_SEED_JUNCTION(Genome_id,seed_0) VALUES(?,?)', (export_table[i][1],export_table[i][0]))
-			#	else:
-			#		cur.execute('ALTER TABLE GENOME_SEED_JUNCTION ADD ? STRING', ("seed_" + str(new)))
-			#		cur.execute('INSERT INTO GENOME_SEED_JUNCTION(Genome_id,seed_? VALUES(?,?)', (str(new),export_table[i][1],export_table[i][0])) # need to check with someone who knows SQL whether this makes sense/could be written better!! Fortunately this code is sort of optional!!
-
-			#	cur.commit()
-			# end of sql dumpster-fire code!!
-	#	cur.execute('CREATE INDEX IF NOT EXISTS GENOME_PREFIX_INDEX ON GENOMES(Genome_id_prefix)')
-	#	sql_db_connect.commit()
-		# failure adding genomes
-	#	export_table.to_sql('GENOMES',sql_db_connect, if_exists='append', index=False)		
-		# NEED TO DECIDE WHETHER TO INCLUDE THE LINE BELOW> THE ABSENCE OF HITS IS BECAUSE EACH ENTRY ALREADY EXISTS IN THE SQL TABLE!!	
-	#	export_table.to_csv(a)
-		# 
-
-		# need to sort hit table such that hits from the same database file are searched in a single pass of the database
-		# maybe instead step 1 should be to dictionalise the rows with the same common block (key)
-		# for each entry:
-		# load a different block
-		# if block id and row id matches then write to genome_file
-		# continue iterating through all the blocks	
-		# genomes should be accessible by index!!
-	#	print ("Done IO!!")
-		
-
-	#	print(genome_file)
-
-	# this step is all about extracting genomes
-
-	else: # need an if statement to delete this directory prior to running the program. Ditto for BLAST compiled db!!
-		# Save fixing this for last!! Don't need to run under default circumstances!!!!!!!!!!
+	else: 
 		subprocess.run(["find " + db_directory_path + " -name *_labelled.fasta -type f | xargs -n 1 -I {} -P 1 cat {} >> " + db_directory_path  + "genome_only_run_master_file.fasta"], shell=True) # first concatenate the genomes
 		a = db_directory_path + "genome_only_run_master_file.fasta"
 		b = a + "_genomes.fasta"
@@ -784,52 +664,26 @@ if (spacer_generation_bypass_switch == 0):
 		for entry in export_table['Genome_id']:
 			my_entry = entry.split("_") [0]
 			if 'Genome_id_prefix' not in genome_prefix_ids:
-			#	genome_prefix_ids['Genome_id_prefix'] = [my_entry]
 				genome_type['Genome_type'] = [genome_is]
 			else:
-			#	genome_prefix_ids.append(my_entry)
 				genome_type.append(genome_type)
 			
-	#	export_table['Genome_id_prefix'] = genome_prefix_ids.values()
 		export_table['Genome_type'] = list(genome_type.values()) [0]
-	#	i = 0
-	#	while i < len( export_table):
-	#		res = cur.execute('SELECT * FROM GENOMES WHERE Genome_id=?', tuple(hit[1]))
-			
-	#		if (res.fetchone() is not None):
-				# In this instance just remove entry from export table.
-	#			export_table.drop(labels=i,axis=0,inplace=True)
-	#		else:
-	#			i += 1	
-
 		cur.execute('CREATE TABLE IF NOT EXISTS GENOMES (RUN STRING, Seed_id STRING, Genome_id STRING, perc_identity STRING, length STRING, mismatch STRING, gapopen STRING, query_start STRING, query_end STRING, match_start STRING, match_end STRING, evalue STRING, bitscore STRING, my_date STRING, params STRING, Genome_type STRING, Genome_id_prefix STRING, Genome_path TEXT, FOREIGN KEY (Genome_id_prefix) REFERENCES GOLD_ANALYSIS_PROJECT (`AP GOLD ID`))')
 		cur.execute('CREATE INDEX IF NOT EXISTS GENOME_PREFIX_INDEX ON GENOMES(Genome_id_prefix)')
 		cur.commit()
 		export_table.to_sql('GENOMES',sql_db_connect, if_exists='append', index=True)
+		SeqIO.write(my_genomes, b, "fasta")
 
-
-		SeqIO.write(my_genomes, b, "fasta") # rename the genome file to be consistent with the other settings. Better to use rename?
-
-		# need to create an input table directly from the genome files encoding the same information!!
-		# need to standardise the table input for both cases in sqlGe
 	index_file = open(file_path + "_index.txt", "w")
 	index_file.write(str(index))
 	index_file.close()
-	# need to add primary and foreign keys to sql table!!
 	sql_db_connect.close()
-	# now need to consider garbage collection
-
-	# mistake with head genome retrieval must be before this line!!!!!!!!!!!!!!!!!!!!!!!!
 	print("checkpoint 2!!")
-
-	# write prodigal + genemark orf translation of target genomes here!!
-	# index with samtools!!
 	if (protein_generation_switch == 1):
 		input_genome_file_name = b
 		generate_protein(input_genome_file_name,protein_hits_block, rnafold_switch, merge_protein)
 	print("checkpoint 3!!")
-	print(db_directory_path)
-	#cores = 48  this should be a command line option
 
 	if (spacer_mapping_switch == 1):
 		print("checkpoint 4!!")
@@ -839,14 +693,11 @@ if (spacer_generation_bypass_switch == 0):
 			os.mkdir(db_directory_path + "spacer_distribution_analysis/")
 		b_basename = b.split("/")
 		b_basename = b_basename[-1]
-		print (b)
-		print(b_basename)
 		# need to seperate split spacers into smaller files
 		output_dir = db_directory_path + "spacer_distribution_analysis/" + b_basename
 		partition_size = os.path.getsize(b) // cores
 		partitions = pyfasta_but_faster.rename(b,output_dir,  1966080) # was 1966080
 		m = 0
-		# may be able to parallelise this loop to save KSU!!
 		partition_cores = 1
 		protopool = Pool(int(cores // partition_cores))
 	
@@ -861,9 +712,6 @@ if (spacer_generation_bypass_switch == 0):
 else:
 	b_basename = file_path + "_all_hits.csv" + "_genomes.fasta"
 	b_basename = b_basename.split("/") [-1]
-	# Need to put in a bypass to jump to this line of code!!!!!!
-
-# table_reverse(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_reconciled_full_arr_positions.csv")
 
 # Merge CRISPR-array predictions
 if (crispr_detect == 1 and crispr_orientation == 1):

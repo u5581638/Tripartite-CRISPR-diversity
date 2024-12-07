@@ -48,10 +48,6 @@ def rep_cluster (b, min_seq_id, db_directory_path, a, merge_protein=0,large_data
 	SeqIO.write(anno_genomes, b + "_rep_genomes.fasta", "fasta")
 
 	# want to append to a specialised rep-genomes_cluster. This is used for annotation. However, this will cause problems!! Really want to only take the cases where spacer mapping occurs
-
-	#	with open(file_path + "_all_hits.csv", "r") as csvfile:
-				# believe block_dict is actually a duplication of these steps
-				# tblastn_hits = list(csv.reader(csvfile))
 	representative_table = table_identifier_extractor.hits_from_genomes(representative_genomes, a, False)
 	
 	return representative_table # ? not sure, may be best to omitt open statement

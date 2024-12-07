@@ -254,7 +254,5 @@ def crt_reconcile(crisprdetect_table_url, crisprcrt_table_url, output_dir):
 	# Else if the array doesn't exists then add the new array <- this will maximise sensitivity at the expense of accuracy.
 	# The alternative being to only take concensous matched spacers.
 	# Should keep a note of which spacers were detected by both CRISPR detection tools and which were unique. Create a new category!!
-#	crisprdetect_table_url.close()
-#	crisprcrt_table_url.close()
 	ret_out.close()
 	return 0

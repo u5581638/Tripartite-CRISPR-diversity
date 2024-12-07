@@ -133,8 +133,6 @@ def pilercr_reconcile (crisprdetect_table_url, crispr_pilercr_url, output_dir):
 						# need to be able to see all rows as list/set in order to be able to decide where to add new spacers. 
 						# need a special condition if insertion results in an overlap with another CRISPR-array!!!!
 						if (row[11] == crisprdetect_dict[array][i][14]):
-					#		print("Key row!!")
-					#		print(row[11])
 							if (crisprdetect_dict[array][i][15] == "CRISPRDETECT"):
 								crisprdetect_dict[array][i][15] = "CRISPRDETECT.PILERCR" # Add a note that spacers match to both
 							elif (crisprdetect_dict[array][i][15] == "CRT"):
@@ -175,18 +173,9 @@ def pilercr_reconcile (crisprdetect_table_url, crispr_pilercr_url, output_dir):
 							#	exit()
 						else:
 							# need to add to nearest array
-						#	print(i)
-						#	print(array)
-						#	print(crisprdetect_start)
-						#	print(crisprdetect_end)
-						#	print(crisprdetect_dict[array])
 							nearest_row = nearest_array(crispr_pilercr_spacer_start, crispr_pilercr_spacer_end, crisprdetect_dict[array]) # nearest crisprdetect row
 							new_crisprdetect_row = construct_crisprdetect_row_minimal_update(row, nearest_row, crisprdetect_dict[array])
-						#	print("Yay!!")
-						#	print(new_crisprdetect_row)
-						#	new_crisprdetect_row[0][15] = "PILERCR"
 							crisprdetect_dict[genome_id].append(new_crisprdetect_row[0]) # add new row to show whether the row is CRT, CRISPRDETECT, or a joint prediction
-						#	print(crisprdetect_dict_spacers[genome_id])
 							crisprdetect_dict_spacers[genome_id].add(new_crisprdetect_row[0][14])
 
 							break
@@ -195,16 +184,10 @@ def pilercr_reconcile (crisprdetect_table_url, crispr_pilercr_url, output_dir):
 
 		else:
 			crisprdetect_dict[array] = add_array(crispr_pilercr_dict[array])
-			# final code to add an entire new array goes here!!
-
-	# THINK ABOUT WHETHER THIS LOOP IS NESSESSARY, WHAT MISSING VALUES IT ASSIGNS
 
 	ret_out = open(output_dir, "w")
 	spam_writer = csv.writer(ret_out)
-#	spam_writer.writerow(["genome_id","orientation","orientation_score", "orientation_confidence", "questionable_array", "array_score","CRISPR-start","CRISPR-end", "repeat_start", "repeat_end","spacer_start","spacer_end","dr_repeat_original", "dr_repeat_concensous", "spacer", "Array_tool" ])
 	outfiles = crisprdetect_dict.values() # this should create a list of lists
-	print("Ready to write!!")
-	print(len(outfiles))
 	for out_arr in outfiles:
 		for row in out_arr:
 			spam_writer.writerow(row)

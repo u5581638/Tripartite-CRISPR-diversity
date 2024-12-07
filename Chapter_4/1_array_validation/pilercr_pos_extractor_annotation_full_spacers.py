@@ -41,46 +41,35 @@ def pos_extractor(argx):
 	sequences = sequence_mega_str.split(">") # hopefully the strings include \n characters. Loading the whole str uses a fair amount of memory
 	ret_file = open(argx + "_real_arr_positions.csv", "a")
 	switch = False
-	#print(sequences)
 	sequences = sequences[1:]
 	for sequence in sequences:
-	#	print(sequence)
 		sequence_lines = sequence.split("\n")
 		line = sequence_lines[0]
 		sequence_lines = sequence_lines[1:]
 		header = line # first line
 		ret_lines = []
-		#print(sequence_lines)
 		for line in sequence_lines:
 			line_items = line.split(" ")
 			line_items = line_denuller(line_items) # get rid of the empty elements in the list from the split.
 			ret_line = []
 			if (line_items != []):
 				pass
-			#	print(line_items[0][0])
 			if (line_items == []):
 				continue
 				
 			elif (switch == False and re.search(equals , line_items[0][0])): # if line[0] contains an equals
-			#	print(line_items[0])
-			#	print("yes")
 				switch = True
 				continue
 			elif (switch == True and re.search(characters, line_items[0][0])):
-			#	print("Hi")
-			#	print(line_items[0], line_items[1])
 				ret_line.append(line_items[0])
 				ret_line.append(line_items[1])
 				ret_lines.append(ret_line)
 				continue
 			elif (switch == True and re.search(equals, line_items[0][0])):
 				switch = False
-			#	print("no")
-				
 				break
 			else:
 				continue	
-		#print(ret_lines)		
 		start_pos = ret_lines[0][0]
 		end_pos = str(int(ret_lines[-1][1]) + int(ret_lines[-1][0]))
 		spam_writer = csv.writer(ret_file)
@@ -91,26 +80,18 @@ def pos_extractor(argx):
 
 def true_repeat(dr_seq, dr_dot, deletions=True):
 	# direct repeats and dots should be the same length. Need to go through the dots and substitute characters if non-dot character is found
-#	print("True repeats:")
-#	print(dr_seq, dr_dot)
-#	print(len(dr_seq), len(dr_dot))
 	i = 0
 	output_seq = list(dr_seq)
 	dr_dot = list(dr_dot)
 	while (i < len(dr_dot)):
 
 		if (dr_dot[i] != "."):
-			if(dr_dot[i] == '-'): # deletion?
-			#	print(output_seq)
-			#	print("Hi")
+			if(dr_dot[i] == '-'): # deletion
 				if (deletions):
 					output_seq.pop(i)
 					dr_dot.pop(i)
 				
 			else:
-#				print(len(dr_dot), len(output_seq), i)
-			#	print(dr_dot[i])
-			#	print(len(output_seq), len(dr_dot))
 				output_seq[i] = dr_dot[i]
 		i += 1
 	return "".join(output_seq)				
@@ -160,20 +141,15 @@ def all_info_extractor_tony_DR_spacers(argx):
 			ret_line = []
 			if (line_items != []):
 				pass
-			#	print(line_items[0][0])
 			if (line_items == []):
 				i += 1
 				continue
 				
 			elif (switch == False and re.search(equals , line_items[0][0])): # if line[0] contains an equals
-			#	print(line_items[0])
-			#	print("yes")
 				switch = True
 				i += 1
 				continue
 			elif (switch == True and re.search(characters, line_items[0][0])):
-			#	print("Hi")
-			#	print(line_items)
 				if (len(line_items) < 4):
 					i += 1
 					continue
@@ -184,15 +160,11 @@ def all_info_extractor_tony_DR_spacers(argx):
 				ret_line.append(line_items[-2])
 				ret_line.append(line_items[-1])
 				ret_lines.append(ret_line)
-			#	print(ret_line)
 				# here might need to reimagine this list.
 				i += 1
 				continue
 			elif (switch == True and re.search(equals, line_items[0][0])):
 				switch = False
-			#	print("no")
-			#	print("Sequence lines are:")
-			#	print (sequence_lines)
 				final_line = sequence_lines[-1]
 				line_items = line.split(" ")
 				line_items = line_denuller(line_items) # get rid of the empty elements in the list from the split.
@@ -200,51 +172,32 @@ def all_info_extractor_tony_DR_spacers(argx):
 				ret_line.append(line_items[3])
 				ret_lines.append(ret_line)
 				final_sequence_line = sequence_lines[i + 1]
-			#	print ("final_sequence_line is:")
-				# print (final_sequence_line)
 				break
 			else:
 				i += 1
 				continue	
-		#print(ret_lines)	
 
 		# now need to find the start and end positions for each line!!
 		i = 0
 		dr_coords = []
 		spacer_coords = []
 		line_coord = []
-		#print(sequence_lines)
-		#print(line_items)
 		final_line_items = line_denuller(final_sequence_line)
-		print("Line items:")
-		print(final_line_items)
 		final_line_items = "".join(i for i in final_line_items if not i.isdigit()) # really shouldn't use this for readability reasons. But it is cool!!
 		final_line_items = final_line_items.strip('')
 		final_line_items = final_line_items.strip()
 	#	print(final_line_items)
 		dr_sequence = final_line_items
-		print(dr_sequence)
 		start_pos = ret_lines[0][0]
 		if (ret_lines[-1][-1][0] != "=" or len(ret_lines) == 1): # special filtering case for corrupted data!!
-			print("Bad data")
-			print(ret_lines)
 			switch = False
 			continue
-	#	print(switch)
-	#	print(sequence_lines[-1])
-	#	print(ret_lines)
+
 		arg1 = ret_lines[-2][0]
 		arg2 = ret_lines[-2][1]
 		arg3 = ret_lines[-2][-1]
 		end_pos = str(int(arg1) + int(arg2) + int(len(arg3)))
-	#	print(ret_lines[-2][0])
-	#	print(ret_lines[-2][1])
-	#	print(ret_lines[-2][-1])
 		while (i < len(ret_lines) - 1): #exclude final line
-			
-	#		print(ret_lines)
-			
-			
 			spacer_start_coord = int(ret_lines[i][0]) + int(ret_lines[i][1]) # start_pos + DR
 			spacer_end_coord = str(int(spacer_start_coord) + len(ret_lines[i][-1])) # length of spacer
 			dr_start_coord = ret_lines[i][0]
@@ -293,16 +246,13 @@ def all_info_extractor (argx):
 	spam_writer = csv.writer(ret_file)
 	spam_writer.writerow(["Genome_id","CRISPR_start_position","CRISPR_end_position","Spacer_start","Spacer_end","Repeat_start","Repeat_end","Repeat_size","left_flanking_sequence","Direct_repeat","Direct_repeat_concensous","Spacer"])
 	switch = False
-	#print(sequences)
 	sequences = sequences[1:]
 	for sequence in sequences:
-	#	print(sequence)
 		sequence_lines = sequence.split("\n")
 		line = sequence_lines[0]
 		sequence_lines = sequence_lines[1:]
 		header = line # first line
 		ret_lines = []
-		#print(sequence_lines)
 		i = 0
 		for line in sequence_lines:
 			line_items = line.split(" ")
@@ -310,20 +260,16 @@ def all_info_extractor (argx):
 			ret_line = []
 			if (line_items != []):
 				pass
-			#	print(line_items[0][0])
+
 			if (line_items == []):
 				i += 1
 				continue
 				
-			elif (switch == False and re.search(equals , line_items[0][0])): # if line[0] contains an equals
-			#	print(line_items[0])
-			#	print("yes")
+			elif (switch == False and re.search(equals , line_items[0][0])):
 				switch = True
 				i += 1
 				continue
 			elif (switch == True and re.search(characters, line_items[0][0])):
-			#	print("Hi")
-			#	print(line_items)
 				if (len(line_items) < 4):
 					i += 1
 					continue
@@ -331,18 +277,13 @@ def all_info_extractor (argx):
 				ret_line.append(line_items[1])
 				ret_line.append(line_items[3])
 				ret_line.append(line_items[-3])
-#				print(line_items)
 				ret_line.append(line_items[-1])
 				ret_lines.append(ret_line)
-			#	print(ret_line)
 				# here might need to reimagine this list.
 				i += 1
 				continue
 			elif (switch == True and re.search(equals, line_items[0][0])):
 				switch = False
-			#	print("no")
-			#	print("Sequence lines are:")
-			#	print (sequence_lines)
 				final_line = sequence_lines[-1]
 				line_items = line.split(" ")
 				line_items = line_denuller(line_items) # get rid of the empty elements in the list from the split.
@@ -350,48 +291,30 @@ def all_info_extractor (argx):
 				ret_line.append(line_items[3])
 				ret_lines.append(ret_line)
 				final_sequence_line = sequence_lines[i + 1]
-			#	print ("final_sequence_line is:")
-				# print (final_sequence_line)
 				break
 			else:
 				i += 1
 				continue	
-		#print(ret_lines)	
 
 		# now need to find the start and end positions for each line!!
 		i = 0
 		dr_coords = []
 		spacer_coords = []
 		line_coord = []
-		#print(sequence_lines)
-		#print(line_items)
 		final_line_items = line_denuller(final_sequence_line)
 		final_line_items = "".join(i for i in final_line_items if not i.isdigit()) # really shouldn't use this for readability reasons. But it is cool!!
 		final_line_items = final_line_items.strip('')
 		final_line_items = final_line_items.strip()
-	#	print(final_line_items)
 		dr_sequence = final_line_items
 		start_pos = ret_lines[0][0]
 		if (ret_lines[-1][-1][0] != "=" or len(ret_lines) == 1): # special filtering case for corrupted data!!
-			print("Bad data")
-			print(ret_lines)
 			switch = False
 			continue
-	#	print(switch)
-	#	print(sequence_lines[-1])
-	#	print(ret_lines)
 		arg1 = ret_lines[-2][0]
 		arg2 = ret_lines[-2][1]
 		arg3 = ret_lines[-2][-1]
 		end_pos = str(int(arg1) + int(arg2) + int(len(arg3)))
-	#	print(ret_lines[-2][0])
-	#	print(ret_lines[-2][1])
-	#	print(ret_lines[-2][-1])
 		while (i < len(ret_lines) - 2): #exclude final line and penultimate line
-			
-	#		print(ret_lines)
-			
-			
 			spacer_start_coord = int(ret_lines[i][0]) + int(ret_lines[i][1]) # start_pos + DR
 			spacer_end_coord = str(int(spacer_start_coord) + len(ret_lines[i][-1])) # length of spacer
 			dr_start_coord = ret_lines[i][0]
@@ -401,7 +324,6 @@ def all_info_extractor (argx):
 				i += 1
 				continue
 			dr_dots = ret_lines[i][-2]
-			print(dr_sequence)
 			my_dr_sequence = true_repeat(dr_sequence, dr_dots)	
 			left_flanking_sequence = ret_lines[i][-2] # check this in testing. May be more trouble than it's worth to include this information.
 			dr_size = str(int(dr_end_coord) - int(dr_start_coord))
@@ -418,7 +340,6 @@ def all_info_extractor (argx):
 			i += 1
 			continue
 		dr_dots = ret_lines[i][-2]
-		print(dr_sequence)
 		my_dr_sequence = true_repeat(dr_sequence, dr_dots)	
 		left_flanking_sequence = ret_lines[i][-2] # check this in testing. May be more trouble than it's worth to include this information.
 		dr_size = str(int(dr_end_coord) - int(dr_start_coord))
@@ -466,16 +387,12 @@ def merged_detectcrtpilercr_table_2_fasta_with_dr_offset_all_cases (table_name, 
 		new_spacer_left = Seq(spacer[12][(-1 * offset):] + spacer[14])
 		new_spacer_right = Seq(spacer[14] + spacer[12][: (offset - 1)])
 		genome_base_position = spacer[0].split("::")
-	#	print(genome_base_position)
 		genome_base_position = genome_base_position[1]
 		genome_base_position = genome_base_position.split(":")
 		genome_base_position = int(genome_base_position[0])
-
-		#the same id will be appended to all sequences!! Check this does not cause issues!!
 		spacer_id = spacer[0]
 		spacer_id = spacer[0].split(" ")
 		spacer_id = spacer_id[0]
-	#	print(spacer[10])
 		spacer_id = spacer_id + "|" + "spacer_start_pos:" + spacer[10] + "|" + "spacer_end_pos:" + spacer[11] + "|" + "global_start_pos:" + str(int(spacer[10]) + genome_base_position) + "|" + "global_end_pos:" + str(int(spacer[11]) + genome_base_position)
 		new_spacer_record = SeqRecord(new_spacer)
 		new_spacer_record.id = spacer_id
@@ -498,7 +415,7 @@ def merged_detectcrtpilercr_table_2_fasta_with_dr_offset_all_cases_but_better (t
 	offset = int(offset)
 	with open(table_name, "r") as csvfile:
 		spacer_table = list(csv.reader(csvfile))
-#	spacer_table = spacer_table[1:]	
+
 	ret_list = []	
 
 	crisprs = {}
@@ -513,14 +430,12 @@ def merged_detectcrtpilercr_table_2_fasta_with_dr_offset_all_cases_but_better (t
 		i = 0
 		while (i < len(crispr) - 1):
 			if (crispr[i][-2] == "" or crispr[i][10] == "" or crispr[i][11] == ""):
-			#	print(crispr[i][-2])
 				i += 1	
 				continue
 			new_spacer = Seq(crispr[i][12][(-1 * offset):] + crispr[i][14] + crispr[i+1][12][: (offset - 1)])
 			new_spacer_left = Seq(crispr[i][12][(-1 * offset):] + crispr[i][14])
 			new_spacer_right = Seq(crispr[i][14] + crispr[i+1][12][: (offset - 1)])
 			genome_base_position = crispr[i][0].split("::")
-	#	print(genome_base_position)
 			genome_base_position = genome_base_position[1]
 			genome_base_position = genome_base_position.split(":")
 			genome_base_position = int(genome_base_position[0])
@@ -557,7 +472,6 @@ def spacer_table_2_fasta_with_dr_offset_all_cases (table_name, offset): # offset
 		new_spacer_left = Seq(spacer[-2][(-1 * offset):] + spacer[-1])
 		new_spacer_right = Seq(spacer[-1] + spacer[-2][: (offset - 1)])
 		genome_base_position = spacer[0].split("::")
-	#	print(genome_base_position)
 		genome_base_position = genome_base_position[1]
 		genome_base_position = genome_base_position.split(":")
 		genome_base_position = int(genome_base_position[0])
@@ -594,7 +508,6 @@ def spacer_table_2_fasta_with_dr_offset_left (table_name, offset): # offset = nu
 	for spacer in spacer_table:
 		new_spacer = Seq(spacer[-2][(-1 * offset):] + spacer[-1])
 		genome_base_position = spacer[0].split("::")
-	#	print(genome_base_position)
 		genome_base_position = genome_base_position[1]
 		genome_base_position = genome_base_position.split(":")
 		genome_base_position = int(genome_base_position[0])

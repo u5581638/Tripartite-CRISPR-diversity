@@ -16,23 +16,15 @@ def true_repeat_indels (repeat, dots, repeat_start, repeat_size, sense, indels_p
 	if (indels_positions == []):
 		return [pilercr_pos_extractor_annotation_full_spacers.true_repeat(repeat,dots),0]
 	else:
-	#	print("Repeat_INDELS:")
-	#	print(indels_positions)
-	#	print("".join(indels_positions))
 		if (re.search("Deletion", "".join(indels_positions))):
-	#		print("Skipp!!!")
 			return (8,8)
 		else:	
 
-			indel_info = indels_positions
-	
+			indel_info = indels_positions	
 			indels = indels_positions
-
-			mutations = indels[0]
-			
+			mutations = indels[0]			
 			coordinates  = indels [1]
 			mutations = mutations.split(",")
-			print(mutations)
 			coordinates = coordinates[1:-1].split(",")
 			repeat_vector = []
 			if sense == 1:
@@ -50,38 +42,12 @@ def true_repeat_indels (repeat, dots, repeat_start, repeat_size, sense, indels_p
 				 ori_dots.insert(repeat_vector[i], list(len(mutations[i]) * "."))
 				 i += 1
 
-		#	print(ori_repeat)
-		#	print(ori_dots)	
 			flat_ori_repeat = list(itertools.chain(*ori_repeat))
-			flat_ori_dots = list(itertools.chain(*ori_dots))
-		#	print(flat_ori_repeat)
-		#	print(flat_ori_dots)
-		#	print(mutations)
-			
+			flat_ori_dots = list(itertools.chain(*ori_dots))			
 			mutation_str = "".join(mutations)
-		#	print(mutation_str)
 
 			return [pilercr_pos_extractor_annotation_full_spacers.true_repeat(flat_ori_repeat,flat_ori_dots), len(mutation_str)] 
 
-
-
-
-
-			# Insertions/point deletions
-		
-
-		#	deletion_coords = indel_info[1]
-		#	deletion_coords = (deletion_coords[1:-1])
-		#	deletion_coords = pilercr_pos_extractor_annotation_full_spacers.line_denuller deletion_coords.split(",")
-		#	for coord in deletion_coords:
-				# do I need all this? 
-				# best response is probably to delete the spacer given it likely being truncated!!
-				# think about what this means!!
-			#	if ((int(coord) > repeat_start and int(coord) < repeat_start + repeat_size and sense == 1) or (int(coord) < repeat_start and int(coord) > repeat_start + repeat_size and sense == -1)):
-
-
-		
-				
 
 
 # function to convert the output file produced by CRISPRdetect into csv format.
@@ -101,11 +67,8 @@ def tabulate(crispr_detect_url):
 		my_crispr = pilercr_pos_extractor_annotation_full_spacers.line_denuller(my_crispr)
 		crispr_header = my_crispr[0]
 		crispr_identifer = pilercr_pos_extractor_annotation_full_spacers.line_denuller (crispr_header.split("\t"))
-	#	print(crispr_identifer)
 		crispr_orientation = crispr_identifer[1]
-	#	print(crispr_orientation)
 		crispr_orientation.strip()
-	#	print(crispr_orientation)
 		crispr_orientation = crispr_orientation.split("Array_Orientation: ") [1]
 
 		crispr_identifer = crispr_identifer[0]
@@ -114,10 +77,7 @@ def tabulate(crispr_detect_url):
 		dr_repeat = ""
 		# iterate through the rows in the crispr
 		while (i < len(my_crispr)):
-		#	print(my_crispr[i])
-			my_row = my_crispr[i].split()
-			
-			
+			my_row = my_crispr[i].split()			
 			my_row = pilercr_pos_extractor_annotation_full_spacers.line_denuller(my_row) # remove empty entries
 
 			if (my_row[0] == "Position"):
@@ -127,8 +87,6 @@ def tabulate(crispr_detect_url):
 			if (my_row[0][0] == '=' and data_switch == 1):
 				data_switch = 0
 				dr_repeat = "".join(pilercr_pos_extractor_annotation_full_spacers.line_denuller( my_crispr[i + 1].split() [4] ))
-				
-		
 				questionable_array = "".join(pilercr_pos_extractor_annotation_full_spacers.line_denuller( my_crispr[i + 4].split() [4] ))
 				array_score = "".join(pilercr_pos_extractor_annotation_full_spacers.line_denuller( my_crispr [i + 4].split() [6] ))
 
@@ -142,11 +100,10 @@ def tabulate(crispr_detect_url):
 			i += 1	
 		k = 0 
 		while (k < len(ret_crispr)):
-		#	print("Ya")
 			sense = 1
 			if (crispr_orientation == "Reverse"):
 				sense = -1
-		#	print(crispr_orientation)
+
 			crispr_start = ret_crispr[0][0]
 			crispr_end = str(int(ret_crispr [-1][0]) + int(ret_crispr[-1][1]) * sense)
 			repeat_start = ret_crispr[k][0]
@@ -155,24 +112,20 @@ def tabulate(crispr_detect_url):
 			if (len(ret_crispr[k]) > 6 or '-' in ret_crispr[k][4]):
 				if (len(ret_crispr[k]) <= 6):
 					my_out = true_repeat_indels(snv_dr,ret_crispr[k][4], repeat_start, ret_crispr[k][3],sense)
-					print(my_out)
 					true_dr = my_out[0]
 					mutation_length = my_out[1]
 				else:
 					my_out = true_repeat_indels(snv_dr,ret_crispr[k][4], repeat_start, ret_crispr[k][3],sense, ret_crispr[k][6:])
-					print(my_out)
 					true_dr = my_out[0]
 					mutation_length = my_out[1]
 			else:
 				true_dr = snv_dr
-		#	print(mutation_length)
-		#	print(type(mutation_length))	
+	
 			repeat_end = str(int(repeat_start) + (int(ret_crispr[k][1]) + mutation_length )* sense)
 
 			spacer_start = str(int(repeat_end) + 1 * sense)
 			spacer_end = str(int(spacer_start) + (int(ret_crispr[k][3]) - 1) * sense)
-		#	print("details")
-		#	print(crispr_start, crispr_end, repeat_start, repeat_end, spacer_start, spacer_end)
+
 			# now just need to reconstitute the original drs.
 			
 			spacer = ret_crispr[k][5]
@@ -181,26 +134,13 @@ def tabulate(crispr_detect_url):
 				k += 1
 				continue
 
-		#	if (spacer[0] == "|"):
-			#	spacer = "" 
-		#		break # consider whether the final repeat is needed!
-			if ("-" in spacer): # omit rows with deleted spacers. Consider the validity of this!!
+			if ("-" in spacer): 
 				k += 1
 				continue	
 			spam_writer.writerow([crispr_identifer, crispr_orientation, final_direction_score, final_direction_confidence,questionable_array,array_score,crispr_start,crispr_end, repeat_start, repeat_end,spacer_start, spacer_end,true_dr,dr_repeat,spacer ])
 
 			k += 1
 
-
-
-
-
 	ret_out.close()
 	return 0	
-
-
-
-
-
-
 	

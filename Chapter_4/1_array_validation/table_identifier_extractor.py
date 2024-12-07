@@ -23,7 +23,6 @@ def hits_from_genomes (genomes, table_url, r=False):
 		else:
 			my_id = my_description_id	
 
-		print(my_id)
 		gene_dict[my_id] = gene
 	ret_url = open(table_url + "_rep_genome.fasta_hits.csv", "w")
 	spam_writer = csv.writer(ret_url)
@@ -36,9 +35,8 @@ def hits_from_genomes (genomes, table_url, r=False):
 			spam_writer.writerow(hit)
 			print("Target_found!!")
 		else:
-		#	print("Error!!")
 			pass
-#	print(gene_dict.keys())
+
 	ret_url.close()
 	return table_url + "_rep_genome.fasta_hits.csv"				
 
