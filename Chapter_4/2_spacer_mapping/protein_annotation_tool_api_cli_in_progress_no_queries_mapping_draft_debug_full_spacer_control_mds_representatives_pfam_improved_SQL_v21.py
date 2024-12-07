@@ -247,31 +247,21 @@ def genome_hit_lookup (hit_table, db_directory_path, genome_file_url, block, gen
 		block = SeqIO.parse(genome_row, "fasta")
 		for gene in block:
 			gene_key = gene.id.split("|")
-		#	true_gene_id = 
 			if (len(gene_key) == 1):
-			#	print("mate!!")
 				gene_key = gene_key[0]
 			else:
-				# this only works when the input data is either window or global genome blocks - not generalisable!!
 				gene_key = gene_key[1]	
 			if (gene_key in row[1]):
 				my_genome = gene
 				my_genome.id = gene_key
 				my_genome.description = ""  # my_genome.description # + "|" + row[0] # now sequence should be annotated with block + genome_id + sequence_id
-				# need to modify this code to erase the block name!! This is probably the easiest fix!!
 				SeqIO.write(my_genome, genome_file, "fasta") # This needs to be written to file then indexed with samtools
 	genome_file.close()
 	return 0
 
 #START!!
-# code for directly running from cmdline goes here!!
 # This is the main code for performing spacer mapping
-# end of code for cmdline.
-
-
-
-# need a true CLI interface!!!
-# input_flags:
+# input_flags (full set of options was not implemented):
 # -i input (either csv_file or input sequence in fasta format)
 # -t input_type (query/table)
 # -p use phmmer
@@ -547,7 +537,7 @@ if (spacer_generation_bypass_switch == 0):
 	if '-i' not in sys.argv:
 		db_directory_switch = 0
 	print(db_directory_switch)
-
+	# generate db to retrieve genomes via BLAST search
 	if (dont_initialise == 0):
 		if (os.path.isdir(db_directory_path)):
 			if (db_directory_switch == 1):
@@ -573,8 +563,6 @@ if (spacer_generation_bypass_switch == 0):
 			exit()
 
 
-
-	# also want to create a version of the protein capable of non-specific annotation given an input set of genomes (db_directory_switch_option == 0)
 	print("checkpoint 1!!")
 
 	# need to retrieve the corresponding genomes.
@@ -678,8 +666,8 @@ if (spacer_generation_bypass_switch == 0):
 		#	index = random.choices(L, k = 1) [0]
 			res = cur.execute('SELECT * FROM GENOMES WHERE RUN LIKE ?', (index,))
 			row = res.fetchone()
-			if (row != None): # There should not be an identical run number. THIS MAY BE A SOURCE OF BUGS!!!!!
-				print("random_generation!!") # This should
+			if (row != None): # 
+				print("random_generation!!") 
 			else:
 				break
 					
@@ -710,13 +698,9 @@ if (spacer_generation_bypass_switch == 0):
 		export_table.to_sql('GENOMES',sql_db_connect, if_exists='append', index=True)
 
 
-		SeqIO.write(my_genomes, b, "fasta") # rename the genome file to be consistent with the other settings. Better to use rename?
+		SeqIO.write(my_genomes, b, "fasta")
 
-	# need to add primary and foreign keys to sql table!!
 	sql_db_connect.close()
-	# now need to consider garbage collection
-
-	# mistake with head genome retrieval must be before this line!!!!!!!!!!!!!!!!!!!!!!!!
 	print("checkpoint 2!!")
 
 	# write prodigal + genemark orf translation of target genomes here!!
@@ -922,7 +906,7 @@ if (phage_genomes == 1):
 	in_seq = in_seq[-1] # extract just the basename
 	genome_sequences = list(SeqIO.parse(b_phage, "fasta")) # these are the phage genomes.
 
-	# may want to convert these genomes into a set!!!!
+	# convert these genomes into a set!
 	phage_dict = {}
 	for genome in genome_sequences:
 		if (genome.id not in phage_dict):
@@ -996,9 +980,7 @@ if (phage_genomes == 1):
 if (protein_generation_switch == 1):
 	input_genome_file_name = b_phage
 	generate_protein(input_genome_file_name,phage_protein_hits_block, rnafold_switch, merge_protein)
-# NEED TO FUNCTIONALISE THIS SECTION OF CODE FURTHER SO I CAN RUN TWO INSTANCES OF IT (HOST GENOME AND PHAGE!! - MAY CONSIDER ADDING A SLICING FUNCTION FROM THE SEED PROTEIN/MAPPED TARGET SITE)
 
-# Pipeline begins in earnest!!
 # start of gene_annotation_summary_table_generation
 
 with open (a, "r") as csvfile:
