@@ -52,8 +52,6 @@ if (virsorter_switch != 1):
 a = sys.argv[3]
 b = a + "_genomes.fasta"
 
-# THIS RNA CDS PREDICTION CODE SHOULD HAVE RUN EARLIER!!!
-
 
 
 if (virsorter_switch == 1):
@@ -74,8 +72,8 @@ if (rna_cds_not_run):
 	subprocess.run(["samtools", "faidx", b_phage + "_CDS_raw.fnn"])
 
 # END OF RNA CDS PREDICTION
-#subprocess.run(["/g/data/va71/crispr_pipeline_annotation/plasme.sh " + b + " " + b + "_plasmid_overlaps.fa " + str(cores)],shell=True)
-#subprocess.run(["/g/data/va71/crispr_pipeline_annotation/plasme.sh " + b_phage + " " + b_phage + "_plasmid_overlaps.fa " + str(cores)],shell=True)
+# subprocess.run(["/g/data/va71/crispr_pipeline_annotation/plasme.sh " + b + " " + b + "_plasmid_overlaps.fa " + str(cores)],shell=True)
+# subprocess.run(["/g/data/va71/crispr_pipeline_annotation/plasme.sh " + b_phage + " " + b_phage + "_plasmid_overlaps.fa " + str(cores)],shell=True)
 
 my_pickle_phage = open(phage_a + "_pickle_block_dict.pickle", "rb")
 phage_block_dict = pickle.load(my_pickle_phage)
@@ -93,9 +91,8 @@ if (phage_genomes == 1):
 my_pickle = open(a + "_pickle_block_dict.pickle", "rb")
 block_dict = pickle.load(my_pickle)
 my_pickle.close()
-sequence_master_info_file = open(a + "_summary.csv.txt", "r") # or could just use print statements!! Nah, may generate multiple files. Worth opening an independent stream.
+sequence_master_info_file = open(a + "_summary.csv.txt", "r")
 summary_frame = list(csv.reader(sequence_master_info_file))
-# need to create a table specifying the protein query, matching genome, extracted all orf positions and identity of each orf using HHpred/HMMsearch
 sequence_master_info_file.close()
 db_directory_switch = 1
 

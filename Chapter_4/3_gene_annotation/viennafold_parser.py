@@ -1,5 +1,4 @@
 # program to parse viennafold diagram output!
-# Output table should show the free energy for each hairpin! These can be used to assess whether or not secondary structure exists!!
 
 import sys
 import csv
@@ -12,7 +11,6 @@ def line_denuller(input_str):
 		i += 1
 	return ret_str
 
-
 # parse RNA secondary structure predictions to table.
 def parse(cds_url, ret_url):
 	my_sequence_handle = open(cds_url, "r")
@@ -20,7 +18,7 @@ def parse(cds_url, ret_url):
 	my_sequence_handle.close()
 	my_sequence = my_sequence.split("\n") # split into each line
 	i = 1
-	header = my_sequence[0].split(" ") [0] # take just the protein id - check this!!!
+	header = my_sequence[0].split(" ") [0] # take just the protein id
 	ret_list = []
 	print(my_sequence)
 	mea_line = my_sequence[-3].split("MEA=") [1]

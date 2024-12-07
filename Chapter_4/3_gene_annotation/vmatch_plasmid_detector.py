@@ -24,7 +24,6 @@ def plasmid_detect(vmatch_match_url_i, sequence_url, output_url):
 
 	v_match_output = vmatch_output_url.read()
 	v_match_output = v_match_output.split("# find direct substring matches (repeats)\n")
-	print(v_match_output)
 	if (len(v_match_output)  > 1): # may simply not split. this will be a common source of bugs
 		v_match_output = v_match_output[1]
 	else:
@@ -58,7 +57,7 @@ def plasmid_detect(vmatch_match_url_i, sequence_url, output_url):
 			print(len(v_match_output[i]))
 			i += 1
 			continue
-		print(v_match_output[i][0],v_match_output[i][4],direct_repeat_threshold)	
+
 		if (len(v_match_output[i][0]) > direct_repeat_threshold or len(v_match_output[i][4]) > direct_repeat_threshold):
 			spam_writer.writerow([sequence.id] + v_match_output[i])
 		i += 1

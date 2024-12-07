@@ -56,6 +56,8 @@ def pdb70_parse(sequence_url):
 		spam_writer.writerow([my_sequ_id, my_sequ_description, probability, e_value, score, similarity])
 	outfile.close()	
 	return	ret_list
+
+# function to parse output from hhblits to table (used in pfam).
 def pdb70_parse_pfam(sequence_url):
 
 	sequences = SeqIO.parse(sequence_url, "fasta")
