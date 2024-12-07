@@ -17,6 +17,5 @@ with open(sys.argv[3], "r") as csvfile2:
 	#print("program started")
 with open(sys.argv[4], "a") as csvfile3:
 	spam_writer = csv.writer(csvfile3)
-	print("Hi!!")
 	spam_writer.writerow([sys.argv[1], sys.argv[2], sys.argv[3], len(window_hit_table), len(database_hit_table), float(len(window_hit_table) / len(database_hit_table))])
 	
