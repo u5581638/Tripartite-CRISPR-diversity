@@ -48,7 +48,6 @@ for arr in arrays:
 		spamwriter.writerow(row)
 arr_out.close()
 
-# need to consider whether to check arrays in this format!! -> a dictionalised format would be preferred
 array_dict = {}
 for arr_group in arrays:
 	for arr in arr_group:
@@ -93,20 +92,6 @@ for m_phage in mapped_phages:
 	else:
 		mapped_phage_dict[phage_id].append(m_phage)
 
-
-# create a set of all mapped_phage_ids
-
-
-# need to mask all mapped contigs before doing the main loop:
-
-
-# start main loop:
-
-# will actually need to mask every mapped sequence in the mapped phage for effectiveness. This will require dictionalising all mapped hits which target the same phage sequence
-
-
-
-# change phage_set_id to dict mapping to target coords?
 print("Start!!")
 
 # masking all mapped_phage_contigs:
