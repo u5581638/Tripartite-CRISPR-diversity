@@ -59,16 +59,6 @@ strand_minus_one_ks_goodness <- ks.test(quantiles_strand_minus_one,"punif")
 
 
 
-# The problem with this test is that it's not calculated using the original distances. Hence the difference in mapping densities isn't meaningful because the 
-# sample size is arbitary.
-# nearly need to compute external what the significance is, then add this to the plot.
-
-
-#some part of this line is incorrect
-#strand_one_ks_goodness <- ks.test(x=pos_kde_frame$pos_kde.x,y=expected_kde_frame$expected_kde.x)
-#strand_minus_one_ks_goodness <- ks.test(x=neg_kde_frame$neg_kde.x,y=neg_kde_frame$neg_kde.y)
-
-
 if (strand_one_ks_goodness$p.value < 0.001) {
 	sig <- "***"
 } else if (strand_one_ks_goodness$p.value < 0.01) {
@@ -100,8 +90,5 @@ deviation_plot <- ggplot() + theme(panel.background = element_rect(colour = "bla
 quantiles_strand_one <- 1-(1-strand_one)^2
 quantiles_strand_minus_one <- 1-(1-strand_minus_one)^2
 
-# Given that this works on scaled spacers. I bet that the graphs shown in the paper actually represent scaled spacers (distance/contig length). In any case this would work in showing what we want to show!
-
-# need to compare the expected vs abs density y values
 my_out <- paste(i_sequence,"spacer_distribution_plotd_whole_5000_8_9_2024_a.png",sep="_")
 ggsave(my_out,width=10,height=9,units="in")

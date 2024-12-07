@@ -16,7 +16,6 @@ ncbi_dict = {}
 # unusual inversion of standard dict use.
 
 for row in raw_table:
-	print(row)
 	my_key = []
 	 # change this index for jgi
 	if (len(row) > 2):

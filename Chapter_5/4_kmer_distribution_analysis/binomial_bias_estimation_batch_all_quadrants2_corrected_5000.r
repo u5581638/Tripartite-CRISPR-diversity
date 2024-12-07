@@ -7,6 +7,9 @@ library(ggpubr)
 library(ggprism)
 library(EMT)
 
+# compute bionomial significance!!
+# apply a similar procedure to label each plot!!
+#  limit to [-5000,5000]
 
 setwd("D:/spacer_expansion/finished_problem_corrected_subtypes/finished_2")
 i_sequence <- "spcas9_detection_parallel_gadi_kmer14_29-3-2024.csv_non-self.csv_expanded.csv_corrected.csv_2_or_more_hits.csv_justified.csv_distances_annotated.csv_af.csv_h.csv"
@@ -23,10 +26,6 @@ coord_position <- max(c(quandrant_upper_size,quandrant_lower_size)) + 1
 # Bionomial probability
 # P(X) = ((n!) /(n-x)!x!)*pxqn-x
 strand_probability <- binom.test(quandrant_lower_size,total_size,1/2) 
-
-# need to draw and save a strand probability plot
-
-
 
 # now need to add the binomial calculated p-values
  
@@ -121,8 +120,6 @@ if (quad_4_p$p.value < 0.001) {
 } else {
 	qp4 <- "ns"
 }
-
-# need to draw C-bars -> has to be done manually because 
 
 #quad_2_3_h1_df <- data.frame(x1 = 0.5,x2 = 0.7,y1 = -1 * quadrant_3_size, y2 = -1 * quadrant_3_size) 
 #quad_2_3_v1_df <- data.frame(x1 = 0.5,x2 = 0.7,y1 = 1 * quadrant_2_size, y2 = 1 * quadrant_2_size) 

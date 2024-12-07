@@ -179,7 +179,7 @@ def gen_synthetic_phage(phage_length,phage_id):
 	return SeqRecord(Seq("".join(ret_str)),id=phage_id)
 
 
-# duplicate homologous kmers generated from spacers
+# de-duplicate homologous kmers generated from spacers
 def kmer_homolog_elimination(array,mapped_spacers):
 	arr_spacers = []
 	new_arr = []
@@ -208,7 +208,7 @@ def kmer_homolog_elimination(array,mapped_spacers):
 
 
 
-# duplicate homologous blast hits generated from mapping (for validation and comparison with kmer mapping only - not used)
+# de-duplicate homologous blast hits generated from mapping (for validation and comparison with kmer mapping only - not used)
 def blast_homolog_elimination(array,mapped_spacers):
 	# BLAST mapped spacers and eliminate the mapped spacers and any homologs
 	arr_spacers = []

@@ -17,7 +17,6 @@ ncbi_dict = {}
 
 for row in raw_table:
 	my_key = []
-	print(row)
 #	datatype = row[24] # change this index for jgi
 #	gen_species = row[7].split(" ")	
 #	my_key.append(datatype)

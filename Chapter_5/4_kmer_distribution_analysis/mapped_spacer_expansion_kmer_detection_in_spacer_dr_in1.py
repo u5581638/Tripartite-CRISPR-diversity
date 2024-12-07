@@ -1,7 +1,7 @@
 # mapped_spacer_expansion
 
 # map spacers onto contigs for which a pre-existing match already exists
-# This requires a two-step approach.
+# This requires a multi-step approach.
 
 # 1. Need to develop a pairwise alignment tool to substitute BLAST, which is unsuitable due to it's need to be indexed as a database.
 
@@ -13,8 +13,6 @@
 # 1. development of a pairwise tool to determine an identity score, identify all S-W matches, and exclude matching targets below this threshold. 
 #    The matched target start and end coordinates, as well as other properties should be saved and used to build a csv file in the same format as BLAST output 10.
 #	 This will simplify subsequent code to find primed spacers.
-
-# The mapped coordinates need to be reported as an extrapolation of their original positions
 
 from Bio import Align
 from Bio import SeqIO
@@ -30,8 +28,6 @@ import re
 import copy
 import subprocess
 import spacer_expansion_functions
-# size the total size of the gapped query alignment
-# This doesn't allow for deletions. Should be the combined additive length of
 
 kmer_switch = 1
 with open(sys.argv[1], "r") as csvfile:
@@ -88,22 +84,6 @@ for m_phage in mapped_phages:
 	else:
 		mapped_phage_dict[phage_id].append(m_phage)
 
-
-# create a set of all mapped_phage_ids
-
-
-# need to mask all mapped contigs before doing the main loop:
-
-
-# start main loop:
-# In this loop:
-# 1. Iterate through mapped sequences.
-# 2. Retrieve mapped phage sequences with coordinates overlapping the target range. A single contig should be sufficent!!
-# 3. Mask the original mapped sequence by substitution with "N"
-# 4. Perform pairwise alignments
-# 5. Save the original mapped alignment + additional alignments in the same mapped format as prior used to PPS calculation (may have to put NA for some columns).
-# 6. Write these entries to a file in append/write mode.
-# mapped phages need to be dictionalised so that the appropiate corresponding mapped gene can be looked up
 ret_out = open(sys.argv[4],"a")
 spamwriter = csv.writer(ret_out)
 # write the header
@@ -124,8 +104,6 @@ phage_count = 0
 # 4. Mask all existing target sites.
 # 5. Assign the new masked contigs to the new mapped_phage_dict.
 
-# change phage_set_id to dict mapping to target coords?
-
 for phage_set_id in phage_id_set:
 	i = 0
 	while (i < len(mapped_phage_dict[phage_set_id])):
@@ -137,13 +115,23 @@ for phage_set_id in phage_id_set:
 			for coord in target_coords:
 				mapped_phage_dict[phage_set_id][i] = spacer_expansion_functions.mask_contig(mapped_phage_dict[phage_set_id][i], int(coord[0]) - int(phage_contig_start) + 1,int(coord[1]) - int(phage_contig_start) + 1)
 		i += 1
+
+# create a set of all mapped_phage_ids
+# need to mask all mapped contigs before doing the main loop:
+# start main loop:
+# In this loop:
+# 1. Iterate through mapped sequences.
+# 2. Retrieve mapped phage sequences with coordinates overlapping the target range. A single contig should be sufficent!!
+# 3. Deduplicate homologous spacers
+# 4. Perform pairwise alignments
+# 5. Save the original mapped alignment + additional alignments in the same mapped format as prior used to PPS calculation (may have to put NA for some columns).
+# 6. Write these entries to a file in append/write mode.
+# mapped phages need to be dictionalised so that the appropiate corresponding mapped gene can be looked up
+
 for array in dedup_spacer_list:
 	# group spacers in array into lists based on a conserved phage contig`
 	phage_id_dict = {}
-	# do I need phage id dict? 
 	for spacer in array:
-		print("i:")
-		print(i)
 		i += 1
 		if (spacer[1] not in phage_id_dict):
 			phage_id_dict[spacer[1]] = [spacer]
@@ -177,7 +165,7 @@ for array in dedup_spacer_list:
 			if (kmer_switch != 1):
 				SeqIO.write(new_phage_contig, "contig1.fasta","fasta")
 				subprocess.run(["makeblastdb -in " + "contig1.fasta" + " -dbtype nucl"],shell=True)
-			# Exclude the original spacers + any spacers with homology (use BLAST) -> could use .
+			# Exclude the original spacers + any spacers with homology
 			for arr_spacer in matching_arr:
 				# should be able to eliminate this as these targets should be masked.
 				if (kmer_switch == 1):

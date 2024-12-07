@@ -43,19 +43,6 @@ def two_or_more(spacer_url):
 	with open (spacer_url, "r") as csvfile:
 		hit_table = list(csv.reader(csvfile))
 
-	# need to recognise when a specific array has already been detected.
-	'''
-	hit_dict = {}
-	for hit in hit_table:	
-		hit_id = hit[0].split("|")
-		hit_id = hit_id[0] + hit[1] + hit[8] + hit[9] + hit[18] + hit[19] # genome_id + phage + arr_start + arr_end
-		
-		# remove identical targets from the same array
-		if (hit_id not in hit_dict):
-			hit_dict[hit_id] = hit 
-	
-	hit_table = list(hit_dict.values())
-	'''
 	hit_dict = {}
 	for hit in hit_table:	
 		hit_id = hit[0].split("|")

@@ -127,8 +127,6 @@ for array in dedup_spacer_list:
 	# group spacers in array into lists based on a conserved phage contig`
 	phage_id_dict = {}
 	for spacer in array:
-		print("i:")
-		print(i)
 		i += 1
 		if (spacer[1] not in phage_id_dict):
 			phage_id_dict[spacer[1]] = [spacer]
@@ -145,18 +143,16 @@ for array in dedup_spacer_list:
 			matching_arr =  spacer_expansion_functions.blast_homolog_elimination(matching_arr, ms_rows)
 		else:
 			matching_arr = spacer_expansion_functions.kmer_homolog_elimination(matching_arr,ms_rows)
-		# take a random phage key
 		contig_number = len(mapped_phage_dict[phage_id])
 		mapped_phage_random = []
 		k = 0 
+		# take random contigs from the pool of phage-mapped contigs without replacement.
 		while (k < contig_number):
 			phage_index = random.randint(0,len(phage_pool) - 1)
 			phage_contigv = phage_pool.pop(phage_index)
 			mapped_phage_random.append(phage_contigv)
 			k += 1
-		# take 4 random contigs from the pool of phage-mapped contigs without replacement.
 
-		 # should this be without replacement??
 		for new_phage_contig in mapped_phage_random:	
 			phage_contig_start = new_phage_contig.id.split(":") [1]
 			phage_contig_end = phage_contig_start.split("-") [1]
@@ -167,10 +163,9 @@ for array in dedup_spacer_list:
 			if (kmer_switch != 1):
 				SeqIO.write(new_phage_contig, "contig1.fasta","fasta")
 				subprocess.run(["makeblastdb -in " + "contig1.fasta" + " -dbtype nucl"],shell=True)
-			# Exclude the original spacers + any spacers with homology (use BLAST) -> could use .
+			# Exclude the original spacers + any spacers with homology.
 			for arr_spacer in matching_arr:
-					# should be able to eliminate this as these targets should be masked.
-					# should include the option to do kmer comparison instead.
+				# should be able to eliminate this without causing bias as these targets should be masked.
 				if (kmer_switch == 1):
 					pairwise_mapping = spacer_expansion_functions.kmer_pairwise_alignment_query_length_spacer_coord(arr_spacer[14],20,5,arr_spacer[-1],arr_spacer[0], new_phage_contig,10)
 					pairwise_mapping2 = spacer_expansion_functions.kmer_pairwise_alignment_query_length_spacer_coord(arr_spacer[14][-5:] + arr_spacer[12] + arr_spacer[14][:5],20,5,arr_spacer[-1],arr_spacer[0], new_phage_contig,10)
@@ -201,8 +196,6 @@ for array in dedup_spacer_list:
 					spamwriter2.writerow([mapped_spacer_id] + [pairwise_mapping2[1].split(":")[0]] + pairwise_mapping2[2:8] + [target_start,target_end] + pairwise_mapping2[10:11] + ["NA","NA","NA","NA","NA","NA", arr_spacer[6],arr_spacer[7],arr_spacer[8],arr_spacer[9],arr_spacer[10],arr_spacer[11],arr_spacer[12],arr_spacer[13],arr_spacer[14],arr_spacer[15],arr_spacer[16],arr_spacer[-2],arr_spacer[-1]])
 			if (kmer_switch != 1):
 				subprocess.run("rm contig1.fasta",shell=True)
-							# consider some control statements to flag errors in case things don't.
-					# for each spacer in the array (bar the original) do the pairwise alignment
 				# The above if statement should always be triggered at least once unless something is broken with the mapped genome
 	# can I map arrays to their mapped phages by id? Use tuples as key?
 

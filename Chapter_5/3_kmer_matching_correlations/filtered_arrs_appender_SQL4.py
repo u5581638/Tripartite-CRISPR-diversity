@@ -209,18 +209,10 @@ def number_arrays (merged_table): # number arrays can assign the relative positi
 			array_dict[genome_id + row[6] + row[7]] = [row]# want to be able to add different arrays in each genome as seperate groups
 			arr_index += 1
 		else: # This is the problematic row as with arr_index incrementing there can never be two identical rows
-			# Is this condition ever triggered?
-		#	print("Yello!!")
 			array_dict[genome_id + row[6] + row[7]].append(row)
-		#	print(array_dict[genome_id + row[6] +row[7]])
 	i = 0 
-	# iterate through the array containing a list of lists of spacer coordinates for each CRISPR_array. Add a row if the spacer value is not within within 10bp of the other rows. Must not map to self  
-# 2. NOT WHAT THIS DOES!!! - (Determine if the spacer start/end coordinates are all within the bounds of one array!!)
-# consider whether this function is worth it? May just unnessessarily distort data	
-		
-	#	Is this function nessessary. A simplier way to create an array dictionary would be to just use the start/end coordinates. Have already previously checked for overlap!!
-	#	array_dict[array] = is_overlapping(array_dict[array]) # should split list entries in seperate arrays in individual genomes. Need to test this!!!
-		#
+	# 2. iterate through the array containing a list of lists of spacer coordinates for each CRISPR_array. Add a row if the spacer value is not within within 10bp of the other rows. Must not map to self  
+#  (Determine if the spacer start/end coordinates are all within the bounds of one array)
 
     # 3. Sort the arrays and number by the oldest spacers!!
 	crispr_index = 0
@@ -230,11 +222,9 @@ def number_arrays (merged_table): # number arrays can assign the relative positi
 				array_dict[genome] = sorted(array_dict[genome], key=lam_sort, reverse=True) # sort by descending spacers because PFS is the last spacer
 			except:
 				print(array_dict[genome])
-		# Otherwise must be reverse
 		else:
-		#	print(array_dict[genome])
 			array_dict[genome] = sorted(array_dict[genome], key=lam_sort)	
-		k = 0 # This IS THE SPACER NUMBER INDEX IN THE PRESUMED ORDER OF WHEN SPACERS WERE INTEGRATED BASED ON THEIR ORIENTATION!! IS THIS A VALID ASSUMPTION???
+		k = 0 
 		while(k < len(array_dict[genome])):
 			array_dict[genome][k].append(crispr_index) # append the crispr_array number
 			array_dict[genome][k].append(str(k))
@@ -245,7 +235,7 @@ def number_arrays (merged_table): # number arrays can assign the relative positi
 
 	return ret_table # may want to save this to seperate file!!!
 
-# function to generate a concensous set of array predictions and to number each spacer from the PPS
+# function to generate a concensus set of array predictions and to number each spacer from the PPS
 def spacer_hits_appender(filtered_spacer_hit_url, merged_spacer_table_url, output_url):
 	filtered_spacer_hit_url = open(filtered_spacer_hit_url, "r")
 	merged_spacer_table_url = open(merged_spacer_table_url, "r")
@@ -265,22 +255,6 @@ def spacer_hits_appender(filtered_spacer_hit_url, merged_spacer_table_url, outpu
 	merged_spacer_table = largest_array_merge(merged_spacer_table)		
 	merged_spacer_table = number_arrays(merged_spacer_table[1:]) # assign numbers for each spacer relative to the PFS
 	filtered_spacer_hits = list(csv.reader(filtered_spacer_hit_url))
-	'''
-	print(merged_spacer_table)
-	out_file = open("merge_numbered.csv","w")
-	number_writer = csv.writer(out_file)
-	for ele in merged_spacer_table:
-		for row in ele:
-			number_writer.writerow(row)
-	out_file.close() 
-#	exit()
-	ret_out = open("check_merged_numbering.csv","w")
-	spoof_writer = csv.writer(ret_out)
-	for crispr in merged_spacer_table:
-		for row in crispr:
-			spoof_writer.writerow(row)
-	ret_out.close()
-'''
 
 	spam_writer = csv.writer(output_url)
 	spam_writer.writerow(["Spacer_id","Phage_id","Perc_id","Length", "Mismatches","Gapopen","query_start","query_end","Mapped_start_site","Mapped_end_site","evalue","bitscore","Genome_id","orientation","orientation_score","orientation_confidence","questionable_array","array_score","CRISPR-start","CRISPR-end","repeat_start","repeat_end","spacer_start","spacer_end","dr_repeat_original","dr_repeat_concensous","spacer","Array_tool","run","array_number","spacer_number"])
@@ -288,24 +262,14 @@ def spacer_hits_appender(filtered_spacer_hit_url, merged_spacer_table_url, outpu
 	out_row = []
 
 	spacer_dict = {}
-	# why is this double looped!!
 	for hit in merged_spacer_table:
 		for spacer in hit:
 			spacer_id = spacer[0].split(" ")
 			spacer_id = spacer_id[0]
 			spacer_dict[(spacer_id.strip(), str(int(float(spacer[10]))).strip(), str(int(float(spacer[11]))).strip())] = spacer
-#	all_keys = spacer_dict.keys()
-#	my_out = open("outfile.csv","w")
-#	spa_writer = csv.writer(my_out)
-#	for akey in all_keys:
-#		spa_writer.writerow(akey)
-#	my_out.close()
-
 	i = 0
 	for spacer in filtered_spacer_hits:
-	#	print("start of loop")
 		spacer_id = spacer[0].split("|")
-	#	print(spacer_id)
 		spacer_start = spacer_id[1].split("spacer_start_pos:") [1]
 		spacer_end = spacer_id[2].split("spacer_end_pos:") [1]
 		spacer_id = spacer_id[0]
@@ -313,9 +277,7 @@ def spacer_hits_appender(filtered_spacer_hit_url, merged_spacer_table_url, outpu
 		spacer_start = spacer_start.split("|") [0]
 		spacer_end = spacer_end.split("|") [0]
 		if (spacer_id.strip(), spacer_start.strip(), spacer_end.strip()) in spacer_dict:
-			# This might be a flawed line!!
 			out_row = spacer + spacer_dict[(spacer_id.strip(), spacer_start.strip(), spacer_end.strip())]
-		#	print("Checked_row!!")
 		else:
 			# this needs to be subject to a check as well!!
 			print("Error, original mapping sequence and orientation not found") # unless a mistake has been made, there should never be a case where the spacer + orientation information can't be retrieved and mapped to the hits. However, some sequences are removed from the merged table. Which may account for this!!
@@ -324,9 +286,6 @@ def spacer_hits_appender(filtered_spacer_hit_url, merged_spacer_table_url, outpu
 		spam_writer.writerow(out_row)
 		out_table.append(out_row)
 		i += 1
-	#	print(len(filtered_spacer_hits))
-	#	print(i)
-	# First number the arrays (may want to save to seperate file) then merge with filtered spacer hits -> Use existing code as a template!!
 	print("done_arr_appending!!")
 	filtered_spacer_hit_url.close()
 	merged_spacer_table_url.close()

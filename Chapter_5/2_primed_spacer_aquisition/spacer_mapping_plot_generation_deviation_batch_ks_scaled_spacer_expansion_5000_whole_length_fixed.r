@@ -34,10 +34,9 @@ expected_kde_frame <- data.frame(expected_kde$x,expected_kde$y)
 expected_minus_one_kde <- density(expected_minus_one,adjust = 1, kernel = c("gaussian"), window = kernel, n=512,from=-5000,to=5000, bw=50) 
 expected_kde_minus_one_frame <- data.frame(expected_minus_one_kde$x,expected_minus_one_kde$y)
 
-#should this be scaled spacers???? -> check this?
+#filter PPS-spacer distances pairs between [-5000, 5000]????
 spacers <- spacers %>% filter(distance < 5000) %>% filter(distance > -5000)
 n_size = length(spacers$distance)
-print(n_size)
 n_size = paste("n:" , n_size, sep=" ")
 
 strand_one <- scaled_spacers %>% filter(mapped_strand==1) %>% pull(distance)
@@ -54,23 +53,10 @@ expected_kde_minus_one_frame <- data.frame(expected_minus_one_kde$x,expected_min
 
 strand_one <- scaled_spacers %>% filter(mapped_strand==1)  %>% pull(deviation)
 strand_minus_one <- scaled_spacers %>% filter(mapped_strand==-1)  %>%  pull(deviation)
-# scaled_spacers %>% mutate(quantile = 1-(1-distance)^2)
 quantiles_strand_one <- 1-(1-strand_one)^2
 quantiles_strand_minus_one <- 1-(1-strand_minus_one)^2
 strand_one_ks_goodness <- ks.test(quantiles_strand_one,"punif")
 strand_minus_one_ks_goodness <- ks.test(quantiles_strand_minus_one,"punif")
-
-
-
-# The problem with this test is that it's not calculated using the original distances. Hence the difference in mapping densities isn't meaningful because the 
-# sample size is arbitary.
-# nearly need to compute external what the significance is, then add this to the plot.
-
-
-#some part of this line is incorrect
-#strand_one_ks_goodness <- ks.test(x=pos_kde_frame$pos_kde.x,y=expected_kde_frame$expected_kde.x)
-#strand_minus_one_ks_goodness <- ks.test(x=neg_kde_frame$neg_kde.x,y=neg_kde_frame$neg_kde.y)
-
 
 if (strand_one_ks_goodness$p.value < 0.001) {
 	sig <- "***"

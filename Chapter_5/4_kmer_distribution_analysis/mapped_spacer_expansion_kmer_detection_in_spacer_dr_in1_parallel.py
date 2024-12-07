@@ -2,8 +2,8 @@
 
 # parallelised version of mapped_spacer_expansion_kmer_detection_in_spacer_dr_in1.py
 
-# need to mapp spacers onto contigs for which a pre-existing match already exists
-# This will require a two-step approach.
+# map spacers onto contigs for which a pre-existing match already exists
+# This requires a two-step approach.
 
 # 1. Need to develop a pairwise alignment tool to substitute BLAST, which is unsuitable due to it's need to be indexed as a database.
 
@@ -16,7 +16,6 @@
 #    The matched target start and end coordinates, as well as other properties should be saved and used to build a csv file in the same format as BLAST output 10.
 #	 This will simplify subsequent code to find primed spacers.
 
-# The mapped coordinates need to be reported as an extrapolation of their original positions
 
 from Bio import Align
 from Bio import SeqIO
@@ -34,8 +33,6 @@ import subprocess
 import spacer_expansion_functions
 import fcntl
 from multiprocessing import Pool
-# size the total size of the gapped query alignment
-# This doesn't allow for deletions. Should be the combined additive length of
 
 kmer_switch = 1
 with open(sys.argv[1], "r") as csvfile:
@@ -104,17 +101,13 @@ for m_phage in mapped_phages:
 
 
 # start main loop:
-# In this loop:
-# 1. Iterate through mapped sequences.
-# 2. Retrieve mapped phage sequences with coordinates overlapping the target range. A single contig should be sufficent!!
-# 3. Mask the original mapped sequence by substitution with "N"
-# 4. Perform pairwise alignments
-# 5. Save the original mapped alignment + additional alignments in the same mapped format as prior used to PPS calculation (may have to put NA for some columns).
-# 6. Write these entries to a file in append/write mode.
-# mapped phages need to be dictionalised so that the appropiate corresponding mapped gene can be looked up
 
 # will actually need to mask every mapped sequence in the mapped phage for effectiveness. This will require dictionalising all mapped hits which target the same phage sequence
 
+
+
+# change phage_set_id to dict mapping to target coords?
+print("Start!!")
 
 # masking all mapped_phage_contigs:
 # 1. iterate through the mapped spacer list
@@ -123,9 +116,7 @@ for m_phage in mapped_phages:
 # 4. Mask all existing target sites.
 # 5. Assign the new masked contigs to the new mapped_phage_dict.
 
-# change phage_set_id to dict mapping to target coords?
-print("Start!!")
-print(cores)
+
 a = 0
 for phage_set_id in phage_id_set:
 	if (phage_set_id not in mapped_phage_dict):
@@ -143,27 +134,29 @@ for phage_set_id in phage_id_set:
 			for coord in target_coords:
 				mapped_phage_dict[phage_set_id][i] = spacer_expansion_functions.mask_contig(mapped_phage_dict[phage_set_id][i], int(coord[0]) - int(phage_contig_start) + 1,int(coord[1]) - int(phage_contig_start) + 1)
 		i += 1
-print("Good")
-# Do I need dedup_spacer_list to do phage contig masking?
+
 ret_out = open(sys.argv[4],"a")
 spamwriter = csv.writer(ret_out)
-	# write the header
+# write the header
 spamwriter.writerow(["Spacer_id","Phage_id","Perc_id","Length", "Mismatches","Gapopen","query_start","query_end","Mapped_start_site","Mapped_end_site","evalue","bitscore","Genome_id","orientation","orientation_score","orientation_confidence","questionable_array","array_score","CRISPR-start","CRISPR-end","repeat_start","repeat_end","spacer_start","spacer_end","dr_repeat_original","dr_repeat_concensous","spacer","Array_tool","array_number","spacer_number"])
 
 ret_out2 = open(sys.argv[4] + "_dr.csv","a")
 spamwriter2 = csv.writer(ret_out2)
-	# write the header
+# write the header
 spamwriter2.writerow(["Spacer_id","Phage_id","Perc_id","Length", "Mismatches","Gapopen","query_start","query_end","Mapped_start_site","Mapped_end_site","evalue","bitscore","Genome_id","orientation","orientation_score","orientation_confidence","questionable_array","array_score","CRISPR-start","CRISPR-end","repeat_start","repeat_end","spacer_start","spacer_end","dr_repeat_original","dr_repeat_concensous","spacer","Array_tool","array_number","spacer_number"])	
 
 ret_out.close()
 ret_out2.close()
+
+
+
+# match spacer derived kmers to mapped sequences in parallel.
 def parallel_kmer_search(array):
 	i = 0
 	phage_count = 0
 	print("Function_start")
 	# group spacers in array into lists based on a conserved phage contig`
 	phage_id_dict = {}
-	# do I need phage id dict? 
 	for spacer in array:
 		i += 1
 		if (spacer[1] not in phage_id_dict):
@@ -172,6 +165,15 @@ def parallel_kmer_search(array):
 			phage_id_dict[spacer[1]].append(spacer)
 	matching_arr = array_dict[(spacer[0].split("|")[0],int(spacer[-2]))]
 	print("Main_loop:::::")
+	# In this loop:
+	# 1. Iterate through mapped sequence entries.
+	# 2. Retrieve mapped phage sequences with coordinates overlapping the target range. A single contig should be sufficent!!
+	# 3. Deduplicate homologous spacers.
+	# 4. Perform pairwise alignments
+	# 5. Save the original mapped alignment + additional alignments in the same mapped format as prior used to PPS calculation (may have to put NA for some columns).
+	# 6. Write these entries to a file in append/write mode.
+	# mapped phages need to be dictionalised so that the appropiate corresponding mapped gene can be looked up
+
 	for phage_id in phage_id_dict:
 		# need to sort according to mapped phage genome.
 		ms_rows = []
@@ -202,7 +204,7 @@ def parallel_kmer_search(array):
 			if (kmer_switch != 1):
 				SeqIO.write(new_phage_contig, "contig1.fasta","fasta")
 				subprocess.run(["makeblastdb -in " + "contig1.fasta" + " -dbtype nucl"],shell=True)
-			# Exclude the original spacers + any spacers with homology (use BLAST) -> could use .
+			# Exclude the original spacers + any spacers with homology
 			for arr_spacer in matching_arr:
 				# should be able to eliminate this as these targets should be masked.
 				if (kmer_switch == 1):
@@ -252,7 +254,7 @@ def parallel_kmer_search(array):
 pool = Pool(cores)
 # run kmer matching in paralllel.
 pool.map(parallel_kmer_search, dedup_spacer_list)
-print("Bye3")
+print("Bye")
 #	parallel_kmer_search(array,array_dict,mapped_phage_dict,kmer_size)
 pool.close()
 pool.join()

@@ -45,12 +45,8 @@ def kmer_pairwise_alignment_query_length_spacer_coord(spacer,min_seq_id,coverage
 			switch = 1
 			break
 		if (mr):
-			# need to check the directions are correct
-			# Should be (contig) - mr.start() + abs(qstart)?
 			match_start = len(contig) - mr.start() + abs(spacer_size - int(qstart)) # kmer start and end coordinates
-			# Should be len(contig) - mr.end() - abs(spacer_size - qend)
 			match_end = len(contig) - mr.end() - int(qend)
-			# In the end the mipoint remains unchanged so the original math may be fine even though incorrect!!
 			# May be useful to delete the reverse complement section so the matching sequence can be checked
 			match_sequence = reverse_complement(mr.group(0)) # take the reverse complement to be consistent with the normal frame
 			switch = 1

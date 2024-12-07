@@ -28,8 +28,6 @@ for row in jgi_table:
 	jgi_dict[row[12]] = row
 
 jgi_url.close()
-print(sys.argv[1])
-print(len(host_ids))
 in_count = 0
 ret_out = open(sys.argv[3],"w")
 spamwriter = csv.writer(ret_out)

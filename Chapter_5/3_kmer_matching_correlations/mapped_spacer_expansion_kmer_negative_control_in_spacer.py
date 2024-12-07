@@ -32,7 +32,7 @@ arr_out.close()
 
 
 # Note that this is a list of lists of arrays each each unique array is a list in and of itself!
-# need to consider whether to check arrays in this format!! -> a dictionalised format would be preferred
+# Need to consider whether to check arrays in this format!! -> a dictionalised format would be preferred
 array_dict = {}
 for arr_group in arrays:
 	for arr in arr_group:
@@ -42,7 +42,6 @@ for arr_group in arrays:
 		else:
 			array_dict[arr_id].append(arr)	
 # code for array dictionary goes below:
-
 # next need to load mapped spacer genes and mask
 with open(sys.argv[2],"r") as csvfile:
 	dedup_spacer_hits = list(csv.reader(csvfile))
@@ -115,8 +114,6 @@ for array in dedup_spacer_list:
 	# group spacers in array into lists based on a conserved phage contig`
 	phage_id_dict = {}
 	for spacer in array:
-		print("i:")
-		print(i)
 		i += 1
 		if (spacer[1] not in phage_id_dict):
 			phage_id_dict[spacer[1]] = [spacer]
@@ -149,24 +146,21 @@ for array in dedup_spacer_list:
 			# This code needs to be run iteratively to mask multiple parts of the contig if multiple mapping occurs.
 			
 			new_phage_contig = spacer_expansion_functions.gen_synthetic_phage(phage_len,new_phage_contig.id)
-			#	for coord in target_coords:
-			#		new_phage_contig = mask_contig(new_phage_contig, int(coord[0]) - int(phage_contig_start) + 1,int(coord[1]) - int(phage_contig_start) + 1)			
-
 				# this may be a bug!! -> no becuase it looks for arrays rather than matched genomes	
-				
-				
-				# code to eliminate spacers with homology to the existing spacers using BLAST and target coord info
+				# code to eliminate spacers with homology to the existing spacers
+				# Exclude the original spacers + any spacers with homology.
 
-
+				# should be able to eliminate this as these targets should be masked.				
 				
-				# end of code to eliminate homologous spacers
 			original_spacers = []
 			if (kmer_switch != 1):
 				SeqIO.write(new_phage_contig, "contig1.fasta","fasta")
 				subprocess.run(["makeblastdb -in " + "contig1.fasta" + " -dbtype nucl"],shell=True)
-			# Exclude the original spacers + any spacers with homology (use BLAST) -> could use .
+			
+			# for each spacer in the array (bar the original) do the pairwise alignment
+			# want to select just the subset of arrays corresponding to the mapped spacers.
+			# after selection, should just work from the arrays against a negative control
 			for arr_spacer in matching_arr:
-				# should be able to eliminate this as these targets should be masked.
 				if (kmer_switch == 1):
 					pairwise_mapping = spacer_expansion_functions.kmer_pairwise_alignment_query_length_spacer_coord(arr_spacer[14],20,5,arr_spacer[-1],arr_spacer[0], new_phage_contig,10)
 					pairwise_mapping2 = spacer_expansion_functions.kmer_pairwise_alignment_query_length_spacer_coord(arr_spacer[14][-5:] + arr_spacer[12] + arr_spacer[14][:5],20,5,arr_spacer[-1],arr_spacer[0], new_phage_contig,10)
@@ -196,13 +190,7 @@ for array in dedup_spacer_list:
 					
 			if (kmer_switch != 1):
 				subprocess.run("rm contig1.fasta",shell=True)
-				# consider some control statements to flag errors in case things don't.
-				# for each spacer in the array (bar the original) do the pairwise alignment
-				# The above if statement should always be triggered at least once unless something is broken with the mapped genome
-	# can I map arrays to their mapped phages by id? Use tuples as key?
 print("phage_count:")
 print(phage_count)		
 ret_out.close()
 ret_out2.close()
-# want to select just the subset of arrays corresponding to the mapped spacers.
-# after selection, should just work from the arrays against a negative control
