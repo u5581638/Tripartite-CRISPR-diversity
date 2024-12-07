@@ -20,7 +20,7 @@ mygraph <- set.edge.attribute(mygraph, "weight",index=E(mygraph),value=0.001)
 my_layout <- layout_with_fr(mygraph)
 my_layout <- norm_coords(my_layout, ymin=-1, ymax=1, xmin=-1, xmax=1) # normalise the coordinates to a plane between -1,1
 
-# need to create a dataframe with the component numbers as column headers and 
+# need to create a dataframe with the component numbers as column headers 
 component_vec <- out_comp$component
 comp_x <- my_layout[,1]
 comp_y <- my_layout[,2]
