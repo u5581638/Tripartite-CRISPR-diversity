@@ -457,8 +457,6 @@ while (i < len (sys.argv)):
 			padlocplus_switch_novel = 1
 			i += 1		
 
-	print(i)	
-
 eggnog_switch=0
 vmatch_switch=0
 virsorter_switch=0
@@ -486,7 +484,7 @@ if (spacer_generation_bypass_switch == 0):
 		gold_Analysis_project = pandas.read_excel(golddata_url,sheet_name="Analysis Project")
 
 
-	# Intialise SQL db
+	# Intialise SQL db (functionality was not used in final runs)
 		try:
 			gold_study.to_sql("GOLD_STUDY",sql_db_connect,if_exists='fail',index=False)
 			cur.execute("CREATE INDEX GOLD_STUDY_ID_INDEX ON GOLD_STUDY (`STUDY GOLD ID`)")
@@ -565,7 +563,7 @@ if (spacer_generation_bypass_switch == 0):
 
 	print("checkpoint 1!!")
 
-	# need to retrieve the corresponding genomes.
+	# retrieve the corresponding genomes using query-based BLAST search or a table of genome sequence IDs.
 	print("db_directory_switch:")
 	print(db_directory_switch)
 	if (db_directory_switch != 0):
@@ -609,7 +607,7 @@ if (spacer_generation_bypass_switch == 0):
 			existing_block.close()
 
 
-		else:	
+		else: # start with a set of input genomes, as opposed to a query sequence	
 			subprocess.run(["cat " + b + " >> " + genome_hits_block],shell=True)
 		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/seqkit rmdup " + genome_hits_block],shell=True)
 		subprocess.run(["/g/data/va71/crispr_pipeline_annotation/seqkit faidx " + "--update-faidx " + genome_hits_block],shell=True)
@@ -617,13 +615,15 @@ if (spacer_generation_bypass_switch == 0):
 		# if option -q is used then prodigal should be used to predict proteins arising from tblastn hits.
 		# blastp should then identify these proteins.
 		# these proteins should then be retrieved!!
-		# these should also be a set, so that redundant proteins are removed.
+		# these should also be a representative set from mmseqs clustering, so that redundant proteins are removed.
+		
 		if (protein_query_switch == 1):
 			representative_table = genome_representative_clustering.rep_cluster(b, min_seq_id, db_directory_path, a, merge_protein, large_dataset, phylogeny_switch, sys.argv)
 			a = representative_table
 			with open (a, "r") as csvfile:
 				hit_table = list(csv.reader(csvfile))
 		
+		# generate SQL table (vestigal function)
 		genome_hit_sql_table_generation(hit_table,a, "".join(sys.argv), sql_db_connect) # need to reach here to bypass creating new genome blocks. The reason is because this function modifies the hit_table!!!
 		
 		# RUN this code as a standalone. Attempt to integrate the prefix ids. Should not need to rest!!!!
@@ -631,7 +631,6 @@ if (spacer_generation_bypass_switch == 0):
 		genome_prefix_ids = {}
 		genome_type = {}
 		genome_is = "HOST"
-	#	print(export_table.columns)
 		for entry in export_table['Genome_id']:
 			my_entry = entry
 			my_entry = my_entry.split("_") 	
@@ -735,12 +734,13 @@ if (spacer_generation_bypass_switch == 0):
 			m += 1
 		protopool.close()
 		protopool.join()
-else:
+else: # execute this if CRISPR-arrays have already been predicted and extracted.
+
 	b_basename = file_path + "_all_hits.csv" + "_genomes.fasta"
 	b_basename = b_basename.split("/") [-1]
 	# Need to put in a bypass to jump to this line of code!!!!!!
 
-# THis encode the raw detected CRISPR_arrays
+# predict CRISPR-arrays and merge predictions (run seperately of the main workflow intially)
 if (crispr_detect == 1 and crispr_orientation == 1):
 	pilercr_pos_extractor_annotation_full_spacers.merged_detectcrtpilercr_table_2_fasta(db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_reconciled_full_arr_positions.csv")
 else:	
@@ -763,7 +763,7 @@ for hit in hit_table:
 	spam_writer.writerow(hit)
 out_file.close()	
 # Parameters for spacer mapping!!
-# This parameters should be related to the dr offset score!!!
+# These parameters should be related to the dr offset score!!!
 perc_identity = 0.90
 dr_perc_identity = 0.90
 query_cover = 95
@@ -774,6 +774,7 @@ if (mapping_skip_switch == 0):
 		input_spacer_fasta = db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_reconciled_full_arr_positions.csv" + "_reconciled_spacers.fasta"
 	else:
 		input_spacer_fasta = db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_full_real_arr_positions.csv" + "_spacers.fasta"
+	# filter spacers which are misidentified and actually concatenated elements of entire arrays
 	false_crispr_array_spacers_filtration.filtration(input_spacer_fasta)
 	input_spacer_fasta = input_spacer_fasta + "_arrs_filtered.fasta"
 	if (tony_mapping_switch == 1):
@@ -781,6 +782,7 @@ if (mapping_skip_switch == 0):
 			input_dr_spacer_fasta = db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_reconciled_full_arr_positions.csv" + "_drs_" + str(offset) + "_reconciled_spacers.fasta"
 		else:
 			input_dr_spacer_fasta = db_directory_path + "spacer_distribution_analysis/" + b_basename + "_crisprs" + ".lst" + "_full_real_arr_positions_tony.csv" + "_drs_" + str(offset) + "_spacers.fasta"
+		# filter spacers which are misidentified and actually concatenated elements of entire arrays
 		false_crispr_array_spacers_filtration.filtration(input_dr_spacer_fasta)
 		input_dr_spacer_fasta = input_dr_spacer_fasta + "_arrs_filtered.fasta"
 		print("Good!!")
@@ -790,7 +792,7 @@ if (mapping_skip_switch == 0):
 	print (block_directory)
 	print (perc_identity)
 	print(cores)
-	# subproccess call to script mapping spacers barcoded with direct repeat handles
+	# subproccess call to script which maps spacers barcoded with direct repeat handles
 	subprocess.run(["/g/data/va71/crispr_pipeline_annotation/pipe_line_source_files/nested_mpirun_script_no_qsub_flock_optimised_test_script.sh", input_spacer_fasta, block_directory, str(perc_identity), str(cores), "/g/data/va71/crispr_pipeline_annotation/pipe_line_source_files/", db_directory_path, "co_occurrance_bug_diagnostics_results/", str(query_cover), formatting ]) # what input args are required??
 		
 if (tony_mapping_switch == 1):
@@ -851,7 +853,6 @@ cur.execute("CREATE INDEX IF NOT EXISTS GENOME_ID_INDEX ON `PRIMED_SPACER_2+_SPA
 cur.execute("CREATE INDEX IF NOT EXISTS PHAGE_ID_INDEX ON `PRIMED_SPACER_2+_SPACER_HITMAP_DISTANCES` (Phage_id)")
 sql_db_connect.commit()
 distance_table.to_sql("PRIMED_SPACER_2+_HITMAP_DISTANCES", sql_db_connect, if_exists='append', index=True)
-	#  
 	
 sql_db_connect.close()
 
@@ -947,12 +948,13 @@ if (phage_genomes == 1):
 		ret_ele = [in_seq, phage_a, gene_name, gene_id]
 		phage_summary_frame.append(ret_ele)
 	
-	# Once These elements have been added to the table to only sql statements to add are in the annotation_parallelisation script. This requires using locks but is much easier conceptually!!
+	# construct genome summary csv file for mapped sequences
 	for frame in phage_summary_frame:
-		summary_writer.writerow(frame) # could do this concurrently with writing in memory!!
+		summary_writer.writerow(frame) 
 	phage_master_info_file.close()
-	SeqIO.write(genome_sequences,b_phage, "fasta") # Need this to remove genome_sequences not written from b_phage. Note. These read/write operations will slow the program noticably, even though they are not super_compute intensive.
+	SeqIO.write(genome_sequences,b_phage, "fasta") 
 	
+	# concatenate to a file containing an indexed form of all mapped phage sequences
 	if (os.path.isfile(phage_hits_block + ".fai")):
 		# need to only add genomes which are not already in the data block. Extract the ids from the samtools file
 		with open (phage_hits_block + ".fai", "r") as csvfile:
@@ -967,7 +969,6 @@ if (phage_genomes == 1):
 		new_genomes = SeqIO.parse(genome_sequences, "fasta")
 		existing_block = open(phage_hits_block, "a")
 		for genome in genome_sequences:
-			print(genome.id)
 			if (genome.id not in fai_headers):
 				SeqIO.write(genome, existing_block, "fasta")
 		existing_block.close()
@@ -981,7 +982,7 @@ if (protein_generation_switch == 1):
 	input_genome_file_name = b_phage
 	generate_protein(input_genome_file_name,phage_protein_hits_block, rnafold_switch, merge_protein)
 
-# start of gene_annotation_summary_table_generation
+# start of gene_annotation_summary_table_generation for host encoded sequences
 
 with open (a, "r") as csvfile:
 	hit_table = list(csv.reader(csvfile))
@@ -990,8 +991,9 @@ sequence_master_info_file = open(a + "_summary.csv.txt", "w") # or could just us
 summary_writer = csv.writer(sequence_master_info_file)
 summary_frame = []
 if (protein_query_switch == 1):
-	b = b + "_rep_genomes.fasta" #switch to representative genomes
+	b = b + "_rep_genomes.fasta" #switch to representative genomes of a clustered representation of the host set.
 # may want to make this summary file a option in the CLI!! Often not needed for pipeline running
+# summary table file generation for when an input query sequence was used as input
 if (db_directory_switch != 0 ): # If a csv/query sequence is used for input
 	summary_headers = ["Input_sequence","Input_table_name","Input_table_entries","genome_file_names","corresponding_genome_ids", "genome_protein_orfs"]
 	summary_frame.append(summary_headers)
@@ -1024,25 +1026,20 @@ if (db_directory_switch != 0 ): # If a csv/query sequence is used for input
 				genome_id = genome.id  
 				genome_file_name = genome.description.split("|")
 				genome_file_name = genome_file_name
-			#	print(genome)
-				print(genome_id)
 			else:
 				genome_id = genome.description.split("|")
-				print(genome)
-				print(genome_id)
 				genome_file_name = genome_id[0]
 				genome_file_name = genome_file_name.split(" ")
 				genome_file_name = genome_file_name[0] # need to switch the genome file and genome id variable names!!
-				print(genome_id)
 				genome_id = genome_id[1]
 			summary_frame[i].extend([genome_id, genome_file_name, b + "_output_full.txt"]) # protein orf_name
 		else:
 			print("Error!!")
 		i += 1
 	for frame in summary_frame:
-		summary_writer.writerow(frame) # could do this concurrently with writing in memory!!
+		summary_writer.writerow(frame) 
 	sequence_master_info_file.close()
-else: # db only specified
+else: #  case for when host genomes only are used as input
 	summary_headers = ["Input_sequence","Input_path","genome_name", "genome_ids"]
 	summary_frame.append(summary_headers)
 	in_seq = b.split("/")
@@ -1069,18 +1066,9 @@ else:
 	pickle.dump(block_dict, my_pickle)
 	my_pickle.close()
 
-# now need to create a second table for each genome stating
-# 1. summary_frame info as header or as first columns (repeated) # this is probably better as allows concatenation
-# one create a folder containing these files
-# iterate through the summary frame.
-# will have to compromise between amount of output files and speed (I/O bottleneck). Some of these tables could be exlcusively held in memory!
-# still, these are the main tables.
-# this is the end of the genome level summary file!!!!!!!!!!!!
-
 protein_annotation_frames = []
 
 # bypass switch in the case of spacers already being mapped!!
-# do not delete spacer distribution analysis when running in this mode!!!
 if (bypass_switch == 1):
 	b_basename = b.split("/")
 	b_basename = b_basename[-1]
@@ -1092,7 +1080,7 @@ if (bypass_switch == 1):
 	
 
 # main function calls for gene annotation in parallel:
-
+# Note this was run as a seperate standalone workflow, partially because the compute requirements for both workflows were too large for a single batch run (for larger subtypes)
 if (phage_genomes == 1):
 	phage_protein_annotation_frame = []
 	phage_summary_frame = phage_summary_frame[1:] # may not need this if phage summary frame already lacks headers
@@ -1116,7 +1104,3 @@ for frame in summary_frame:
 pool.close()
 pool.join()
 print("Done!")
-
-# Use the protein tables for each genome to retrieve all the ORFs, along with their positional information and sense.
-# Create a rank-ordered set of ORFs for concatenation. Either save this feature as a tabular representation or output as actual sequences.
-# This may be easier to do from SQL after all. 
