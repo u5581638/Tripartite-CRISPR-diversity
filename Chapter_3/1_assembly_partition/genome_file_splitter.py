@@ -3,11 +3,15 @@ import sys
 import os
 
 # program to split concatenated genome assemblies into smaller blocks.
-# input: a concatenated FASTA file of genome-assemblies
+# INPUT: Concatenated ~10TB FASTA file of genome-assemblies
+# OUTPUT: ~250-300mb files of FASTA sequences which are split from the input.
+# i.e. genome_block_0 .. genome_block_1 .. genome_block_2 ..etc )
+# SHELL: python3 genome_file_splitter.py {INPUT}
+
 FILE = open(sys.argv[1], "r")
-FILE.seek(5008028911291)
+# FILE.seek(5008028911291)
 sequence_iter = SeqIO.parse(FILE, "fasta")
-i = 20032
+i = 0
 out_file_name = "genome_block_"
 
 for sequence in sequence_iter:

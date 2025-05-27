@@ -3,13 +3,23 @@ from Bio import SeqIO
 import re
 import copy
 
+# script to copy/extract DNA upstream and downstream of CRISPR-arrays
 
- 
-# file containing genome_aseemblies in FASTA format
+# INPUT:
+# file containing genome_assemblies in FASTA format
 fasta_sequences = list(SeqIO.parse(sys.argv[1], "fasta"))
-# file containing PILER-CR crispr array predictions in FASTA format.
+# file containing PILER-CR crispr array predictions in quasi-FASTA format.
 crispr_arrays = list(SeqIO.parse(sys.argv[2], "fasta"))
+# number of bp to extract upstream and downstream of the CRISPR array. Must be int.
 window_size = sys.argv[3]
+
+# OUTPUT:
+
+# FASTA file containing CRISPR arrays and their upstream and downstream DNA regions.
+# i.e. labelled_genomes/genome_block_0.fasta_labelled.fasta_windows.fasta
+
+# SHELL:
+# find labelled_genomes/ -name "genome_block_*.fasta_labelled.fasta" | xargs -n 1 -P 24 -I {IN} python3 sequence_window_extractor.py {IN}
 
 # convert to dict 
 # 1. go through all the sequences
