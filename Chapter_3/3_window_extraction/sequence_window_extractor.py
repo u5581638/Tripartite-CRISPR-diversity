@@ -14,7 +14,6 @@ crispr_arrays = list(SeqIO.parse(sys.argv[2], "fasta"))
 window_size = sys.argv[3]
 
 # OUTPUT:
-
 # FASTA file containing CRISPR arrays and their upstream and downstream DNA regions.
 # i.e. labelled_genomes/genome_block_0.fasta_labelled.fasta_windows.fasta
 
