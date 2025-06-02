@@ -19,7 +19,7 @@ CRISPRdetect	 2,2
 
 CRISPRleader	 1.0.3
 
-mmseqs2	 b06bee91ea69c3e41f8479f69651e5c2068f3fe7©
+mmseqs2
 
 BLAST  2.6.0
 
