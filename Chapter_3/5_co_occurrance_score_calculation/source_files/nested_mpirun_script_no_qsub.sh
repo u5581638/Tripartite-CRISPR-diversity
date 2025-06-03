@@ -14,18 +14,22 @@ module load parallel
 module load python3/3.8.5
 pip3 install biopython
 
-# nested mpirun script
-# script to call mpirun for each sequence which in turn individually calls mpirun for database block.
+# nested tblastn script
+# script to call tblastn for each sequence which in turn individually calls tblastn for database block.
 # results should be manually concatenated together at the end of each run to avoid truncation.
-# top level script need only be an mpirun if required/ to increase speed
+# top level script need only be an tblastn if required/ to increase speed
 # easily convertable to a self-submitting job script.
 
 # each sequence script should:
-# 1. generate an individual script for running mpirun
-# 2. run mpirun from a given directory
+# 1. generate an individual script for running tblastn
+# 2. run tblastn from a given directory
 # 3. concatenate the results
 
-# input: script containing the input sequence file names listed one per line
+# INPUT: 1. folder containing containing the input sequences named as run*.fasta
+# 		 2. Folder must also contain nucleotide_database_headers.txt
+#		 3. although not a direct input, each genome block in labelled/genomes must also be available to perform tBLASTn
+# OUTPUT: list of tBLASTn hits from each genome block in co_occurrance_bug_diagnostics_results.  These may be concatenated into one result file.
+# i.e. combined_run_1.csv
 # these should be readable as csv
 
 arr=($( find ../ -name "run_*.fasta" -type "f" -exec basename {} \; )) # need to change directory to a new folder.

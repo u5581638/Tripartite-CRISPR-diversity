@@ -4,7 +4,12 @@
 from Bio import SeqIO
 import sys
 
-# file containing 30-80 input representative protein sequences to co-occurrance calculation (in FASTA format)
+# INPUT: file containing input representative protein sequences to co-occurrance calculation (in FASTA format)
+# i.e. representative_distance_5000_10000avg_dist_position_n_distance_relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# OUTPUT: FASTA file comprising 80 sequences labelled by run number (for running tBLASTN to compute co-occurrance/CRISPRicity)
+# i.e. 80_sequence_runs/run_1/run_1_run_80_sequence_5_10kb.fasta 
+# SHELL: python3 representative_distance_5000_10000avg_dist_position_n_distance_relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# Note: the directories containing the runs must be created prior to runnning this program.
 sequences = list(SeqIO.parse(sys.argv[1], "fasta"))
 i=0
 run_number = 0

@@ -2,6 +2,12 @@
 from Bio import SeqIO
 import sys
 
+# INPUT: Output from cluster_length_filter after filtering members > 98% similar. A list of protein sequences labelled by cluster in FASTA format, with clusters lacking at least one sequence > 300aa removed.
+# i.e. cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# OUTPUT: FASTA file containing protein sequences labelled by cluster, with each cluster >= 3 members in size.
+# i.e. grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# SHELL: python3 cluster_size_threshold_filterer.py cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+
 # Input file containing clusters in FASTA format.
 sequences = SeqIO.parse(sys.argv[1], "fasta")
 cluster_size_cutoff = 3

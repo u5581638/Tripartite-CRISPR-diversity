@@ -16,10 +16,16 @@ import csv
 import sys
 import re
 
-# filtered cluster files of protein sequences in FASTA format.
+# INPUT: relabelled, declustered and filtered protein sequence clusters.
+# i.e. relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
 sequences = SeqIO.parse(sys.argv[1], "fasta")
-# CRISPR-array predictions from PILER-CR in FASTA format.
+# CRISPR-array predictions from PILER-CR in quasi-FASTA format.
+# i.e. spliced_debug_corrected_cleaned_rerun_20kb_local_windows_combined.fasta_pilercr.fa 
 crispr_arrs = list(SeqIO.parse(sys.argv[2], "fasta"))
+
+# OUTPUT: protein sequences (as part of clusters) with the protein coordinates labelled. 
+# i.e. position_n_distance_relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# SHELL: python3 cRISPR_array_position_appender_working.py relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta spliced_debug_corrected_cleaned_rerun_20kb_local_windows_combined.fasta_pilercr.fa 
 
 
 crispr_arr_dict = {}
@@ -34,8 +40,6 @@ def closest_crispr_array (arr_positions, protein_position, first_gene_coord):
 			nearest_position = abs(position - true_position)
 			nearest_arr_position = position	
 	return (nearest_arr_position, nearest_position) # tuple of nearest array position and distance to protein	
-
-
 
 
 

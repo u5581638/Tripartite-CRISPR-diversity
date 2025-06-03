@@ -6,6 +6,11 @@ import pandas as pd
 
 # code to generate a 3D scatter plot showing co-occurrance, abundance and distance, with each point corresponding to each representative protein sequence assigned by colour to each function category assigned by DEFLOC database searches
 
+# INPUT: table containing representative sequence ids, distance, co_occurrance, abundance, annotation category and font size for each category.
+# i.e. hardcoded -> see below.
+# OUTPUT: 3D plot showing distance, occurrance and abundance coloured by category (as annotated by DEFLOC).
+# SHELL: python3 topology_plot3D_plotly_code_working.py
+
 d3_table = pd.read_csv("0_10kb_co_occurrance_table_classified_summary_3D_input_padloc_labelled.csv")
 figure = px.scatter_3d(d3_table,x='abundance',y='distance (bp)',z='co_occurrance',color='Key:',size='font_size',log_x=True,log_y=False,log_z=True)
 figure.show()

@@ -1,12 +1,17 @@
 # script constructor 
-# program to write the script required for parallel tblastn search
+# helper program to write the script required for parallel tblastn search
 
 import sys
 import csv
 
+# INPUT: 1. import file containing protein sequence file names one on each line
+#        i.e. sequence_headers.txt
+# 		 2. import file containing database block file names one on each line
+#		 i.e. nucleotide_database_headers.txt
+# OUTPUT: BASH file containing TBLASTN commmands for each genome block.
+# SHELL: N/A (called from nested_mpirun_script_no_qsub.sh)
 # extract the sequences
 sequence_names = []
-# import file containing protein sequence file names one on each line
 
 with open(sys.argv[1], "r") as seq_file:
 	while (True):

@@ -4,10 +4,14 @@
 import sys
 import csv
 
-# argv[1] = protein sequence
-# argv[2] = csv file containing number of hits inside CRISPR array
-# argv[3] = csv file containing of database hits (with \n and headers removed)
-# argv[4] = result table tabulating the co-occurrance scores
+# INPUT:
+# 1. argv[1] = protein sequence
+# 2. argv[2] = csv file containing number of hits inside CRISPR array
+# 3. argv[3] = csv file containing of database hits (with \n and headers removed)
+# 4. argv[4] = result table tabulating the co-occurrance scores
+
+# OUTPUT: co-occurrance score for the protein sequence used as input.
+# SHELL: This program is usually run as a helper function for co_occurrance_batch_helper_script.sh, which is in turn called by co_occurrance_calculation_script.sh
 
 #print (sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
 with open(sys.argv[2], "r") as csvfile:

@@ -1,7 +1,7 @@
 # distance calculator
 # Find the minimum distance between the array and the starting point of the arrays
-# this requires computing the abolsute positions of the proteins from the CRISPR array
-# the abolsute position will be the position given by prodigal/genemark + starting array position
+# this requires computing the absolute positions of the proteins from the CRISPR array
+# the absolute position will be the position given by prodigal/genemark + starting array position
 # if strand is negative the starting position should have a higer score than the negative position
 # do this for each protein in each cluster, then average the results for each cluster - this is now the primary purpose of the program is the previous program finds the minimal distance and  starting point of the arrays.
 
@@ -11,7 +11,12 @@ import re
 from statistics import mean
 from statistics import stdev
 
-# file containing filtered clusters with distances labelled in the identifiers in FASTA format.
+# INPUT: file containing filtered clusters with distances and CRISPR-array coordinates labelled in the identifiers in FASTA format.
+# i.e. position_n_distance_relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# OUTPUT: file containing the average distance from the CRISPR array appended to sequences from each cluster.
+# i.e. average_dist_position_n_distance_relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# SHELL: python3 distance_calculator_working_archived.py position_n_distance_relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+
 sequences = list(SeqIO.parse(sys.argv[1], "fasta"))
 i = 0
 cluster_pattern = re.compile("cluster_[0-9]* CRISPR_Position")

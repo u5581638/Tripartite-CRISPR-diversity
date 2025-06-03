@@ -13,6 +13,12 @@ def re_add (identifer):
 		i += 1
 	return new_id	
 
+# INPUT: FASTA file containing the  deduplicated clusters (generated from mmseqs2 using convert2fasta), sorted in descending order, of putative protein familes predicted from DNA within +- 20kb of CRISPR arrays
+# i.e. sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# OUTPUT: FASTA file containing only clusters with at least one member greater than 300aa.
+# i.e. one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# SHELL: python3 cluster_length_filterer.py sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+
 sequences = SeqIO.parse(sys.argv[1], "fasta")
 
 ret_seq = []

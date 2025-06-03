@@ -3,7 +3,12 @@
 from Bio import SeqIO
 import sys
 
-# files containing labelled clusters in FASTA format.
+# INPUT files containing  protein clusters in FASTA format.
+# i.e. grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# OUTPUT: protein cluster file with cluster numbers relabelled
+# i.e. relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# SHELL: python3 decluster_relabeller.py grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+
 sequences = SeqIO.parse(sys.argv[1], "fasta")
 cluster_number = 1
 sequ = next(sequences)

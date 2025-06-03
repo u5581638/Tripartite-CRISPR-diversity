@@ -5,11 +5,16 @@ from Bio import SeqIO
 import sys
 import re
 
-# input set of representative protein sequences with average distance labelled in identifiers (in FASTA format)
+# INPUT: set of representative protein sequences with average distance labelled in identifiers (in FASTA format)
+# i.e. avg_dist_position_n_distance_relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# OUTPUT: set of protein representatives within the specified average distance from the crispr array. Note: a minimum distance has not been set in this script.
+# i.e. representative_distance_5000_10000_avg_dist_position_n_distance_relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
+# SHELL: python3 distance_ranker_working_archived.py avg_dist_position_n_distance_relabelled_grt_3_grt_3_cluster_declustered_one_member_gt_300_renumbered_sorted_descending_deduplicated_flattened_all_sequences.fasta_p_formatted.fastanot_in_crisprs.fasta_labelled.fasta
 sequences = SeqIO.parse(sys.argv[1], "fasta")
 
 distance_pattern = re.compile("Average_dist=[0-9]*")
-maximum_distance = 2000 # 2kb from CRISPR array
+minimum_distance = 5000
+maximum_distance = 10000 # 10kb from CRISPR array
 ret_seq = []
 
 for sequ in sequences:
@@ -17,10 +22,10 @@ for sequ in sequences:
 	avg_distance_regex = re.search(distance_pattern, sequ.description)
 	avg_distance_str = avg_distance_regex.group(0)
 	avg_distance = int(avg_distance_str[13:])
-	if (avg_distance < maximum_distance):
+	if (avg_distance < maximum_distance and avg_distance > minimum_distance):
 		ret_seq.append(sequ)
 # returns the clusters with a distance less than the maximum distance.		
-SeqIO.write(ret_seq, "ranked_" + str(maximum_distance) + sys.argv[1], "fasta")
+SeqIO.write(ret_seq, "ranked_" + str(minimum_distance) + "_" + str(maximum_distance) + sys.argv[1], "fasta")
 
 # now just need to select the longest representative sequence from each cluster and we're done!!
 
