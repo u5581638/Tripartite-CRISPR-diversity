@@ -3,6 +3,13 @@ import sys
 
 # load table containing sequence IDs and partitioned cluster numbers
 # create a new table containing sequence ID entries from only the top 20 largest clusters.
+# load partition cluster table
+# INPUT: table containing partitions delineated by leiden clustering.
+# 		 i.e. cas12a_host_only_partition.csv
+# OUTPUT: table containing only the top 20 largest partitions
+#		 i.e. cas12a_host_only_partition_top20.csv
+# SHELL: python3 top_20_network_only.py <input_file.csv> <output_file.csv>
+
 with open(sys.argv[1],"r") as csvfile:
 	hit_table = list(csv.reader(csvfile))
 

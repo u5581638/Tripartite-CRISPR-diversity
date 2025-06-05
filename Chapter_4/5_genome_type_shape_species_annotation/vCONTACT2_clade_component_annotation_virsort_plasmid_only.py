@@ -3,7 +3,7 @@
 # Should work with p/h cluster numbers so that the chart can be compared to the bipartite phage-host interaction diagrams.
 # Steps:
 # 1. Load host/phage vCONTACT2 .clusters + .ntw file + other annotations.
-# 2. Find the number of components in the /ntw file
+# 2. Find the number of components in the .ntw file
 # 3. Find the annotation proportion of eac component. This may require developing new functions to retrieve the species.
 # 4. Use species function to retrieve annotations
 # 5. Need to label the graph diagram with component numbers. <- this will also be the basis for overlaying other stuff.
@@ -15,6 +15,8 @@ from properties_species_annotation_functions import plasme_proportion
 from properties_species_annotation_functions import species_survey
 from properties_species_annotation_functions import matrix_generation
 
+# INPUT: 
+# 1. host/phage c1.clusters file in csv format (from vConTACT output)
 # make this the network file. Extract directly from the network.
 with open(sys.argv[1],"r") as csvfile1:
 	host_cluster_table = list(csv.reader(csvfile1)) 
@@ -44,7 +46,7 @@ for row in host_plasme_table:
 	if (row[0] not in plasme_dict):
 		plasme_dict[row[0]] = row	
 
-# 4. Table of JGI metadata annotations (from GOLD)
+# 4. Table of JGI metadata annotations (from GOLD) i.e. 
 with open(sys.argv[4],"r") as csvfile4:
 	host_gold_annotation_table = list(csv.reader(csvfile4)) # need to a script to create this file. Must be specific to a CRISPR-subtype.
 
@@ -57,6 +59,7 @@ for row in host_gold_annotation_table[1:]:
 with open(sys.argv[5],"r") as csvfile5:
 	host_ncbi_annotation_table = list(csv.reader(csvfile5)) # need to a script to create this file. Must be specific to a CRISPR-subtype.
 
+
 ncbi_dict = {}
 for row in host_ncbi_annotation_table:
 	if row[0] not in ncbi_dict:
@@ -66,7 +69,8 @@ for row in host_ncbi_annotation_table:
 with open(sys.argv[6],"r") as csvfile:
 	component_table = list(csv.reader(csvfile))
 
-
+# OUTPUT: Conservation matrix showing the proportion of linear/circular+host/phage(RNA/dsDNA/ssDNA/jumbo phage) in each partitioned cluster
+# i.e cas13b_virsort_phage_matrix.csv
 
 component_dict = {}
 for comp in component_table[1:]:

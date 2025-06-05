@@ -3,6 +3,12 @@
 import sys
 import csv
 
+# INPUT: 1 protein annotation table generated for each partitioned cluster in each CRISPR-Cas subtype 
+# i.e. cluster_5.csv
+# OUTPUT: list of each protein annotation with it's conservation score annotated. This output file combines predictions from Pfam and DEFLOC together into one table.
+# i.e. cluster_5.csv_anno.csv
+# SHELL: host_orf_counter_conservation_t_pfam_padloc_combined_id_partition.py ...
+
 with open(sys.argv[1],"r") as csvfile:
 	proteins = list(csv.reader(csvfile))[1:]
 

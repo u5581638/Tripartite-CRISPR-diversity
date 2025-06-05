@@ -2,6 +2,10 @@ library(pheatmap)
 setwd("E:/host_phage_component_partition_reconciliation/host_partition10_final")
 
 # generate heatmap for matrix with manually filtered/merged rows.
+# INPUT: conservation matrix
+# i.e. see below
+# OUTPUT: heatmap showing partitioned community specific protein family annotations (combined with DEFLOC)
+
 my_in = "cas13b_heatmap_matrix_top10_2.csv_filtered_matrix_cas13b_top10.csv"
 my_table = read.csv(my_in,row.names=1)
 the_matrix <- data.matrix(my_table)

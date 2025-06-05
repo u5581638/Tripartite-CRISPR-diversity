@@ -1,5 +1,9 @@
 #conservation_heatmp_generation
 # generate heatmap from conservation matrix for the top 30 largest clusters from leiden partitioning
+# INPUT: Matrix containing conservation scores for each Pfam+DEFLOC annotated node in each partitioned cluster
+#		 i.e. cas12a_heatmap_matrix_top30.csv_filtered_matrix_cas12a_base3.csv
+# OUTPUT: heatmap diagram showing the conservation of each protein family in each partitioned cluster for each subtype (top30 largest clusters only).
+
 library(pheatmap)
 setwd("C:/Users/u5581/Documents/PhD/Thesis/result_chapter_2_figure_3/phage_only_virsort_heatmaps_9_9_2024/")
 my_in = "casIB_new_heatmap_matrix_phage.csv"

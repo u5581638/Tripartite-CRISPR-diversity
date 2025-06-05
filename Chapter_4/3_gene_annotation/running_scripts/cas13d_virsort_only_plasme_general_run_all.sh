@@ -13,6 +13,14 @@ module load samtools
 module load blast
 
 # input urls to run virsorter2 only for the mapped sequences of type VI-D systems
+# INPUT: 1. path to folder containing DNA extracted within 20kb of CRISPRs (db_directory_path)
+#		 i.e. /g/data/va71/crispr_pipeline_annotation/annotation_upgraded_main_workflow_run/cas13d/genomes/
+#		 2. query search name 
+#		 i.e. cas13d.fasta
+#		 3. tBLASTn result table from contig retrieval.
+#		 i.e. /g/data/va71/crispr_pipeline_annotation/annotation_upgraded_main_workflow_run/cas13d/queries/cas13d.fasta_all_hits.csv
+
+# OUTPUT: folder containing virsorter predictions for host/mapped contigs
 
 
 db_dir=/g/data/va71/crispr_pipeline_annotation/annotation_upgraded_main_workflow_run/cas13d/genomes/

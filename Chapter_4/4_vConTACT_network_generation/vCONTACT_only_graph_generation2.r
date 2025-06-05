@@ -4,6 +4,14 @@ library(dplyr)
 #library(CINNA)
 
 # render networks using the Fruchterman Reingold layout
+
+# INPUT: 1. network file in .graphml (converted by cytoscape)
+#        i.e. c1.graphml
+#        2. table showing the graph partitions for each node in the network.
+#        i.e spcas9_host_only_partition.csv
+# OUTPUT: 1. Network visualisation colouring the chart by the communities of nodes delineated by leiden clustering.
+#         2. Table storing the colours (RGB values) used for each leiden partition
+
 setwd("E:/host_phage_batch_run_7_5_2024/host_only_vCONTACT_networks/casIIIA")
 #edgelist <- read.csv("cas12b_ph_filtered_16_4_2024.csv",row.names=NULL)
 mygraph <- read.graph("c1.graphml",format="graphml")

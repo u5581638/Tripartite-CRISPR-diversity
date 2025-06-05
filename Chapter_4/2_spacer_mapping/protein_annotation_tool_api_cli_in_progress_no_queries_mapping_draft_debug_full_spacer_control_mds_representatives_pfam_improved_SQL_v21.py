@@ -270,6 +270,22 @@ def genome_hit_lookup (hit_table, db_directory_path, genome_file_url, block, gen
 # -a use alphafold + DALI
 # should supply a number of potential tokens as well as having default values. Tokens are represented with an '-' specifier.
 
+# INPUT: 1. representative ORF/ or other CRISPR-associated protein sequence (in FASTA format)
+# 		 i.e. cas13a.fasta (located in "queries/" folder)
+# 		 2. file path to folder containing 10TB genome blocks, along with  files to run BLAST, for each block
+#        i.e. /g/data/va71/labelled_genomes/
+#		 3. file path to folder called "genomes/" containing the file with DNA extracted 20kb upstream and downstream of CRISPR-arrays
+#		 i.e. "cas13a/genomes/" containing "spliced_debug_corrected_cleaned_rerun_20kb_local_windows_combined.fasta" and associated files for running BLAST
+#		 4. Additionally, in order to run correctly, the output from running "" must be present in the "queries/" and "genomes/" directories
+# OUTPUT: 1. Table containing hits to mapped spacers. This table has been filtered to exclude hits to self-CRISPR arrays, and hits to other arrays encodding the same spacers
+#		  2. FASTA file containing a list of "host" encoding contigs
+#		  3. FASTA file containing spacer mapped target contigs (in FASTA format)
+#		  4. Preliminary table of PPS-spacer distances (not used)
+#		  5. Preliminary PAM concensous predictions for each subtype (not used)
+
+
+# SHELL: see annotation_cas13a_working_spacer_mapping1.sh. located in "2_spacer_mapping/running_scripts/"
+
 i = 1
 
 db_directory_path = "genomes/"

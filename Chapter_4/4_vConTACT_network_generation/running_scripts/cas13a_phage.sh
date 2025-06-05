@@ -17,6 +17,13 @@ export PYTHONPATH=$PYTHONPATH:/g/data/va71/vConTACT2/MAVERICLab-vcontact2-c0413a
 
 # script to perform vConTACT2 network generation using the mapped sequences of Type VI-A genomes.
 
+# INPUT: 1. directory to phage-encoded contigs (see below)
+#		 2. ORF predictions of CRISPR-Cas subtype (phage encoded) contigs in translated amino acid FASTA format
+# OUTPUT: 
+#		 1. gene-to-genome table (for parsing to vConTACT2)
+#		 2. output folder from vConTACT network generation, including a .ntw file containing the network (parsable to cytoscope) as well as a c1.clusters file containing each  viral cluster of the network and a summary table (genome_by_genome_overview.csv) describing the viral cluser, edge distances and other important information for each input contig.
+
+
 input_dir=/g/data/va71/vConTACT2/MAVERICLab-vcontact2-c0413a6c92e8/bin/cas13a/phage/
 input_protein=cas13a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_faidx_bp_window.fasta_nr.fa_aa_raw.fasta
 output_protein=cas13a_phage_g2g.csv

@@ -2,6 +2,11 @@ library(igraph)
 #library(CINNA)
 
 # generate a number of graph partition using the leiden clustering algorithm
+# INPUT: network file in .graphml format (converted by cytoscape)
+# i.e. c1.graphml
+# OUTPUT: Table labelling each node in the graph by it's assigned cluster (community) as determined by leiden clustering of the network.
+# i.e. cas12a_host_only_partition2.csv"
+# Note: The order of entries in the table is important as this order maps to the order of nodes in the graph file. This is important later when rendering the graph coloured according to community (from leiden clustering)
 setwd("D:/host_phage_component_reconciliation")
 mygraph <- read.graph("c1.graphml",format="graphml")
 new_graph <- as.undirected(mygraph,mode="mutual")

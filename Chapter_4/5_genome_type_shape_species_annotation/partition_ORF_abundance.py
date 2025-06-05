@@ -2,6 +2,13 @@ import csv
 import sys
 import os
 
+# INPUT: 1. table showing partition numbers for each node from leiden clustering
+#		 i.e. cas12a_host_only_partition.csv_top10.csv
+#		 2. protein annotation table for each CRISPR-Cas subtype or the corresponding mapped target sequences
+#		 i.e. cas12a.fasta_all_hits.csv_genomes.fasta_annotations.csv
+# OUTPUT: set of table files (in .csv format) grouping the annotations by partitioned cluster. Each cluster is a seperate file. These are in a "results/" folder
+# SHELL: python3 partition_ORF_abundance.py cas12a_host_only_partition.csv_top10.csv cas12a.fasta_all_hits.csv_genomes.fasta_annotations.csv 
+
 # open the partition table
 with open(sys.argv[1]) as csvfile:
 	partition_table = list(csv.reader(csvfile))

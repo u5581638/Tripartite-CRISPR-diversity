@@ -1,6 +1,6 @@
 #!/bin/bash
 # plasme_running_helper_script
-
+# run plasme (as a helper script)
 
 export PATH=$PATH:/g/data/va71/crispr_pipeline_annotation/prodigal/prodigal
 export PATH=$PATH:/g/data/va71/crispr_pipeline_annotation/plasme/PLASMe/diamond

@@ -16,6 +16,9 @@ from properties_species_annotation_functions import plasme_proportion
 from properties_species_annotation_functions import species_survey
 from properties_species_annotation_functions import matrix_generation
 from properties_species_annotation_functions import species_annotation
+
+# INPUT: 
+# 1. host/phage c1.clusters file in csv format (from vConTACT output)
 # make this the network file. Extract directly from the network.
 with open(sys.argv[1],"r") as csvfile1:
 	host_cluster_table = list(csv.reader(csvfile1)) 
@@ -72,7 +75,8 @@ for row in host_ncbi_annotation_table:
 with open(sys.argv[6],"r") as csvfile:
 	component_table = list(csv.reader(csvfile))
 
-
+# OUTPUT: Conservation matrix showing the proportion of linear/circular+host/phage(RNA/dsDNA/ssDNA/jumbo phage) in each partitioned cluster
+#		  i.e cas13a_species6_phage_inclu_heatmap_matrix.csv
 
 # need to consider what rendering is best.
 # 1. Take the fraction of known vs unknown species/samples

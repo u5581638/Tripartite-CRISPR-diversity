@@ -1,6 +1,8 @@
 # basic heatmap generation script
 # generate heatmap from input matrix (this script is specific to the parameters used for heatmap visualisation of genome type/shape conservation for each partitioned cluster from network generation)
-
+# INPUT: heatmap matrix of conservation scores from Virsorter and PLASMe predictions annotating each contig for each partitioned cluster as linear/circular and host/phage.
+# i.e. see below
+# OUTPUT: Heatmap showing the degree of conservation of circular/linear contigs and host/phage contigs by parritioned cluster.
 library(pheatmap)
 setwd("D:/host_phage_batch_run_7_5_2024-27_8_2024")
 my_table = read.csv("cas12a_species6_inclu_heatmap_matrix.csv",row.names=1)

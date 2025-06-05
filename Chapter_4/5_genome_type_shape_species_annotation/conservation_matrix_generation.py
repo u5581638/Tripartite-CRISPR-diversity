@@ -3,6 +3,12 @@ import sys
 import csv
 
 # generate a matrix of conservation scores from an input list of csv tables containing the conservation score for each gene annotation.
+# INPUT: list of conservation tables for each partitioned cluster
+# i.e. cluster_1.csv_anno.csv cluster_2.csv_anno.csv ... cluster_n.csv_anno.csv
+# OUTPUT: matrix showing conservation scores for the same conserved protein annotations from each partitioned cluster.
+# i.e. conservation_matrix_pfam_500_all.csv
+# SHELL: python3 conservation_matrix_generation.py  .. etc <output_matrix_name>
+
 i = 1
 conservation_dict = {}
 while (i < len(sys.argv) - 1):

@@ -249,6 +249,12 @@ def genome_hit_lookup (hit_table, db_directory_path, genome_file_url, block, gen
 # This is the main code for performing CRISPR array validation, which is followed by spacer mapping and gene annotation
 # This was originally designed to run as a CLI program with diverse functions. However, this was not implemented and a single workable workflow was run instead.
 
+# INPUT: representative ORF/ or other CRISPR-associated protein sequence (in FASTA format)
+# i.e. cas13a.fasta
+# OUTPUT: Set of contigs containing the query sequence within 20kb of a CRISPR array. A table describing a non-redundant set of predicted CRISPR-arrays by 3 seperate CRISPR-array prediction tools. Overlapping predictions were ranked (CRISPRdetect > CRT > PILERCR) by their overall accurary
+# i.e. 1. contigs - cas13a.fasta_all_hits.csv_genomes.fasta
+#	   2. table - cas13a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_reconciled_full_arr_positions.csv
+# SHELL: See annotation_cas13a_working_prespacers1.sh located in running scripts
 # input_flags:
 # -i input (either csv_file or input sequence in fasta format)
 # -t input_type (query/table)

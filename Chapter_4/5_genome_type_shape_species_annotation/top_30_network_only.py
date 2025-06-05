@@ -3,6 +3,12 @@ import sys
 
 # write to file sequence identifiers and entries from the top 30 partitioned clusters in each network (by size)
 # load partition cluster table
+# INPUT: table containing partitions delineated by leiden clustering.
+# 		 i.e. cas12a_host_only_partition.csv
+# OUTPUT: table containing only the top 30 largest partitions
+#		 i.e. cas12a_host_only_partition_top30.csv
+# SHELL: python3 top_30_network_only.py <input_file.csv> <output_file.csv>
+
 with open(sys.argv[1],"r") as csvfile:
 	hit_table = list(csv.reader(csvfile))
 

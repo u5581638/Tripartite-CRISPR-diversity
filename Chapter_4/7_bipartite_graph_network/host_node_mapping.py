@@ -3,18 +3,24 @@ import sys
 
 # Associate host-mapped sequence interaction table with colours + partitioned clusters from the respective monopartite networks.
 
-# INPUT: host-MGE interaction table
+# INPUT: 1. host-MGE interaction table
+# 		 i.e. cas13b_host_phage_interaction_table.csv
 with open(sys.argv[1],"r") as csvfile:
 	interaction_table = list(csv.reader(csvfile))
 
-# INPUT: table of host sequence IDs, cluster partition nos. and associated colours
+# INPUT: 2. table of host sequence IDs, cluster partition nos. and associated colours
+#		 i.e. cas13b_host_only_partition.csv_top30.csv_w_color.csv
 with open(sys.argv[2],"r") as csvfile:
 	host_node_table = list(csv.reader(csvfile))
 
-# # INPUT: table of mapped sequence IDs, cluster partition nos. and associated colours
+# INPUT: 3. table of mapped sequence IDs, cluster partition nos. and associated colours
+#		 i.e. cas13b_phage_only_partition.csv_top10.csv_w_color.csv
 with open(sys.argv[3],"r") as csvfile:
 	phage_node_table = list(csv.reader(csvfile))
 
+
+# OUTPUT: host-mapped sequence interaction table where each host/mapped sequence node is mapped to the colours and cluster partition numbers from their respective monopartite networks generated via vConTACT2
+# i.e.	  cas13b_host_phage_interaction_table.csv_names_kept2.csv_hp_colors_table.csv
 host_dict = {}
 phage_dict = {}
 for row in host_node_table:

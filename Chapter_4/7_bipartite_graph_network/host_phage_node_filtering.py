@@ -3,7 +3,10 @@ import csv
 import re
 
 # script to filter unassociated/singleton sequences from the interaction table.
-
+# INPUT: host-phage interaction table (from homolog_node_constructor_numbering_tabulation.py)
+#		i.e cas13b_host_phage_interaction_table.csv
+# OUTPUT: host-phage interaction table with singleton entries removed.
+#		i.e. cas13b_host_phage_interaction_table.csv_names_kept2.csv
 csvfile = open(sys.argv[1])
 hp_table = csv.reader(csvfile)
 

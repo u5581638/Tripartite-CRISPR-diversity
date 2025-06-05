@@ -4,7 +4,15 @@ library(randomcoloR)
 library(dplyr)
 #library(CINNA)
 
+
 # render networks using the Fruchterman Reingold layout with only the 10 largest network partitions coloured.
+# INPUT: 1. network file in .graphml (converted by cytoscape)
+#        i.e. c1.graphml
+#        2. table showing the graph partitions for each node in the network.
+#        i.e spcas9_host_only_partition.csv
+# OUTPUT: 1. Network visualisation colouring the chart by the communities of nodes delineated by leiden clustering.
+#         2. Table storing the colours (RGB values) used for each leiden partition
+
 setwd("/Users/gaetanburgio/Documents/cluster_networks_alex_13-05-2024/cas13b/")
 #edgelist <- read.csv("casIIIB_ph_filtered_16_4_2024.csv",row.names=NULL)
 mygraph <- read.graph("c1.graphml",format="graphml")

@@ -4,6 +4,12 @@
 import sys
 import csv
 
+# INPUT: 1. Table containing the filtered hits to mapped spacers from a specific subtype.
+#		 i.e. cas13a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv
+#		 2. c1.clusters file produced from vConTACT2 network generation using the host-encoded contigs for a specific subtype
+#		 3. c1.clusters file produced from vConRACT2 network generation using the mapped target sequence contigs corresponding to a specific subtype 
+
+# OUTPUT: Table in csv format mapping the host-encoded clusters to their corresponding phage clusters.
 
 with open(sys.argv[1], "r") as csvfile:
 	hitmap_table = list(csv.reader(csvfile))

@@ -14,6 +14,27 @@ import virsorter_parser2
 # need to retrieve/load phage_summary_frame!!
 # also need to check exactly how proteins from generate protein are handled!!!
 
+# script to annotate contigs from each subtype:
+# INPUT: 1. path to folder containing DNA extracted within 20kb of CRISPRs (db_directory_path)
+#		 i.e. /g/data/va71/crispr_pipeline_annotation/annotation_upgraded_main_workflow_run/cas13b/genomes/
+#		 2. query search name 
+#		 i.e. cas13b.fasta
+#		 3. tBLASTn result table from contig retrieval.
+#		 i.e. /g/data/va71/crispr_pipeline_annotation/annotation_upgraded_main_workflow_run/cas13b/queries/cas13b.fasta_all_hits.csv
+#		 4. table containing mapped spacer hits (filtered_spacer_url)
+#		 i.e. cas13b.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_non_redundant.csv_filtered.csv
+#        5. folder containing mapped target files (phage_db_directory_path)
+#	 	 i.e. /g/data/va71/Alex/crispr_pipeline_annotation/annotation_upgraded_main_workflow_run/cas13b/genomes/phages/
+#		 6. summary file of mapped target contigs (phage_a)
+#		 i.e. cas13b.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered.csv_summary.csv.txt
+#		 7. mapped target contigs from spacer mapping (in FASTA format)
+#		 i.e. cas13b.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_non_redundant.csv_filtered.csv_deduplicated.csv_filtered_hits_extracted_faidx_bp_window.fasta
+#		 8. Additionally, this script depends on the output and directories used to perform spacer mapping (see "annotation_cas13a_working_spacer_mapping1.sh" as an example) 
+# OUTPUT: 1. annotations of each gene in each contig using Pfam, PDB70 and DEFLOC via HMM searches.
+#		  2. Virsorter predictions (depending on the exact command used)
+#		  3. Viennafold RNA secondary structure predictions of each ORF employed. (depending on the exact parameters/switches used in input section)
+
+# SHELL: see cas13b_annotation_only_plasme_general_run.sh or cas13b_annotation_phage_only_plasme_general_run.sh or cas13b_virsort_only_plasme_general_run_all.sh for different run parameters
 phage_genomes = 1
 # db_directory_path = "/g/data/va71/crispr_pipeline_annotation/annotation_upgrades_test_sequences/cas12a_test2_4/genomes/"
 db_directory_path = sys.argv[1]

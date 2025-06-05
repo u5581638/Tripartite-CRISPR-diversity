@@ -1,6 +1,10 @@
 # basic heatmap generation script
 
 # generate heatmap from input matrix (this script is specific to the parameters used for gene annotation of network-partitioned clusters)
+# INPUT: conservation matrix
+# i.e. see below
+# OUTPUT: heatmap showing partitioned community specific protein family annotations (combined with DEFLOC)
+
 library(pheatmap)
 setwd("D:/cas12b_heatmap_rerun_15_4_2024/heatmap_repeat/phage")
 my_table = read.csv("out_components.csv",row.names=NULL)

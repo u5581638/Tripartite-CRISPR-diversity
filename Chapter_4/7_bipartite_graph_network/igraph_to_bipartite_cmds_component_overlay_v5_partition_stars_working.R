@@ -7,11 +7,12 @@ library(r2r)
 library(dplyr)
 
 # script to generate and render type VI host-phage bipartite networks.
-
+# INPUT: host-phage interaction table with cluster partition number and associated RGB color added.
+# OUTPUT: rendering of host-phage interaction network using the Fruchterman Reingold layout coloured and labelled by host-phage partitioned clusters.
 
 setwd("E:/host-phage-bipartite-coloring_11_9_2024/cas13d")
 # need to create script to swap the first and second rows
-input_str = "cas13d_host_phage_interaction_table.csv_names_kept2.csv_hp_colors_table_top10_only.csv"
+input_str = "cas13b_host_phage_interaction_table.csv_names_kept2.csv_hp_colors_table_top10_only.csv"
 edgelist <- read.csv(input_str,row.names=NULL)
 edgelist <- select(edgelist,Phage_cluster,Genome_cluster,Phage_contig,host_cluster,host_color,phage_cluster,phage_color)
 i = 1
