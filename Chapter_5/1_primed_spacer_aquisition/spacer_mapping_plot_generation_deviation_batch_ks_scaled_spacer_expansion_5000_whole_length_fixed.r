@@ -7,6 +7,9 @@ library(ggplot2)
 
 # script to generate a spacer distribution. 
 # Note: the parameters of the KDEs were altered for different ranges over which the distribution was measured
+# INPUT: deduplicated table of PPS-spacer distances
+# i.e. cas12a.fasta_whole_h.csv
+# Output: Kernal density plot showing a density distribution of PPS-spacer distances centered on the PPS (the origin).
 
 setwd("E:/spacer_expansion/final_overlay_eric_h_files_29_4_2024/")
 i_sequence = "typeIA.fasta_whole_h.csv"

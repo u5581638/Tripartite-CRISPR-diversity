@@ -11,6 +11,9 @@ library(EMT)
 # apply a similar procedure to label each plot!!
 #  limit to [-5000,5000]
 
+# INPUT: deduplicated table of PPS-spacer distances
+# i.e. cas12a.fasta_whole_h.csv
+# OUTPUT: bar plot and bionomial significance values describing differences in the frequencies of spacers in each quadrant of the corresponding KDE, which means differences in the strand directionary upon which spacer acquisition biases occur.
 
 setwd("D:/spacer_expansion/finished_problem_corrected_subtypes/finished_2")
 i_sequence <- "spcas9_detection_parallel_gadi_kmer14_29-3-2024.csv_non-self.csv_expanded.csv_corrected.csv_2_or_more_hits.csv_justified.csv_distances_annotated.csv_af.csv_h.csv"

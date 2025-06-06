@@ -8,11 +8,18 @@
 # 4. Do this for complete matches as well as kmer=10,12,14. Note: Only kmer_size=14 was used in the end as shorter kmers had too many false positives.
 # 4. Run this script as a batch job using R script.
 
+
+
 library(dplyr)
 library(ggplot2)
 
 setwd("F:/spacer_expansion/non-problem_corrected_subtypes/")
 
+# INPUT: 1. PPS-spacer table (deduplicated) with 2+ spacers mapped to each contig for whole matches only.
+#				 i.e. cas12a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_distances_annotated.csv_filt_all.csv_h.csv
+#				 2. PPS-spacer table (deduplicated) with 2+ spacers mapped to each contig for whole matches and kmers=14.
+#				 i.e. cas12a_detection_parallel_gadi_kmer14_29-3-2024.csv_non-self.csv_expanded.csv_2_or_more_hits.csv_distances_annotated.csv_all_filt.csv_h.csv
+# OUTPUT: overlayed spacer mapping density distribution plot
 graph_parameters <- function(distance_table) {
 filtered_df <- filter(distance_table, mapped_strand == 1)
 # need to later make negative the KDE

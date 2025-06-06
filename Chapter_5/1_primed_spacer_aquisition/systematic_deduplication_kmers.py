@@ -164,12 +164,19 @@ def distance_deduplication(host_spacer_pairs,allowed_distance_between_pairs=50):
 
 	return ret_host_spacer_pairs
 
+# INPUT: hitmap table with PPS-distances and strand directionality appended.
+# i.e. cas12a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_non_redundant.csv_filtered.csv_2_or_more_hits.csv_distances_annotated.csv
+# OUTPUT: hitmap table with redundant PPS-spacer distances and other artefactual hits deduplicated.
+# i.e. cas12a.fasta_whole_h.csv
+# SHELL: python3 systematic_deduplication_kmers.py cas12a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_non_redundant.csv_filtered.csv_2_or_more_hits.csv_distances_annotated.csv cas12a.fasta_whole_h.csv
+
 with open(sys.argv[1],"r") as csvfile:
 	mapped_spacers = list(csv.reader(csvfile))
 
 
 # will need to dictionalise by array or phage. The actual distance elimination could be done by a shared function
 # first do dictionalisation by phage to eliminate the case of two arrays mapping to the same spacer.
+
 
 phage_dict = {}
 for spacer in mapped_spacers[1:]:

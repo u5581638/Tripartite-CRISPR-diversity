@@ -5,7 +5,11 @@ library(ggplot2)
 
 setwd("C:/Users/u5581/Documents/PhD/Thesis/")
 
+# INPUT: abundances of kmer matches for a given kmer size after self-matches have been removed.
+# i.e. values manually entered into dataframe for visualisation shown below (in df)
+# OUTPUT: chart comparing the hit rates of kmer matches at different kmer sizes
 base_sequence = "hex"
+
 
 df <- data.frame(subtype=rep(c("Type\nV-A","Type\nV-B","Type\nV-F1","Type\nVI-B","Type\nI-B","Type\nI-D"),3),
 	abundance=c(15445,1166,12642,4164,9875,3901,3146.7,107.47,3228.59,786.69,1241.43,1153.18,428,15,259,148,336,179),

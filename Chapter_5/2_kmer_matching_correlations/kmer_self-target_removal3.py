@@ -9,6 +9,13 @@
 import sys
 import csv
 
+# INPUT: 1. table containing kmer-matches to target contigs (which contain 1+ complete match)
+# 		 i.e. cas12a.fasta_detection_parallel_gadi_kmer14_29-3-2024.csv
+#		 2. table containing direct repeat kmer-matches to target contigs (which contain 1+ complete match)
+#		 i.e. cas12a.fasta_detection_parallel_gadi_kmer14_29-3-2024.csv_drs.csv
+# OUTPUT: table with matches to self-crispr arrays removed.
+# i.e. cas12a.fasta_detection_parallel_gadi_kmer14_29-3-2024.csv_non-self.csv
+# SHELL: python3 kmer_self-target_removal3.py cas12a.fasta_detection_parallel_gadi_kmer14_29-3-2024.csv cas12a.fasta_detection_parallel_gadi_kmer14_29-3-2024.csv_drs.csv cas12a.fasta_detection_parallel_gadi_kmer14_29-3-2024.csv_non-self.csv
 spacer_open = open(sys.argv[1],"r")
 spacer_kmers = list(csv.reader(spacer_open))
 spacer_open.close()

@@ -176,6 +176,13 @@ def distance_deduplication(host_spacer_pairs,allowed_distance_between_pairs=50):
 
 	return ret_host_spacer_pairs
 
+# INPUT: hitmap table with PPS-distances and strand directionality appended.
+# i.e. cas12a.fasta_detection_parallel_gadi_kmer14_29-3-2024.csv_non-self.csv_pcontig.csv_expanded.csv_2_or_more_hits.csv_distances_annotated.csv_strip.csv_af.csv
+# OUTPUT: hitmap table with redundant PPS-spacer distances and other artefactual hits deduplicated.
+# i.e. cas12a.fasta_detection_parallel_gadi_kmer14_29-3-2024.csv_non-self.csv_pcontig.csv_expanded.csv_2_or_more_hits.csv_distances_annotated.csv_strip.csv_af.csv_h.csv
+# SHELL: python3 systematic_deduplication_kmers.py cas12a.fasta_detection_parallel_gadi_kmer14_29-3-2024.csv_non-self.csv_pcontig.csv_expanded.csv_2_or_more_hits.csv_distances_annotated.csv_strip.csv_af.csv cas12a.fasta_detection_parallel_gadi_kmer14_29-3-2024.csv_non-self.csv_pcontig.csv_expanded.csv_2_or_more_hits.csv_distances_annotated.csv_strip.csv_af.csv_h.csv
+
+
 with open(sys.argv[1],"r") as csvfile:
 	mapped_spacers = list(csv.reader(csvfile))
 

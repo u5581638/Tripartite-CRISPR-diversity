@@ -43,6 +43,19 @@ def two_or_more(spacer_url):
 	with open (spacer_url, "r") as csvfile:
 		hit_table = list(csv.reader(csvfile))
 
+	# need to recognise when a specific array has already been detected.
+	'''
+	hit_dict = {}
+	for hit in hit_table:	
+		hit_id = hit[0].split("|")
+		hit_id = hit_id[0] + hit[1] + hit[8] + hit[9] + hit[18] + hit[19] # genome_id + phage + arr_start + arr_end
+		
+		# remove identical targets from the same array
+		if (hit_id not in hit_dict):
+			hit_dict[hit_id] = hit 
+	
+	hit_table = list(hit_dict.values())
+	'''
 	hit_dict = {}
 	for hit in hit_table:	
 		hit_id = hit[0].split("|")
@@ -66,6 +79,13 @@ def two_or_more(spacer_url):
 				spam_writer.writerow(row)
 	ret_out.close()
 	return 0
+
+# INPUT: hitmap table showing spacer mapping to target sequences:
+# i.e. cas12a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_non_redundant.csv_filtered.csv
+# OUTPUT: hitmap table filtered to keep only cases where there occurred two or more mapped hits from two different spacers from the same CRISPR array to the same target contig.
+# i.e. cas12a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_non_redundant.csv_filtered.csv_2_or_more_hits.csv
+# SHELL python3 spacers_2_or_more_2.py cas12a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_non_redundant.csv_filtered.csv
+
 
 two_or_more(sys.argv[1])
 

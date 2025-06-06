@@ -34,6 +34,18 @@ import spacer_expansion_functions
 import fcntl
 from multiprocessing import Pool
 
+# INPUT: 1. table containing the concensous arrays predicted and validated (see chapter 4) for a given subtype. 
+#		 i.e. cas12a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_reconciled_full_arr_positions.csv_no_blanks.csv
+#		 2. spacer hitmap table giving the spacer hits to target sequences
+#		 i.e. cas12a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_non_redundant.csv_filtered.csv
+#		 3. a file containing the target sequence (phage) contigs
+#		 i.e. cas12a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_non_redundant.csv_filtered.csv_deduplicated.csv_filtered_hits_extracted_faidx_bp_window.fasta
+# OUTPUT: 1. table containing kmer matches on each contig
+#		  i.e cas12a_detection_parallel_gadi_kmer14_29-3-2024.csv
+#		  2. table containing kmer matches to associated direct repeats on each contig
+#		  i.e. cas12a_detection_parallel_gadi_kmer14_29-3-2024.csv_dr.csv
+# SHELL: see cas12a_kmer14_detection.sh
+
 kmer_switch = 1
 with open(sys.argv[1], "r") as csvfile:
 	arrays = list(csv.reader(csvfile))
