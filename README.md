@@ -19,7 +19,7 @@ This repository contains a copy of the workflow used for surveying the intra-sub
 9. Retrieve and prediction contig DNA annotations describing whether contigs are linear/circular and host/phage encoded. Also performs ORF annotation using PFAM and a customised anti-phage defence database, referred to as "DEFLOC".
 10. Use host and mapped MGE contigs to generate host and MGE gene cluster networks. These networks are then combined to generate host-phage interaction networks. Concurrently, heatmap describing the composition of each community (local cluster) are also generated.
 
-Note: Many of the scripts and code were originally run from a single fixed directory (/g/data/va71/crispr_pipeline_annotation) on a computing cluster. These have not yet been adapted for standalone use. As such running from each chapter specific folder may produce dependency and pathing errors. I will work to fix these issues progressively in a separate branch.
+
 ![image](https://github.com/user-attachments/assets/fb1c04dc-6cf1-4c80-9c6c-347d942e59e4)
 
 # Installation
@@ -111,4 +111,10 @@ ggprism  1.0.5
 
 # Running Workflows
 
-This code was originally designed to be run as a single integrated workflow, however this approach has not yet been implemented. An executable version of this workflow, which allows all the required file paths to be specified at input, is in development.
+Within the repository, the files which were used to run the workflow are organised into 3 chapters. These have a relation to, but not a one-to-one correspondance to the layers described above. While the files stored in the folder named "Chapter 3" correspond to the 1st layer of the proccess, the files stored in "Chapter 5" refer exclusively the step (7.), which performs an analysis of the aggregate distribution of mapped spacers in cases where two or more spacers are mapped  to the same target sequence. The files stored in "Chapter 4" are used for running all of the remaining steps of the second and third layers described above. There is a significant degree of interdependency terms of input and output immediate files required, between the general steps described both within, and between each layer.
+
+To run the workflow, each of the dependencies described above must be pre-installed. For each Chapter, a specification file detailing the exact steps run is given. This file includes a description of each step, as well as the script in the repository that was used to run. Each python, BASH and R file within the repository mentioned within the specification also includes a description of the input and output files required. For most files an example input and output file, which was used to run the workflow, is also given. Many of the exact filenames used will change as specified by the user, but the addition of these examples is useful, as the file extensions can be used to trace many of the intermediate files generated while running the workflow.
+
+Because many of the scripts and code were originally run from a single fixed directory on a computing cluster, some of the directory paths specified within each script may need to be changed to run correctly for an external user. 
+
+This code was originally designed to be run as a single integrated workflow, however this approach has not yet been implemented. A executable version of this workflow, which allows all the required file paths to be specified at input, is in development.
