@@ -14,6 +14,7 @@ This repository contains a copy of the workflow used for surveying the intra-sub
 7. Use mapper-spacing data to analyse biases in the distribution of spacers during spaer acquisition.
 
 **Layer 3:**
+
 8. Retrieve the spacer-mapped target sequences. These are usually Phage or plasmid Mobile Genetic Elements (MGEs). These may be prophage encoded.
 9. Retrieve and prediction contig DNA annotations describing whether contigs are linear/circular and host/phage encoded. Also performs ORF annotation using PFAM and a customised anti-phage defence database, referred to as "DEFLOC".
 10. Use host and mapped MGE contigs to generate host and MGE gene cluster networks. These networks are then combined to generate host-phage interaction networks. Concurrently, heatmap describing the composition of each community (local cluster) are also generated.
