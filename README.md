@@ -19,8 +19,9 @@ This repository contains a copy of the workflow used for surveying the intra-sub
 9. Retrieve and prediction contig DNA annotations describing whether contigs are linear/circular and host/phage encoded. Also performs ORF annotation using PFAM and a customised anti-phage defence database, referred to as "DEFLOC".
 10. Use host and mapped MGE contigs to generate host and MGE gene cluster networks. These networks are then combined to generate host-phage interaction networks. Concurrently, heatmap describing the composition of each community (local cluster) are also generated.
 
+![Overall workflow no numbering](https://github.com/user-attachments/assets/1becfa97-f535-4728-85ff-069a49803af0)
 
-![image](https://github.com/user-attachments/assets/fb1c04dc-6cf1-4c80-9c6c-347d942e59e4)
+
 
 # Installation
 
