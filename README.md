@@ -9,9 +9,14 @@ This repository contains a copy of the workflow used for surveying the intra-sub
 
 **Layer 2:**
 
-5. 
+5. Retrieve CRISPR-Cas operon encoding contigs for each CRISPR-Cas subtype (base on the presence or absence of a signature identifying gene).
+6. Expand and verify the contig encoding CRISPR-arrays, and map the spacers form these contigs onto the 10TB data block.
+7. Use mapper-spacing data to analyse biases in the distribution of spacers during spaer acquisition.
 
 **Layer 3:**
+8. Retrieve the spacer-mapped target sequences. These are usually Phage or plasmid Mobile Genetic Elements (MGEs). These may be prophage encoded.
+9. Retrieve and prediction contig DNA annotations describing whether contigs are linear/circular and host/phage encoded. Also performs ORF annotation using PFAM and a customised anti-phage defence database, referred to as "DEFLOC".
+10. Use host and mapped MGE contigs to generate host and MGE gene cluster networks. These networks are then combined to generate host-phage interaction networks. Concurrently, heatmap describing the composition of each community (local cluster) are also generated.
 
 Note: Many of the scripts and code were originally run from a single fixed directory (/g/data/va71/crispr_pipeline_annotation) on a computing cluster. These have not yet been adapted for standalone use. As such running from each chapter specific folder may produce dependency and pathing errors. I will work to fix these issues progressively in a separate branch.
 ![image](https://github.com/user-attachments/assets/fb1c04dc-6cf1-4c80-9c6c-347d942e59e4)
