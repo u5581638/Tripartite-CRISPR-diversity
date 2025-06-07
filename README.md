@@ -1,5 +1,17 @@
 # Tripartite-CRISPR-diversity
-This repository contains a copy of the workflow used for surveying the intra-subtype and spacer acquisition diversity across CRISPR-Cas subtypes. The workflow functions as 3 seperate yet inter-dependent layers. In the top layer, a computational pipeline mines and extracts DNA upstream and downstream of CRISPR-arrays, using assembled prokaryotic metagenomic and NGS sequencing data as the main feedstock. Genes were then predicted from this data, clustered into putative families, and assessed for their degree of co-association with the arrays. The categorical conservation of different CRISPR-associated genes, based on annotation by domain homology was surveyed to identify the fraction of associated genes whose function remains unknown. This was also performed at the CRISPR-Cas subtype level, where the identities of known and unknown co-associated genes, were examined. 
+This repository contains a copy of the workflow used for surveying the intra-subtype and spacer acquisition diversity across CRISPR-Cas subtypes. The workflow functions as 3 seperate yet inter-dependent layers. These layers comprise the following overall steps:
+
+**Layer 1:**
+1. Identify CRISPR-arrays/ or other distinguishing motifs, in a 10TB data block comprised of assembled metagenomic and NGS sequencing data.
+2. Extract DNA upstream and downstream of the arrays. Predict Open Reading Frames (ORFs). Cluster into putative families
+3. Verify that co-encoded genes are associated with CRISPR-arrays, by computing CRISPRicity, abundance and average distance from the CRISPR-array for a representative from each cluster.
+4. Survey the space of co-associated genes using HMM based homology to determined the fraction of uncategorised genes.
+
+**Layer 2:**
+
+5. 
+
+**Layer 3:**
 
 Note: Many of the scripts and code were originally run from a single fixed directory (/g/data/va71/crispr_pipeline_annotation) on a computing cluster. These have not yet been adapted for standalone use. As such running from each chapter specific folder may produce dependency and pathing errors. I will work to fix these issues progressively in a separate branch.
 ![image](https://github.com/user-attachments/assets/fb1c04dc-6cf1-4c80-9c6c-347d942e59e4)
