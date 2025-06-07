@@ -1,5 +1,5 @@
 # Tripartite-CRISPR-diversity
-Code for surveying the intra-subtype and spacer acquisition diversity across CRISPR-Cas subtypes. This code was originally designed to be run as a single integrated workflow, however this approach was not implemented and most code was instead run seperately. As a result, some scripts contain functions and unused sections of code which were not utilised. These will be progressively deleted.
+This repository contains a copy of the workflow used for surveying the intra-subtype and spacer acquisition diversity across CRISPR-Cas subtypes. The workflow functions as 3 seperate yet inter-dependent layers. In the top layer, a computational pipeline mines and extracts DNA upstream and downstream of CRISPR-arrays, using assembled prokaryotic metagenomic and NGS sequencing data as the main feedstock. Genes were then predicted from this data, clustered into putative families, and assessed for their degree of co-association with the arrays. The categorical conservation of different CRISPR-associated genes, based on annotation by domain homology was surveyed to identify the fraction of associated genes whose function remains unknown. This was also performed at the CRISPR-Cas subtype level, where the identities of known and unknown co-associated genes, were examined. 
 
 Note: Many of the scripts and code were originally run from a single fixed directory (/g/data/va71/crispr_pipeline_annotation) on a computing cluster. These have not yet been adapted for standalone use. As such running from each chapter specific folder may produce dependency and pathing errors. I will work to fix these issues progressively in a separate branch.
 ![image](https://github.com/user-attachments/assets/fb1c04dc-6cf1-4c80-9c6c-347d942e59e4)
@@ -89,3 +89,8 @@ ggpubr  0.6.0
 ggprism  1.0.5
 
 
+
+
+# Running Workflows
+
+This code was originally designed to be run as a single integrated workflow, however this approach has not yet been implemented. An executable version of this workflow, which allows all the required file paths to be specified at input, is in development.
