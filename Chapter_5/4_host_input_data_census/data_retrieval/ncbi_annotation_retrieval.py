@@ -3,8 +3,13 @@ import sys
 import csv
 
 # do two things
-# 1. Find all matching NCBI records (from master genbank table).
+# 1. Find all matching NCBI records.
 # 2. Compute matched/unmatched proportion
+
+# INPUT: 1. list of host genome ids from each subtype.
+#		 2. host-window table of NCBI annotations
+
+# OUTPUT: table containing matched NCBI entries for each subtype.
 
 host_url = open(sys.argv[1],"r")
 host_table = csv.reader(host_url)

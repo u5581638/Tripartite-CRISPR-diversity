@@ -4,6 +4,14 @@ import sys
 
 # script to retrieve all the ncbi annotation for a given cluster input file:
 # should have an existing GOLD equivalent: "phage_gold_annotation_retrieval.py"
+# INPUT:
+# 1. c1.clusters file from the mapped sequences
+# 2. genome block NCBI annotation tables retrieved from master genbank table (located in /g/data/va71/labelled_genomes/)
+# 3. genome block NCBI annotations tables retrieved via entrez.
+
+# OUTPUT:
+# 1.  table containing matching NCBI annotations for the mapped sequences from each subtype.
+
 with open(sys.argv[1],"r") as csvfile:
 	cluster_table = list(csv.reader(csvfile))
 

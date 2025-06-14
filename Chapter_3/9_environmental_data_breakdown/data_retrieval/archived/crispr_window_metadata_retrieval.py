@@ -2,9 +2,12 @@ import csv
 import sys
 from Bio import SeqIO
 
+# may not have been used
 # script to retrieve sequence metadata for JGI-derived sequences using a merged metadata table downloaded from the GOLD database website
-# SHELL: python3 crispr_window_metadata_retrieval.py true_gold_compile3_merged.csv spliced_debug_corrected_cleaned_rerun_20kb_local_windows_combined.fasta output file name>
-# INPUT: GOLD table (merged)
+# SHELL: python3 crispr_window_metadata_retrieval.py true_gold_compile3_merged.csv spliced_debug_corrected_cleaned_rerun_20kb_local_windows_combined.fasta <output file name>
+# INPUT: 1. GOLD table (merged)
+# 		 2. 40kb sequence "window" file in FASTA format.
+# OUTPUT: table of JGI-matched metadata entries.
 # i.e. true_gold_compile3_merged.csv
 with open (sys.argv[1],"r") as csvfile:
 	microbiome_table = list(csv.reader(csvfile))

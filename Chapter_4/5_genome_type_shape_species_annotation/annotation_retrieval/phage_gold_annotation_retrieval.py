@@ -14,7 +14,12 @@
 import csv
 import sys
 
+# INPUT:
+# 1. c1.clusters file from the mapped sequences
+# 2. genome block JGI annotation tables (located in /g/data/va71/labelled_genomes/)
 
+# OUTPUT:
+# 1.  table containing matching JGI annotations for the mapped sequences from each subtype.
 with open(sys.argv[1],"r") as csvfile:
 	cluster_table = list(csv.reader(csvfile))
 

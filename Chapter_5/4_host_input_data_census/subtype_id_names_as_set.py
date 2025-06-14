@@ -1,6 +1,8 @@
 # subtype_id_names_as_set
 
 # script to take the mapped spacer tables and extract just the genome ids for proportion calculation
+# INPUT: mapped spacer interaction ("hitmap") table
+# OUTPUT: set of non-redundant genome_ids
 
 # must add top layer to krona layers to be either JGI or NCBI -> this will enable merging of the two seperate plots.
 

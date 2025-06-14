@@ -5,7 +5,7 @@
 import sys
 import csv
 
-# INPUT: JGI table containing species metadata in csv format.
+# INPUT: JGI table containing subtype specific species metadata in csv format.
 with open(sys.argv[1],"r") as csvfile:
 	raw_table = list(csv.reader(csvfile))
 
@@ -14,6 +14,8 @@ ncbi_dict = {}
 # need to use tuple (datatype,genus,species) as tuple
 # need to count number of instances and store as value
 # unusual inversion of standard dict use.
+# OUTPUT: table of contig annotations usuable as input to Krona.html
+# SHELL: krona_table_generation_jgi.py jgI_microbiome_window_only2.csv <output_file_name>
 
 for row in raw_table:
 	my_key = []

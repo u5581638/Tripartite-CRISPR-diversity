@@ -2,6 +2,10 @@
 # census run batch script
 
 # JGI retrieval run below
+
+# INPUT: list of de-duplicated genome ids from each subtype investigated (hardcoded in this instance)
+# OUTPUT: tables of JGI annotations for each set of subtype contigs
+
 python3.7 jgi_annotation_retrieval.py ../non-redundant_mapping_tables/mapped_spacer_genome_ids/cas12a.fasta_all_hits.csv_genomes.fasta_crisprs.lst_full_real_arr_positions.csv_all_hits_blast_filtered_hitmap.csv_standardised.csv_non_redundant.csv_filtered.csv_host_ids.csv ../contig_environment_metadata/jgi_microbiome_window_only2_dedup.csv ../non-redundant_mapping_tables/census_subtype_runs/cas12a_test_jgi_annotations.csv >> ../non-redundant_mapping_tables/census_subtype_runs/jgi_retrieval_readout.csv
 
 

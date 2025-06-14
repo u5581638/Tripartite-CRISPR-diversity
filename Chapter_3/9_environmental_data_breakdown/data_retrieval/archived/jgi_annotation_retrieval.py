@@ -2,10 +2,16 @@ from Bio import SeqIO
 import sys
 import csv
 
+
+# this script may not have been used!!
 # script to retrieve sequence metadata for JGI-derived sequences using a merged metadata table downloaded from the GOLD database website
 
 # SHELL: find labelled_genomes -name "*.fasta" | xargs -n 1 -I {} -P 1 python3 jgi_annotation_retrieval.py {} true_gold_compile3_merged.csv {}_gold_annotations.csv
-# INPUT: table containing JGI sequence identifers (Ga numbers)
+# INPUT: 1
+#		2. merged_table containing JGI sequence identifers (Ga numbers). This must be: true_gold_compile3_merged.csv. Any other table will not work!!
+# OUTPUT: table containing 
+
+
 host_url = open(sys.argv[1],"r")
 host_table = csv.reader(host_url)
 

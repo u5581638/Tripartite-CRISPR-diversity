@@ -14,7 +14,13 @@ def row_sorter(x):
 
 # SHELL: see large_scale_data_block_species_rncbi_retriever6_annotation_merged.sh
 # This script was run recursively using half the batch_number with each iteration.
-# INPUT: number of identifiers to retrieve per bad. The high the nubmer the greater the probability of retrieval failing.
+# INPUT: 1. table containing NCBI identifiers compatible with entrez
+#		 2. number of identifers to query at once (int)
+# OUTPUT: 1. table containing a list of matching ncbi identifiers
+#		  2. List of unmatched identifiers
+#		  1. list of incompatible IDs
+#		   
+
 batch_num = int(sys.argv[2])
 
 # table/list of ncbi identifiers in csv format

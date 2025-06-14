@@ -14,7 +14,7 @@ with open(sys.argv[1],"r") as csvfile:
 
 ncbi_dict = {}
 
-# OUTPUT: table of contig annotations usuable as input to Krona.html
+# OUTPUT: table of contig annotations usable as input to Krona.html
 # SHELL: krona_table_generation.py ncbi_microbiome_window_only2_dedup.csv <output_file_name>
 for row in raw_table:
 	my_key = []

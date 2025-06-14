@@ -6,6 +6,11 @@ import csv
 # 1. Retrieve all matching JGI scaffolds from GOLD records.
 # 2. Compute matched/unmatched proportion
 
+# INPUT: 1. list of host genome ids from each subtype.
+#		 2. merged_table containing JGI sequence identifers (Ga numbers). This must be: true_gold_compile3_merged.csv. Any other table will not work!!
+
+# OUTPUT: 1. table containing matched JGI entries for each subtype.
+
 host_url = open(sys.argv[1],"r")
 host_table = csv.reader(host_url)
 

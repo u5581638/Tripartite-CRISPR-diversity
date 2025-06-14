@@ -10,9 +10,13 @@
 # 2. sort copy of interaction table
 # 3. Remove redundant entries
 # 4. Lookup relevant labelled genomes file
-# 
+
 import csv
 import sys
+
+# INPUT: 1. Spacer-mapping interaction table specific to each CRISPR-Cas subtype
+#		 2. Gold annotation table for CRISPR 40kb DNA windows
+# OUTPUT: 1. Table of annotations matched to just the host-encoded CRISPR-Cas subtypes.
 
 with open(sys.argv[1],"r") as csvfile:
 	interaction_table = list(csv.reader(csvfile))
